@@ -1,0 +1,44 @@
+# =============================================================================
+# Dockerfile.backend - Node.js 20 Alpine, multi-stage
+# =============================================================================
+
+# ── Stage 1: Install dependencies ───────────────────────────────────────────
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY backend/package*.json ./
+RUN npm install --omit=dev --no-audit --no-fund && npm cache clean --force
+
+# ── Stage 2: Runtime ─────────────────────────────────────────────────────────
+FROM node:20-alpine
+
+LABEL maintainer="FCIT Tanta University"
+LABEL description="FCIT SRS - Backend API"
+
+ENV NODE_ENV=production \
+    NODE_OPTIONS="--max-old-space-size=512" \
+    PORT=3000
+
+RUN apk add --no-cache netcat-openbsd bash curl
+
+WORKDIR /app
+
+# Non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+
+# Copy dependencies from builder
+COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
+
+# Copy application source
+COPY --chown=nodejs:nodejs backend/ ./
+
+# Logs directory
+RUN mkdir -p logs && chown -R nodejs:nodejs logs
+RUN chmod +x entrypoint.sh
+
+USER nodejs
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -sf http://localhost:3000/health || exit 1
+
+ENTRYPOINT ["/bin/bash", "/app/entrypoint.sh"]

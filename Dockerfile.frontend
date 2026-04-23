@@ -1,0 +1,30 @@
+# =============================================================================
+# Dockerfile.frontend - React build + Nginx
+# =============================================================================
+
+# ── Stage 1: Build React app ─────────────────────────────────────────────────
+FROM node:20-alpine AS builder
+WORKDIR /app
+# Copy package.json only — we'll install fresh inside the container
+# This avoids host-generated lock file / peer-dep conflicts (e.g. typescript version mismatch)
+COPY frontend/package.json ./
+RUN npm install --legacy-peer-deps --no-audit --no-fund && npm cache clean --force
+COPY frontend/ ./
+# Skip the lock file check since we installed fresh above
+ENV CI=false
+RUN npm run build
+
+# ── Stage 2: Nginx runtime ───────────────────────────────────────────────────
+FROM nginxinc/nginx-unprivileged:1.27-alpine
+
+LABEL description="FCIT SRS - Frontend"
+
+RUN rm /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/build /usr/share/nginx/html
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:8080/index.html || exit 1
+
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]

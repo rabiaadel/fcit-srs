@@ -1,0 +1,12 @@
+node_modules/
+.env
+*.log
+logs/
+backend/logs/
+dist/
+build/
+.DS_Store
+postgres_data/
+prometheus_data/
+grafana_data/
+*.local

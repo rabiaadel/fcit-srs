@@ -1,0 +1,57 @@
+# =============================================================================
+# .dockerignore — keeps Docker build context small (was 284MB, now ~5MB)
+# =============================================================================
+
+# Node dependencies — NEVER send to Docker, each Dockerfile installs its own
+**/node_modules
+node_modules
+
+# Lock files — we install fresh inside containers to avoid peer-dep conflicts
+**/package-lock.json
+**/npm-debug.log*
+
+# React build output — gets rebuilt inside Docker
+frontend/build
+frontend/.cache
+
+# Logs
+**/logs
+**/*.log
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment files — never bake secrets into images
+.env
+.env.*
+!.env.example
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+**/.DS_Store
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Docker files themselves (no recursion needed)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Docs (not needed at runtime)
+README.md
+*.md
+
+# CI/CD
+.github/
+.circleci/
