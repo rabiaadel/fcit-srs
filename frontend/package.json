@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@tanstack/react-query": "^5.45.0",
+    "ajv": "^8.20.0",
     "axios": "^1.7.2",
     "chart.js": "^4.4.3",
     "react": "^18.3.1",
@@ -22,11 +23,15 @@
     "eject": "react-scripts eject"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
-    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
-  },
-  "overrides": {
-    "typescript": "4.9.5"
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
-

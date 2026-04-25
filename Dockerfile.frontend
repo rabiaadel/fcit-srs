@@ -1,23 +1,27 @@
-# =============================================================================
-# Dockerfile.frontend - React build + Nginx
-# =============================================================================
-
-# ── Stage 1: Build React app ─────────────────────────────────────────────────
 FROM node:20-alpine AS builder
 WORKDIR /app
-# Copy package.json only — we'll install fresh inside the container
-# This avoids host-generated lock file / peer-dep conflicts (e.g. typescript version mismatch)
+
 COPY frontend/package.json ./
-RUN npm install --legacy-peer-deps --no-audit --no-fund && npm cache clean --force
+
+# Step 1: install everything with legacy peer deps
+# Step 2: force-upgrade ajv to v8 so ajv-keywords can find dist/compile/codegen
+# Step 3: clean cache
+RUN npm install --legacy-peer-deps --no-audit --no-fund \
+    && npm install ajv@8 ajv-keywords@5 --legacy-peer-deps --no-audit --no-fund \
+    && npm cache clean --force
+
 COPY frontend/ ./
-# Skip the lock file check since we installed fresh above
+
 ENV CI=false
+ENV GENERATE_SOURCEMAP=false
+
 RUN npm run build
 
-# ── Stage 2: Nginx runtime ───────────────────────────────────────────────────
 FROM nginxinc/nginx-unprivileged:1.27-alpine
 
+LABEL maintainer="Rabia Adel Gamal"
 LABEL description="FCIT SRS - Frontend"
+LABEL version="1.0.0"
 
 RUN rm /etc/nginx/conf.d/default.conf
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf

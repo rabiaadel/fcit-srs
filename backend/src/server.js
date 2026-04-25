@@ -13,8 +13,8 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 const { checkHealth } = require('./config/database');
 
 collectDefaultMetrics({ prefix: 'fcit_srs_' });
-
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // ── Security middleware ───────────────────────────────────────────────────────

@@ -1,11 +1,9 @@
 version: '3.9'
 
 services:
-  # ─────────────────────────────────────────────────────────
-  # PostgreSQL Database
-  # ─────────────────────────────────────────────────────────
+
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16.3-alpine3.20
     container_name: fcit-srs-postgres
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
@@ -14,33 +12,30 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./database/enhancements.sql:/docker-entrypoint-initdb.d/02-enhancements.sql
-      - ./database/seeds/001_demo_users.sql:/docker-entrypoint-initdb.d/03-seed-users.sql
-      - ./database/seeds/002_initial_setup.sql:/docker-entrypoint-initdb.d/04-seed-setup.sql
-      - ./database/seeds/003_complete_curriculum.sql:/docker-entrypoint-initdb.d/05-seed-curriculum.sql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/enhancements.sql:/docker-entrypoint-initdb.d/02-enhancements.sql:ro
+      - ./database/seeds/001_demo_users.sql:/docker-entrypoint-initdb.d/03-seed-users.sql:ro
+      - ./database/seeds/002_initial_setup.sql:/docker-entrypoint-initdb.d/04-seed-setup.sql:ro
+      - ./database/seeds/003_complete_curriculum.sql:/docker-entrypoint-initdb.d/05-seed-curriculum.sql:ro
     ports:
       - "${DB_PORT:-5432}:5432"
     networks:
       - fcit-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-student_registration_system}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-student_registration_system} -q"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 40s
     restart: unless-stopped
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "20m"
+        max-file: "5"
 
-  # ─────────────────────────────────────────────────────────
-  # Backend API (Node.js + Express)
-  # ─────────────────────────────────────────────────────────
   backend:
-    image: fcit-srs-backend:latest
+    image: fcit-srs-backend:1.0.0
     container_name: fcit-srs-backend
     build:
       context: .
@@ -53,8 +48,8 @@ services:
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-student_registration_system}
-      JWT_SECRET: ${JWT_SECRET:-change-this-in-production-fcit-tanta-2024}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-this-refresh-fcit-tanta-2024}
+      JWT_SECRET: ${JWT_SECRET:-fcit-srs-change-me-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-fcit-srs-refresh-change-me}
       JWT_EXPIRY: ${JWT_EXPIRY:-15m}
       JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
       API_RATE_LIMIT: ${API_RATE_LIMIT:-200}
@@ -66,36 +61,29 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - ./backend/logs:/app/logs
-      - ./database:/app/database
+      - backend_logs:/app/logs
+      - ./database:/app/database:ro
     networks:
       - fcit-network
-    entrypoint: ["/bin/bash", "/app/entrypoint.sh"]
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health',(r)=>{if(r.statusCode!==200)throw new Error()})"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 60s
+      test: ["CMD-SHELL", "curl -sf http://localhost:3000/health || exit 1"]
+      interval: 20s
+      timeout: 8s
+      retries: 5
+      start_period: 90s
     restart: unless-stopped
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "20m"
+        max-file: "5"
 
-  # ─────────────────────────────────────────────────────────
-  # Frontend (React + Nginx)
-  # ─────────────────────────────────────────────────────────
   frontend:
-    image: fcit-srs-frontend:latest
+    image: fcit-srs-frontend:1.0.0
     container_name: fcit-srs-frontend
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    environment:
-      REACT_APP_API_URL: /api/v1
-      REACT_APP_ENV: ${NODE_ENV:-production}
     ports:
       - "${FRONTEND_PORT:-3001}:8080"
     depends_on:
@@ -104,11 +92,11 @@ services:
     networks:
       - fcit-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/index.html"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/index.html || exit 1"]
       interval: 30s
-      timeout: 3s
+      timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 15s
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -116,58 +104,91 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # ─────────────────────────────────────────────────────────
-  # Prometheus (Metrics)
-  # ─────────────────────────────────────────────────────────
   prometheus:
     image: prom/prometheus:latest
     container_name: fcit-srs-prometheus
-    volumes:
-      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    ports:
-      - "9090:9090"
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=15d'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=2GB'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      backend:
+        condition: service_healthy
     networks:
       - fcit-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9090/-/healthy || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # ─────────────────────────────────────────────────────────
-  # Grafana (Dashboards)
-  # ─────────────────────────────────────────────────────────
   grafana:
     image: grafana/grafana:latest
     container_name: fcit-srs-grafana
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
-      GF_USERS_ALLOW_SIGN_UP: 'false'
-      GF_INSTALL_PLUGINS: grafana-clock-panel
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_LOG_LEVEL: "warn"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
     ports:
       - "3050:3000"
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
     networks:
       - fcit-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   fcit-network:
     driver: bridge
+    name: fcit-srs-network
     ipam:
+      driver: default
       config:
-        - subnet: 172.30.0.0/16
+        - subnet: 172.30.0.0/24
+          gateway: 172.30.0.1
 
 volumes:
   postgres_data:
     driver: local
+    name: fcit-srs-postgres-data
+  backend_logs:
+    driver: local
+    name: fcit-srs-backend-logs
   prometheus_data:
     driver: local
+    name: fcit-srs-prometheus-data
   grafana_data:
     driver: local
+    name: fcit-srs-grafana-data
