@@ -18,8 +18,7 @@ const login = async (req, res, next) => {
     const user = userRes.rows[0];
 
     if (!user) {
-      // Constant-time to prevent timing attacks
-      await bcrypt.compare('dummy', '$2b$10$invalidhashXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
+      await bcrypt.compare(password, '$2b$10$W2hZVsJqkGqLAHlzdb.sa.Ar7CqOq.wIBCTKPjZfg2mnRdI.8vD26');
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
@@ -174,7 +173,19 @@ const getMe = async (req, res, next) => {
       )).rows[0];
     }
 
-    return res.json({ success: true, data: { user, profile } });
+    return res.json({ success: true, data: {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        fullNameAr: user.full_name_ar,
+        fullNameEn: user.full_name_en,
+        phone: user.phone,
+        lastLogin: user.last_login,
+        mustChangePw: user.must_change_pw,
+      },
+      profile,
+    } });
   } catch (err) {
     next(err);
   }

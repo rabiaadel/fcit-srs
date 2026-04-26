@@ -1,0 +1,935 @@
+{
+  "metadata": {
+    "filename": "complete_specialization_courses.json",
+    "description": "Complete course listings for all 4 specializations with prerequisites, credits, levels",
+    "specializations_included": 4,
+    "total_courses": "120+ courses",
+    "last_updated": "2024"
+  },
+
+  "general_courses": {
+    "university_requirements": [
+      {
+        "code": "UNV111",
+        "name": "Technical Report Writing",
+        "level": 1,
+        "credits": 1,
+        "category": "General University Requirements",
+        "prerequisites": [],
+        "mandatory": true
+      },
+      {
+        "code": "UNV112",
+        "name": "Societal Issues",
+        "level": 1,
+        "credits": 1,
+        "category": "General University Requirements",
+        "prerequisites": [],
+        "mandatory": true
+      },
+      {
+        "code": "UNV113",
+        "name": "English Language (1)",
+        "level": 1,
+        "credits": 1,
+        "category": "General University Requirements",
+        "prerequisites": [],
+        "mandatory": true
+      },
+      {
+        "code": "UNV114",
+        "name": "Communication Skills",
+        "level": 1,
+        "credits": 1,
+        "category": "General University Requirements",
+        "prerequisites": [],
+        "mandatory": true
+      }
+    ],
+    "total_general_credits": 12,
+    "note": "Total 12 credit hours including 5 mandatory credits above"
+  },
+
+  "basic_sciences_mathematics": {
+    "courses": [
+      {
+        "code": "BS111",
+        "name": "Math (1)",
+        "level": 1,
+        "credits": 3,
+        "category": "Basic Sciences and Mathematics",
+        "prerequisites": [],
+        "mandatory": true
+      },
+      {
+        "code": "BS112",
+        "name": "Discrete Mathematics",
+        "level": 1,
+        "credits": 3,
+        "category": "Basic Sciences and Mathematics",
+        "prerequisites": [],
+        "mandatory": true
+      },
+      {
+        "code": "BS113",
+        "name": "Math (2)",
+        "level": 1,
+        "credits": 3,
+        "category": "Basic Sciences and Mathematics",
+        "prerequisites": ["BS111"],
+        "mandatory": true
+      },
+      {
+        "code": "BS114",
+        "name": "Math (3)",
+        "level": 2,
+        "credits": 3,
+        "category": "Basic Sciences and Mathematics",
+        "prerequisites": ["BS113"],
+        "mandatory": true
+      },
+      {
+        "code": "BS115",
+        "name": "Electronics",
+        "level": 1,
+        "credits": 3,
+        "category": "Basic Sciences",
+        "prerequisites": [],
+        "mandatory": true
+      },
+      {
+        "code": "BS116",
+        "name": "Probability and Statistics (1)",
+        "level": 1,
+        "credits": 3,
+        "category": "Basic Sciences and Mathematics",
+        "prerequisites": ["BS111"],
+        "mandatory": true
+      },
+      {
+        "code": "BS117",
+        "name": "Operations Research",
+        "level": 2,
+        "credits": 3,
+        "category": "Basic Sciences and Mathematics",
+        "prerequisites": ["BS111"],
+        "mandatory": true
+      }
+    ],
+    "total_credits": 15,
+    "note": "70 credit hours mentioned in bylaws for science/math foundation"
+  },
+
+  "basic_computing_sciences": [
+    {
+      "code": "CS111",
+      "name": "Fundamentals of Computer Science",
+      "level": 1,
+      "credits": 3,
+      "category": "Basic Computing",
+      "prerequisites": [],
+      "mandatory": true
+    },
+    {
+      "code": "CS112",
+      "name": "Structured Programming",
+      "level": 1,
+      "credits": 3,
+      "category": "Basic Computing",
+      "prerequisites": ["CS111"],
+      "mandatory": true
+    },
+    {
+      "code": "CS211",
+      "name": "Object Oriented Programming",
+      "level": 2,
+      "credits": 3,
+      "category": "Basic Computing",
+      "prerequisites": ["CS112"],
+      "mandatory": true
+    },
+    {
+      "code": "CS212",
+      "name": "Data Structures",
+      "level": 2,
+      "credits": 3,
+      "category": "Basic Computing",
+      "prerequisites": ["CS112"],
+      "mandatory": true
+    },
+    {
+      "code": "IS111",
+      "name": "Intro to Information Systems",
+      "level": 1,
+      "credits": 3,
+      "category": "Basic Computing",
+      "prerequisites": [],
+      "mandatory": true
+    },
+    {
+      "code": "IT111",
+      "name": "Digital Fundamentals",
+      "level": 1,
+      "credits": 3,
+      "category": "Basic Computing",
+      "prerequisites": [],
+      "mandatory": true
+    }
+  ],
+
+  "computer_science_specialization": {
+    "code": "CS",
+    "name": "Computer Science",
+    "total_credits": 60,
+    "mandatory_credits": 38,
+    "elective_credits": 10,
+    "project_credits": 6,
+    "training_credits": 3,
+    "mandatory_courses": [
+      {
+        "code": "CS311",
+        "name": "Computer Security",
+        "level": 3,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS212"]
+      },
+      {
+        "code": "CS312",
+        "name": "Computer Organization",
+        "level": 3,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS212"]
+      },
+      {
+        "code": "CS313",
+        "name": "Artificial Intelligence",
+        "level": 3,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS212"]
+      },
+      {
+        "code": "CS314",
+        "name": "Machine Learning",
+        "level": 3,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS313"]
+      },
+      {
+        "code": "CS315",
+        "name": "Big Data Analysis",
+        "level": 3,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["IS311"]
+      },
+      {
+        "code": "CS316",
+        "name": "Advanced Operating Systems",
+        "level": 3,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS214"]
+      },
+      {
+        "code": "CS411",
+        "name": "Computation Theory",
+        "level": 4,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS213"]
+      },
+      {
+        "code": "CS412",
+        "name": "Internet of Things",
+        "level": 4,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS312"]
+      },
+      {
+        "code": "CS413",
+        "name": "Problem Solving & Decision Making",
+        "level": 4,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS313"]
+      },
+      {
+        "code": "CS414",
+        "name": "Data Science",
+        "level": 4,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS314", "CS315"]
+      },
+      {
+        "code": "CS415",
+        "name": "Cloud Computing",
+        "level": 4,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS312"]
+      },
+      {
+        "code": "CS416",
+        "name": "Compilers",
+        "level": 4,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS213"]
+      },
+      {
+        "code": "CS214",
+        "name": "Operating Systems",
+        "level": 2,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS212"]
+      },
+      {
+        "code": "CS213",
+        "name": "Algorithms Analysis",
+        "level": 2,
+        "credits": 3,
+        "category": "Applied Sciences",
+        "prerequisites": ["CS212"]
+      }
+    ],
+    "elective_courses": [
+      {
+        "code": "CS321",
+        "name": "Cryptography",
+        "level": 3,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS311"]
+      },
+      {
+        "code": "CS322",
+        "name": "Network & Internet Security",
+        "level": 3,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS311"]
+      },
+      {
+        "code": "CS423",
+        "name": "Mobile Computing",
+        "level": 4,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS312"]
+      },
+      {
+        "code": "CS424",
+        "name": "Mobile Application Programming",
+        "level": 4,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS211"]
+      },
+      {
+        "code": "CS331",
+        "name": "Human Computer Interaction",
+        "level": 3,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS212"]
+      },
+      {
+        "code": "CS332",
+        "name": "Knowledge Discovery",
+        "level": 3,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS313"]
+      },
+      {
+        "code": "CS433",
+        "name": "Selected Topics in AI",
+        "level": 4,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS313"]
+      },
+      {
+        "code": "CS434",
+        "name": "High Performance Computing",
+        "level": 4,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS316"]
+      },
+      {
+        "code": "CS342",
+        "name": "Data Models and Visualization",
+        "level": 3,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS212"]
+      },
+      {
+        "code": "CS443",
+        "name": "Natural Language Processing",
+        "level": 4,
+        "credits": 3,
+        "category": "Elective",
+        "prerequisites": ["CS313"]
+      }
+    ]
+  },
+
+  "information_systems_specialization": {
+    "code": "IS",
+    "name": "Information Systems",
+    "total_credits": 60,
+    "mandatory_credits": 38,
+    "elective_credits": 10,
+    "project_credits": 6,
+    "training_credits": 3,
+    "mandatory_courses": [
+      {
+        "code": "IS211",
+        "name": "Database Systems",
+        "level": 2,
+        "credits": 3,
+        "prerequisite": ["CS112"]
+      },
+      {
+        "code": "IS212",
+        "name": "Optimization Methods",
+        "level": 2,
+        "credits": 3,
+        "prerequisite": ["IS211"]
+      },
+      {
+        "code": "IS311",
+        "name": "Analysis and Design of Information Systems",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IS211"]
+      },
+      {
+        "code": "IS312",
+        "name": "Database Management Systems",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IS211"]
+      },
+      {
+        "code": "IS313",
+        "name": "File Management & Processing",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IS211"]
+      },
+      {
+        "code": "IS314",
+        "name": "Information Retrieval",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IS211"]
+      },
+      {
+        "code": "IS315",
+        "name": "Data Warehousing",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IS312"]
+      },
+      {
+        "code": "IS316",
+        "name": "Data Analytics & Management",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IS312"]
+      },
+      {
+        "code": "IS317",
+        "name": "Web-based Information Systems Development",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IS311"]
+      },
+      {
+        "code": "IS318",
+        "name": "Information Theory & Data Compression",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["BS116"]
+      },
+      {
+        "code": "IS411",
+        "name": "Data Mining",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["IS316"]
+      },
+      {
+        "code": "IS412",
+        "name": "Information Systems Project Management",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["IS311"]
+      },
+      {
+        "code": "IS413",
+        "name": "Selected Topics in IS Engineering",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["IS311"]
+      }
+    ],
+    "elective_courses": [
+      {
+        "code": "IS321",
+        "name": "Selected Topics in Data Engineering",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IS322",
+        "name": "Cloud Databases",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IS331",
+        "name": "Enterprise Information Systems",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IS332",
+        "name": "Management Information Systems",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IS341",
+        "name": "IS Quality Assurance",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IS342",
+        "name": "IS Security & Risk Management",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IS351",
+        "name": "Data Processing & Analysis",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IS414",
+        "name": "Selected Topics in Databases",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IS415",
+        "name": "IS Development Methodologies",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IS423",
+        "name": "Distributed Databases",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IS424",
+        "name": "Selected Topics in Advanced IS",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IS433",
+        "name": "E-Business",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IS434",
+        "name": "Business Process Management",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IS444",
+        "name": "IS Audit & Control",
+        "level": 4,
+        "credits": 3
+      }
+    ]
+  },
+
+  "information_technology_specialization": {
+    "code": "IT",
+    "name": "Information Technology",
+    "total_credits": 60,
+    "mandatory_credits": 38,
+    "elective_credits": 10,
+    "project_credits": 6,
+    "training_credits": 3,
+    "mandatory_courses": [
+      {
+        "code": "IT211",
+        "name": "Digital Logic Design",
+        "level": 2,
+        "credits": 3,
+        "prerequisite": ["BS115"]
+      },
+      {
+        "code": "IT311",
+        "name": "Computer Graphics",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IT211"]
+      },
+      {
+        "code": "IT312",
+        "name": "Pattern Recognition",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IT211"]
+      },
+      {
+        "code": "IT313",
+        "name": "Information & Computer Network Security",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IT211"]
+      },
+      {
+        "code": "IT314",
+        "name": "Signals & Systems",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IT211"]
+      },
+      {
+        "code": "IT315",
+        "name": "Microprocessors",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IT211"]
+      },
+      {
+        "code": "IT316",
+        "name": "Image Processing",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IT311"]
+      },
+      {
+        "code": "IT317",
+        "name": "Advanced Computer Networks",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IT311"]
+      },
+      {
+        "code": "IT318",
+        "name": "Computer Architecture",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IT315"]
+      },
+      {
+        "code": "IT319",
+        "name": "Digital Multimedia",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["IT311"]
+      },
+      {
+        "code": "IT411",
+        "name": "Robot Systems",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["IT314"]
+      },
+      {
+        "code": "IT413",
+        "name": "Communication Technology",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["IT314"]
+      },
+      {
+        "code": "IT414",
+        "name": "Cyber Security",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["IT313"]
+      },
+      {
+        "code": "IT415",
+        "name": "Cloud Computing Networks",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["IT317"]
+      }
+    ],
+    "elective_courses": [
+      {
+        "code": "IT321",
+        "name": "Network Operating Systems",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IT322",
+        "name": "Blockchain Technology",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IT331",
+        "name": "Embedded Systems",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IT332",
+        "name": "Machine Vision",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IT341",
+        "name": "Computer Animation",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IT342",
+        "name": "Advanced Computer Graphics",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "IT423",
+        "name": "Mobile Networks",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IT424",
+        "name": "Selected Topics in Networks",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IT433",
+        "name": "Advanced Pattern Recognition",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IT434",
+        "name": "Selected Topics in Embedded Systems",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IT443",
+        "name": "Advanced Image Processing",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "IT444",
+        "name": "Selected Topics in Multimedia",
+        "level": 4,
+        "credits": 3
+      }
+    ]
+  },
+
+  "software_engineering_specialization": {
+    "code": "SE",
+    "name": "Software Engineering",
+    "total_credits": 60,
+    "mandatory_credits": 38,
+    "elective_credits": 12,
+    "project_credits": 6,
+    "training_credits": 3,
+    "mandatory_courses": [
+      {
+        "code": "SE211",
+        "name": "Software Engineering",
+        "level": 2,
+        "credits": 3,
+        "prerequisite": ["CS112"]
+      },
+      {
+        "code": "SE311",
+        "name": "Software Requirements Analysis",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["SE211"]
+      },
+      {
+        "code": "SE312",
+        "name": "Software Engineering for Internet Applications",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["SE211"]
+      },
+      {
+        "code": "SE313",
+        "name": "Software Design & Architecture",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["SE211"]
+      },
+      {
+        "code": "SE314",
+        "name": "Software Quality Assurance",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["SE311"]
+      },
+      {
+        "code": "SE315",
+        "name": "Advanced Software Engineering",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["SE313"]
+      },
+      {
+        "code": "SE316",
+        "name": "User Interface Design",
+        "level": 3,
+        "credits": 3,
+        "prerequisite": ["SE211"]
+      },
+      {
+        "code": "SE411",
+        "name": "Software Project Management",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["SE311"]
+      },
+      {
+        "code": "SE412",
+        "name": "Software Testing & Validation",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["SE314"]
+      },
+      {
+        "code": "SE413",
+        "name": "Software Engineering Approach to HCI",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["SE316"]
+      },
+      {
+        "code": "SE415",
+        "name": "Ethics in Software Engineering",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["SE411"]
+      },
+      {
+        "code": "SE416",
+        "name": "Software Evolution & Maintenance",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["SE412"]
+      },
+      {
+        "code": "SE417",
+        "name": "Embedded Systems Software Design",
+        "level": 4,
+        "credits": 3,
+        "prerequisite": ["SE313"]
+      }
+    ],
+    "elective_courses": [
+      {
+        "code": "SE321",
+        "name": "Software Security",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "SE322",
+        "name": "Design Patterns",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "SE423",
+        "name": "Software Usability Engineering",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "SE424",
+        "name": "Mobile Applications",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "SE331",
+        "name": "Software Development Management",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "SE332",
+        "name": "Web Application Development",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "SE433",
+        "name": "Games Development",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "SE434",
+        "name": "3D Modeling & Design",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "SE341",
+        "name": "Selected Topics in Software Engineering (1)",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "SE342",
+        "name": "Professional Software Engineering Practice",
+        "level": 3,
+        "credits": 3
+      },
+      {
+        "code": "SE443",
+        "name": "Formal Methods in Software Engineering",
+        "level": 4,
+        "credits": 3
+      },
+      {
+        "code": "SE444",
+        "name": "Selected Topics in Software Engineering",
+        "level": 4,
+        "credits": 3
+      }
+    ]
+  }
+}

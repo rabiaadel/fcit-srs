@@ -20,7 +20,7 @@ BEGIN
     (
         '00000000-0000-0000-0000-000000000001',
         'admin@fci.tanta.edu.eg',
-        '$2b$10$8K1p/a0dL1LXMIgoEDFrwOfMQsA3eKFMkiuX8ehtOgQihtVhxG4bO',
+        '$2b$10$Etxb2LkhfOSZeEZohUkZV.GqHV5D8BsyIEUIx0XSgV0YoLV/KLJ6O',
         'admin',
         'مدير النظام',
         'System Administrator',
@@ -32,7 +32,7 @@ BEGIN
     (
         '00000000-0000-0000-0000-000000000002',
         'dr.ahmed@fci.tanta.edu.eg',
-        '$2b$10$KCCV6NAZ5x1YUaKOLxbr8OQNl4Gx2GH0nRO9mPBJdE0DJkbTe8D.S',
+        '$2b$10$cOqt6YZKmMqMr6noJ5ymiu7D6T08JdSNlVT3dXyM9f/.y9WHgT7tW',
         'doctor',
         'د. أحمد محمد السيد',
         'Dr. Ahmed Mohamed El-Sayed',
@@ -44,7 +44,7 @@ BEGIN
     (
         '00000000-0000-0000-0000-000000000003',
         's.2024cs001@fci.tanta.edu.eg',
-        '$2b$10$kzqN0JjEZOqq3D5gYnSj9.mVNptjXCrN8j1XeD8EjX0tG.sR7aUzC',
+        '$2b$10$q9U0EgCrA3BeXt7tgKNNReO7V6fPDy.k7v0QMRVfN2Sh3U4ay9zrC',
         'student',
         'محمد علي حسن',
         'Mohamed Ali Hassan',

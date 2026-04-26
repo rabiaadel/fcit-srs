@@ -1,0 +1,1170 @@
+================================================================================
+TANTA UNIVERSITY - FACULTY OF COMPUTERS AND INFORMATICS
+BACHELOR'S DEGREE PROGRAM BYLAWS - ACADEMIC YEAR 2024
+================================================================================
+Complete Extraction of Rules, Regulations, Laws, Constraints, and Provisions
+
+================================================================================
+I. GENERAL ADMISSION REQUIREMENTS
+================================================================================
+
+1. GENERAL ADMISSION CONDITIONS (Article 1)
+   Category: Admission Requirements
+   
+   Rule Name: Admission to Faculty of Computers and Informatics
+   Original Text: "Faculty of Computers and Informatics accepts students who have obtained the 
+   General Secondary Certificate in science or the equivalent."
+   Numeric Values: N/A
+   Constraints: 
+   - Students must have General Secondary Certificate in Science
+   - Subject to conditions set by the Higher Council of Universities
+   - Subject to deadlines and schedules determined by university administration
+   - Faculty Council may accept one or two exceptional students per registration
+
+2. MATH (2) PREREQUISITE (Article 1-b)
+   Category: Prerequisites/Admission Requirements
+   
+   Rule Name: Math Level Entry Requirement
+   Original Text: "Science students must pass Math (1) equivalent course before taking Math (2). 
+   This does not count as credit hours and is not included in the cumulative GPA."
+   Numeric Values:
+   - Must pass equivalent of Math (1)
+   - Credit hours: 0
+   Constraints: Prerequisite course does not contribute to GPA
+
+================================================================================
+II. ACADEMIC STRUCTURE AND PROGRAMS
+================================================================================
+
+3. DEGREE AWARDING (Article 3)
+   Category: Degree Requirements
+   
+   Rule Name: Bachelor's Degree in Computers and Informatics
+   Original Text: "Upon request from the Faculty Council, Tanta University awards a Bachelor's 
+   degree in Computers and Informatics in the following specializations: Computer Science, 
+   Information Systems, Information Technology, Software Engineering"
+   Numeric Values: 4 specializations offered
+   Specializations:
+   - Computer Science
+   - Information Systems  
+   - Information Technology
+   - Software Engineering
+
+4. ACADEMIC CALENDAR (Article 4)
+   Category: Academic Calendar
+   
+   Rule Name: Study Year Structure
+   Original Text: "The academic year is divided into two academic semesters and optionally 
+   one summer semester based on student preference and faculty capabilities as approved 
+   by the Faculty Council and University Council."
+   Numeric Values: 3 semester options (2 mandatory + 1 optional)
+   Details:
+   - Fall Semester (20-22 weeks excluding exams) - starts on date set by University Council
+   - Spring Semester (20-22 weeks excluding exams) - starts on date set by University Council  
+   - Summer Semester (2-3 weeks) - optional, starts on date set by Faculty Council
+
+5. LANGUAGE OF INSTRUCTION (Article 5)
+   Category: Program Structure
+   
+   Rule Name: Study Language
+   Original Text: "Study at Faculty of Computers and Informatics at Tanta University is 
+   conducted in English language. Courses can be taught in Arabic language subject to 
+   university requirements, with exams conducted in the same language as instruction."
+   Constraints: Flexibility to use Arabic with approval
+
+6. ACADEMIC ADVISORS (Article 6)
+   Category: Student Support
+   
+   Rule Name: Academic Advising System
+   Original Text: "Faculty designates one academic advisor from faculty members for each 
+   group of students. Academic advisor assists students in selecting courses, registering, 
+   and providing guidance throughout their study at the faculty."
+   Constraints:
+   - Advisor provides consultation (not mandatory)
+   - Student is responsible for selected courses
+   - Course selection must not conflict with faculty bylaws
+
+================================================================================
+III. CREDIT HOURS AND DEGREE REQUIREMENTS
+================================================================================
+
+7. CREDIT HOUR SYSTEM (Article 4)
+   Category: Credit Hours/Grading
+   
+   Rule Name: Credit Hour Definition and Calculation
+   Original Text: "Study depends on semester credit hour system where each course is 
+   measured in credit hours. One credit hour equals the study hours for one course. 
+   Each lecture hour counts as one credit hour."
+   Numeric Values:
+   - Total credit hours required: 132 credit hours (must pass with GPA ≥ 2.0)
+   - Cumulative GPA minimum: 2.0
+   Constraints:
+   - Must pass within 3 academic years (8 semesters)
+   - Each course has specified credit hours
+   - Credit hour calculation based on lecture contact hours
+
+8. TOTAL DEGREE REQUIREMENTS (Article 4)
+   Category: Degree Requirements
+   
+   Rule Name: Graduation Requirements
+   Original Text: "To obtain a Bachelor's degree in Computers and Informatics, students 
+   must pass 132 credit hours of courses that meet university, faculty, and specialization 
+   requirements as listed in the approved study plan."
+   Numeric Values:
+   - Total required credit hours: 132
+   - Minimum cumulative GPA: 2.0
+   - Maximum study period: 3 years = 8 regular semesters
+   Constraints:
+   - Specialization begins after 30 credit hours
+   - Conditions set by each department for specialization
+
+================================================================================
+IV. COURSE REQUIREMENTS BY CATEGORY
+================================================================================
+
+9. GENERAL REQUIREMENTS (Article 20)
+   Category: Course Distribution/Requirements
+   
+   Rule Name: General University Requirements  
+   Original Text: "General requirements (12 credit hours): Students must pass 6 mandatory 
+   general courses (hours vary) and choose electives from general courses offered by the faculty."
+   Numeric Values:
+   - Total: 12 credit hours
+   - Mandatory: 0 credit hours
+   - Electives: 0 credit hours total chosen from general courses
+   
+   Mandatory General Courses (5 credit hours):
+   - UNV111: Technical Report Writing (1 credit hour)
+   - UNV112: Societal Issues (1 credit hour)
+   - UNV113: English Language (1) (1 credit hour)
+   - UNV114: Communication Skills (1 credit hour)
+
+10. BASIC SCIENCES AND MATHEMATICS (Article 20)
+    Category: Course Distribution
+    
+    Rule Name: Science and Math Foundation Requirements
+    Original Text: "Basic Sciences and Mathematics requirements (15 credit hours): 
+    70 credit hours of Mathematics and Basic Sciences mandatory courses"
+    Numeric Values:
+    - Total: 15 credit hours (University)
+    - Divided into 2 sections:
+      Section A: 70 credit hours of Mathematics and Basic Sciences
+      Section B: 23 credit hours of Basic Computer Science
+    
+    Courses Include:
+    - BS111: Math (1) - 3 credit hours
+    - BS112: Discrete Mathematics - 3 credit hours
+    - BS113: Math (2) - 3 credit hours
+    - BS114: Math (3) - 3 credit hours
+    - BS115: Electronics - 3 credit hours
+    - BS116: Probability and Statistics (1) - 3 credit hours
+    - BS117: Operations Research - 3 credit hours
+
+11. SPECIALIZATION REQUIREMENTS (Article 20)
+    Category: Course Distribution
+    
+    Rule Name: Specialization Courses
+    Original Text: "Specialization requirements (60 credit hours): 
+    Applied Science courses (25-28 credit hours mandatory based on specialization)
+    Elective courses within specialization (7-10 credit hours)"
+    Numeric Values:
+    - Total specialization: 60 credit hours
+    - Applied sciences: 25-28 mandatory credit hours
+    - Electives within specialization: 7-10 credit hours
+    
+    All specializations include:
+    - Mandatory core courses (specific to specialization)
+    - Elective courses to choose from specialization courses
+    - Graduation projects (6 credit hours)
+    - Training/Internship (3 credit hours) - non-credit bearing
+
+12. GRADUATION PROJECT REQUIREMENTS (Article 20)
+    Category: Capstone/Projects
+    
+    Rule Name: Graduation Projects
+    Original Text: "Graduation Projects (6 credit hours): Mandatory (6 credit hours) - 
+    PR411 Graduation Project (1) and PR412 Graduation Project (2) spanning 7 weeks each"
+    Numeric Values:
+    - Total: 6 credit hours
+    - PR411: 3 credit hours
+    - PR412: 3 credit hours
+    - Duration: 7 weeks per project
+    
+    Prerequisites:
+    - PR411: Passing 85 credit hours
+    - PR412: Completion of PR411
+    
+    Requirements:
+    - Project analysis and problem formulation
+    - Project design and implementation
+
+13. TRAINING/INTERNSHIP (Article 20)
+    Category: Training/Internship
+    
+    Rule Name: Practical Training Requirement
+    Original Text: "Training (3 credit hours): Non-credit-bearing mandatory training"
+    Numeric Values:
+    - Credit hours: 3 (non-credit-bearing)
+    - Mandatory requirement for graduation
+    Constraints: Must be completed but doesn't count toward GPA or credit hours
+
+================================================================================
+V. CREDIT HOUR LIMITS AND REGISTRATION
+================================================================================
+
+14. REGISTRATION CREDIT HOUR LIMITS (Article 11)
+    Category: Registration Constraints
+    
+    Rule Name: Minimum and Maximum Credit Hours per Semester
+    Original Text: "Minimum credit hours for registration: 2 credit hours. Maximum exceeds 
+    minimum if approved. Exceeding minimum must not result in less than 2 credit hours for 
+    graduation. For specific semester levels..."
+    Numeric Values:
+    - Minimum per semester: 2 credit hours
+    - Maximum credit hours vary by student level:
+      * Freshman (1st year): 27 credit hours
+      * Sophomore (2nd year): 30 credit hours
+      * Junior (3rd year): 22 credit hours
+      * Senior (4th year): 132 credit hours (for graduation)
+    
+    Special Cases:
+    - New students to faculty: 20 credit hours max
+    - CGPA ≥ 3: 70 credit hours max
+    - CGPA 2.5-3: 20 credit hours max
+    - CGPA 0-2.5: 40 credit hours max
+    - CGPA < 0: 70 credit hours max
+    
+    Summer Semester:
+    - Minimum: 2 credit hours
+    - Maximum: 7 credit hours
+    - May reach 7 if graduating
+
+15. ADD/DROP/CHANGE DEADLINE (Article 12)
+    Category: Registration Policy
+    
+    Rule Name: Course Adjustment Period
+    Original Text: "The period for adding/dropping courses is the first two weeks from 
+    start of study registration. Students at higher levels may select from various courses 
+    by choosing required courses as prerequisites for advanced courses."
+    Numeric Values:
+    - Deadline: End of week 2 from start of registration
+    Constraints:
+    - Cannot register lower level courses unless passing prerequisites
+    - Registration must follow prerequisite requirements
+
+================================================================================
+VI. ATTENDANCE AND PARTICIPATION
+================================================================================
+
+16. ATTENDANCE REQUIREMENTS (Article 14)
+    Category: Attendance Policy
+    
+    Rule Name: Class Attendance Requirement
+    Original Text: "Study in the program is based on regular system with no absence allowed. 
+    Student attendance is monitored following conditions set by Faculty Council. 
+    A student's attendance rate must be at least 42% to enter final exam."
+    Numeric Values:
+    - Minimum attendance requirement: 42%
+    - Attendance monitoring: Mandatory
+    - Regular participation grades: Assigned per course
+    
+    Consequences for Absence:
+    - More than 25% absence (without excuse): Faculty may prevent exam entry 
+      after warning and calculate "Pass by Excuse" grade
+    - More than 25% absence (with excuse): Faculty may accept with "Pass by Excuse" grade
+    - Complete absence from exam: 
+      * Without excuse: "Withdrawn" grade recorded
+      * With valid excuse: May take exam within 2 days of excuse submission
+      * Exception: May write "Incomplete" if certain conditions met
+
+17. FINAL EXAM REQUIREMENTS (Article 14)
+    Category: Examination Requirements
+    
+    Rule Name: Exam Entry Conditions
+    Original Text: "Student must achieve at least 42% attendance in lectures and 
+    exercises in each course to enter the final exam. 42% of the course grade is required."
+    Numeric Values:
+    - Attendance minimum: 42% of lectures
+    - Participation minimum: 42% of course components
+    - Minimum final grade for entry: At least 10% of seasonal work grades to take exam
+    
+    Conditions:
+    - Exam administered within university campus
+    - Electronic exams may be conducted
+    - Partial electronic grading allowed if approved
+    - Display to councils required for approval (Student Affairs, Education, University)
+
+================================================================================
+VII. GRADING SYSTEM
+================================================================================
+
+18. GRADING SCALE AND GRADE POINTS (Article 17)
+    Category: Grading System
+    
+    Rule Name: Course Grade Distribution
+    Original Text: "Distribution of exam grades per course follows pattern system as 
+    specified in table based on course characteristics..."
+    Numeric Values:
+    
+    Grade Distribution (Course Score 100%):
+    - Seasonal work (semester work): 40% (based on pattern table)
+      * Mid-semester exam: Up to 47% of course grade
+      * Course work and tests: 10%
+      * Other exams: 10%
+      * Practical applications: 40%
+    - Final exam: 14% of end of semester exam
+    
+    Grade Point Scale:
+    - A+: 4.0 (96% and above)
+    - A: 3.7 (92-95%)
+    - A-: 3.4 (88-91%)
+    - B+: 3.2 (84-87%)
+    - B: 3.0 (80-83%)
+    - B-: 2.8 (76-79%)
+    - C+: 2.6 (72-75%)
+    - C: 2.4 (68-71%)
+    - C-: 2.2 (64-67%)
+    - D+: 2.0 (60-63%)
+    - D: 1.5 (55-59%)
+    - D-: 1.0 (50-54%)
+    - F (Fail): 0 (Below 50%)
+    - Abs (Absent from final without excuse): 0
+
+19. COURSE GRADES WITHOUT CREDIT HOURS (Article 19)
+    Category: Special Grading Codes
+    
+    Rule Name: Non-Credit Grading System
+    Original Text: "For Pass/Fail courses without credit hours, grades are recorded as follows..."
+    Numeric Values: N/A
+    
+    Special Grade Codes:
+    - P (Pass): Successful completion
+    - F (Fail): Course failure
+    - W (Withdrawn): Course withdrawal with/without exception
+    - Abs (Absent): Absence from final exam without Faculty Council excuse
+    - I (Incomplete): If course had year-long work or failed to complete
+    - Con (Continuing): Course continuing into next semester without credits
+    - W (Withdrawn): Whether pass or fail status
+
+20. MINIMUM PASSING GRADE (Article 16)
+    Category: Grading Requirements
+    
+    Rule Name: Passing Threshold
+    Original Text: "Minimum passing grade is 40% of total course grade and 30% of 
+    final exam grade."
+    Numeric Values:
+    - Minimum course grade: 40% of total
+    - Minimum final exam: 30% of final exam score
+    - Grade points for minimum pass: 0.7 (D- equivalent)
+
+================================================================================
+VIII. GPA AND CUMULATIVE GRADE CALCULATIONS
+================================================================================
+
+21. GPA CALCULATION (Article 18)
+    Category: GPA System
+    
+    Rule Name: Semester Grade Point Average (GPA)
+    Original Text: "GPA is the average of grade points earned by student for single 
+    semester, calculated from grade points only."
+    Numeric Values:
+    - Scale: 0-4.0
+    - Decimal precision: Up to three decimal places
+    - Includes: Only one completed semester
+    - Calculation method: Average of pattern rates
+    
+    Transcript shows:
+    - Earned grade points
+    - Percentage of earned points  
+    - Overall GPA by semester
+
+22. CUMULATIVE GPA (CGPA) (Article 18)
+    Category: Cumulative GPA System
+    
+    Rule Name: Overall Cumulative Grade Point Average
+    Original Text: "CGPA is average grade points earned by student across all 
+    study semesters, extending to three decimal places, showing earned pattern rates, 
+    percentage of earned points, and cumulative overall GPA for graduation."
+    Numeric Values:
+    - Scale: 0-4.0
+    - Decimal precision: Up to three decimal places (e.g., x.xxx)
+    - Calculation: Average across all completed semesters
+    - Uses: Determines academic standing and honors
+
+23. GENERAL GPA FOR GRADUATION (Article 20)
+    Category: Academic Standing
+    
+    Rule Name: Overall GPA Classification at Graduation
+    Original Text: "Upon graduation, student transcript shows overall GPA classification..."
+    Numeric Values:
+    
+    GPA Classifications:
+    - Poor: Below 1.0
+    - Weak: 1.0-2.0
+    - Satisfactory (Minimum Pass): 2.0-2.5
+    - Good: 2.5-3.0
+    - Very Good: 3.0-3.5
+    - Excellent: 3.5 and above
+
+================================================================================
+IX. ACADEMIC WARNING AND DISMISSAL
+================================================================================
+
+24. ACADEMIC WARNING (Article 25)
+    Category: Academic Probation
+    
+    Rule Name: Academic Probation Status
+    Original Text: "Student receives academic warning if cumulative GPA in any regular 
+    academic semester (excluding first semester) falls below 2.0 and is placed under 
+    academic observation."
+    Numeric Values:
+    - Threshold: CGPA < 2.0
+    - Applies to: All regular semesters except first
+    - Status: Academic observation placed on student record
+    
+    Implications:
+    - Student academically observed
+    - Affected student designation on record
+    - Student must improve GPA
+
+25. DISMISSAL FROM FACULTY (Article 26)
+    Category: Academic Dismissal Policy
+    
+    Rule Name: Termination from Faculty Program
+    Original Text: "Student dismissed from faculty if meets one of these dismissal conditions:
+    1. Academic warning status for 4 consecutive regular semesters or 6 non-consecutive semesters
+    2. Exceeds recommended study duration (4 years = 8 regular semesters) at faculty"
+    Numeric Values:
+    - Consecutive warning semesters: Maximum 4 consecutive
+    - Total warning semesters: Maximum 6 non-consecutive
+    - Maximum study duration: 4 academic years (8 regular semesters)
+    
+    Exceptions:
+    - May provide additional opportunity
+    - Registration allowed in 2 consecutive regular semesters + optional summer semester
+    - Must pass minimum 12% of total required credit hours for graduation
+    - Requires Faculty Council and University Council approval
+
+26. DISMISSAL FOR DURATION EXCEEDS (Article 26)
+    Category: Academic Dismissal
+    
+    Rule Name: Maximum Study Duration Rule
+    Original Text: "Student dismissed if exceeding recommended study period duration 
+    with break deductions. This occurs when exceeding 4 academic years and faculty 
+    approved break period."
+    Numeric Values:
+    - Maximum regular semesters without dismissal: 8
+    - Additional attempts: May request extension (with conditions)
+    - Minimum pass requirement: 12% of total graduation hours
+    
+    Extension Requirements:
+    - Faculty Council approval required
+    - University Council approval required
+    - At least 12% of required hours completed
+
+================================================================================
+X. COURSE WITHDRAWAL AND LEAVE OF ABSENCE
+================================================================================
+
+27. COURSE WITHDRAWAL (Article 13)
+    Category: Course Withdrawal Policy
+    
+    Rule Name: Course Drop/Withdrawal Procedure
+    Original Text: "After registering for courses, student may withdraw from one or 
+    more courses until end of 7th week from start of semester registration as long as 
+    registered credit hours don't fall below minimum. Student not considered failing in 
+    this case and receives 'W' grade (withdrawn) counted as credit hours."
+    Numeric Values:
+    - Withdrawal deadline: End of week 7 from registration start
+    - Minimum GPA not affected: Withdrawal doesn't count as failing
+    - Grade recorded: W (Withdrawn)
+    - Credit hours: Still counted in calculation but not for GPA
+    
+    Excused vs. Non-excused Withdrawal:
+    - Without Faculty excuse: "Withdrawn" grade recorded
+    - With Faculty excuse (before exam): "Excused Pass" grade  
+    - After exam start (with excuse): Grade based on valid excuse
+    - Repeated withdrawal exceeds limit: "Withdrawn" grade
+
+28. SUMMER SEMESTER WITHDRAWAL (Article 13)
+    Category: Course Withdrawal - Summer
+    
+    Rule Name: Summer Semester Withdrawal
+    Original Text: "For summer semester, student may withdraw from courses after 
+    2nd week registration using procedures. Minimum 2 credit hours with maximum 7 
+    possible for graduation."
+    Numeric Values:
+    - Minimum credit hours: 2
+    - Maximum possible: 7 for graduation
+    - Deadline: After 2nd week of registration start
+    
+    Withdrawal limits subject to Faculty Council regulations.
+
+29. LEAVE OF ABSENCE (Article 15)
+    Category: Academic Leave/Withdrawal
+    
+    Rule Name: Leave from Study Program
+    Original Text: "Student considered withdrawn from study if not registered in 
+    academic semester or withdraws from all registered courses without excuse."
+    Numeric Values:
+    - No limit on approved leaves
+    - Consecutive regular semesters leave: Maximum 4 consecutive
+    - Total non-consecutive leaves: Maximum 6 regular semesters
+    
+    Conditions for Approval:
+    - Maximum 4 consecutive semesters (or 6 non-consecutive)
+    - Faculty Council approval required
+    - Without leave: Considered withdrawn
+    - Can request deferred status end by week 7 of semester start
+    - Faculty Council must approve leave
+
+30. DISMISSED WITH LEAVE APPROVAL (Article 15)
+    Category: Dismissal with Consideration
+    
+    Rule Name: Conditional Leave Status
+    Original Text: "Student may take leave (with excuse) for 2 consecutive regular 
+    semesters or 4 non-consecutive semesters as maximum baseline. If exceeding 
+    approved period without Faculty excuse, dismissed. If with Faculty excuse before 
+    exceeding period, receives 'Excused Pass' grade."
+    Numeric Values:
+    - Approved consecutive leave: 2 semesters maximum
+    - Approved non-consecutive leave: 4 semesters maximum
+    - Exceeding limit without excuse: Dismissal
+    - Exceeding with excuse: May continue under conditions
+    - Dismissal remains: "Withdrawn" status in course
+    
+    Options After Dismissal:
+    - May not be dismissed academically
+    - Receives "Excused Pass" if Faculty approves excuse before exam
+    - Grade status: "Withdrawn" if no excuse documented
+
+================================================================================
+XI. COURSE REPETITION AND GRADE IMPROVEMENT
+================================================================================
+
+31. COURSE REPETITION AFTER FAILURE (Article 22)
+    Category: Course Repetition Policy
+    
+    Rule Name: Retaking Failed Courses
+    Original Text: "If student fails a course, must retake and pass the course. 
+    If succeeds after retaking, receives highest grade earned (maximum B = 2.3) 
+    calculated once in credit hours and based on new attempt for cumulative GPA."
+    Numeric Values:
+    - Failed course: Must retake
+    - Maximum repeatable grade: B (2.3)
+    - Grade recorded: Highest earned attempt
+    - Credit hours: Counted only once
+    - All attempts appear: On official transcript
+    
+    Calculation Method:
+    - Uses new grade for GPA calculation
+    - Only highest grade counts for GPA
+    - Credit hours counted once
+    - Both original and new grades shown on transcript
+    - If student doesn't improve, highest grade still counts
+
+32. COURSE RETAKE FOR GPA IMPROVEMENT (Article 23)
+    Category: Voluntary Course Repetition
+    
+    Rule Name: Voluntary Course Retake for Higher Grade
+    Original Text: "If student wants to improve CGPA by retaking previously passed 
+    course where successful, receives highest grade earned (no more than B = 2.3) 
+    in all retakes. Maximum of 3 courses may be retaken."
+    Numeric Values:
+    - Maximum retakes for improvement: 3 courses
+    - Maximum grade from retakes: B (2.3)
+    - Credit hours: Counted once only minimum: CGPA must be below 2.0
+    - CGPA threshold for improvement retakes: Below 2.0
+    
+    Conditions:
+    - Course must be same or lower level than enrollment
+    - Student must have previously passed course
+    - Grades recorded for all attempts
+    - Only highest grade counts for CGPA
+    - Highest grade shown on official record
+
+33. GRADUATION PROJECT REQUIREMENTS (Article 21)
+    Category: Capstone Projects
+    
+    Rule Name: Project Requirements and Grades
+    Original Text: "Only students passing 85 credit hours may register for project. 
+    Minimum passing for project: 40% of total project grade and 15% for final review. 
+    50% of minimum passing grade for coursework, 15% for oral final defense (via committee)."
+    Numeric Values:
+    - Prerequisite: Minimum 85 credit hours passed
+    - Total credit hours: 6 (3 each for PR411 and PR412)
+    - Minimum passing: 40% of project grade
+    - Final defense minimum: 15% 
+    - Coursework component: 50% minimum for semester work
+    - Final defense grade: 15% of total project grade
+    
+    Components:
+    - Project: 6 credit hours
+    - Project (1): 3 credit hours (analysis/formulation)
+    - Project (2): 3 credit hours (design/implementation)
+    - Occurs in consecutive semesters (Fall then Spring)
+
+================================================================================
+XII. SPECIAL ACADEMIC PROVISIONS
+================================================================================
+
+34. COURSE VARIATIONS AND HYBRID LEARNING (Article 4-d)
+    Category: Alternative Delivery Methods
+    
+    Rule Name: Hybrid and Online Course Options
+    Original Text: "Faculty Council may approve hybrid teaching: courses with nature 
+    requiring classroom: 10-12% face-to-face, 13-15% online, 14-15% for theoretical 
+    courses and 10-14% face-to-face. Final component shown to councils for approval."
+    Numeric Values:
+    - Face-to-face range: 10-14% to 12-15%
+    - Online/remote range: 13-15% to 14-15%
+    - Flexible percentages based on course type
+    
+    Requirements:
+    - Faculty Council approval
+    - Education Affairs Committee approval
+    - University Council approval upon recommendation
+    - Teaching Quality Council final approval
+
+35. ELECTRONIC EXAMS (Article 4-e)
+    Category: Examination Format
+    
+    Rule Name: Electronic Examination Provision
+    Original Text: "Faculty Council may approve conducting exams electronically in 
+    one or more courses within or outside campus requiring safe environment. Partial 
+    or complete electronic grading permitted with council approval."
+    Numeric Values: N/A
+    
+    Requirements:
+    - Faculty Council approval required
+    - Department Council recommendation
+    - Electronic grading allowed with conditions
+    - Display to Education councils/University Council for approval
+
+36. COURSE LEVEL ADVANCEMENT (Article 10)
+    Category: Course Prerequisites
+    
+    Rule Name: Progression to Higher Level Courses
+    Original Text: "At beginning of each semester, students completing prerequisite 
+    course with passing grade may advance to next level course based on credit 
+    hours passed as shown in table."
+    Numeric Values:
+    - Prerequisite requirement: Must pass prerequisite course
+    - Level advancement: Based on passed credit hours per level table
+    - Timing: Beginning of each semester
+    
+    Credit Hour Thresholds by Level:
+    - From Freshman: 27 credit hours on start
+    - From Sophomore: 30 credit hours on start
+    - From Junior: 22 credit hours on start
+    - From Senior: 132 credit hours to complete degree
+
+================================================================================
+XIII. HONORS AND RECOGNITION
+================================================================================
+
+37. HONORS DEGREE (Article 27)
+    Category: Academic Recognition
+    
+    Rule Name: Honors/With Distinction Degree
+    Original Text: "Student awarded honors degree if passes all courses with excellent 
+    or higher grades (not below Very Good), has CGPA minimum 3.0, studies for not more 
+    than 4 academic years (8 regular semesters), has no dismissals, and no failed courses 
+    in any course studied at faculty."
+    Numeric Values:
+    - Minimum CGPA for honors: 3.0
+    - Maximum study duration: 4 years (8 semesters)
+    - Minimum grade: Very Good (3.0)
+    - No failed courses allowed
+    - No dismissals allowed
+    - No withdrawals allowed
+    
+    Conditions:
+    - CGPA ≥ 3.0 throughout program
+    - All grades ≥ Very Good (3.0)
+    - Completion within 4 years
+    - Perfect academic standing
+
+38. STUDENT RANKING (Article 28)
+    Category: Academic Standing
+    
+    Rule Name: Class Ranking by GPA
+    Original Text: "Students ranked by overall CGPA. In case of equal GPA, ranking 
+    determined by sum of grades."
+    Numeric Values:
+    - Ranking basis: Cumulative GPA
+    - Tie-breaker: Total sum of grades
+    
+    Ranking Process:
+    - Primary: CGPA (highest to lowest)
+    - Secondary: Grade sum (if CGPA equal)
+    - Determines: Class standing/honors within program
+
+================================================================================
+XIV. PROGRAM CHANGES AND TRANSFERS
+================================================================================
+
+39. PROGRAM CHANGE/PATH MODIFICATION (Article 29)
+    Category: Program Changes
+    
+    Rule Name: Specialization Selection
+    Original Text: "Third level (Junior) student may change specialization path if 
+    meeting entry conditions. Approval required from academic advisor, department chair, 
+    Education Affairs Committee, and University Council."
+    Numeric Values:
+    - Student level: Junior (3rd year) minimum
+    - Maximum change: One change allowed
+    - Requirements: Meet entering conditions
+    
+    Approvals Required:
+    - Academic advisor approval
+    - Department chair recommendation
+    - Specialization faculty council
+    - Education Affairs Committee
+    - University Council
+
+40. TRANSFER TO NEW PROGRAM (Article 29)
+    Category: Program Transfer
+    
+    Rule Name: Transfer to Different Specialization
+    Original Text: "Upon program change to new specialization, student maintains 
+    status with new level based on current record and studies all new specialization 
+    courses. Matching conducted per new curriculum."
+    Numeric Values:
+    - Credit hours: Evaluated for equivalency
+    - New level: Determined by matching
+    - New GPA base: Recalculated per specialization curriculum
+    
+    Requirements:
+    - All new specialization courses required
+    - Equivalency matching completed
+    - Study plan per new specialization
+
+================================================================================
+XV. SPECIAL COURSES AND PREREQUISITES
+================================================================================
+
+41. PREREQUISITE SYSTEM (Various Articles)
+    Category: Prerequisites
+    
+    Rule Name: Course Prerequisite Requirements
+    Original Text: "Courses marked with prerequisites must have those prerequisites 
+    completed with passing grade before registration. Advanced courses require lower 
+    level prerequisites."
+    
+    Key Prerequisites by Level:
+    
+    First Semester (Level 1):
+    - UNV113: English Language (1) - No prerequisite
+    - UNV114: Communication Skills - No prerequisite
+    - CS111: Fundamentals of Computer Science - No prerequisite
+    - BS111: Math (1) - No prerequisite
+    - IS111: Intro to Information Systems - No prerequisite
+
+    Second Semester (Level 2):
+    - CS211: Object Oriented Programming - Requires: CS112
+    - CS212: Data Structures - Requires: CS112
+    - IT211: Digital Logic Design - Requires: BS115 (Electronics)
+    - IS211: Intro to Database Systems - Requires: CS112
+
+    Third Semester (Level 3):
+    - SE211: Software Engineering - Requires: CS112
+    - IS212: Optimization Methods - Requires: IS211
+    - CS213: Algorithms Analysis - Requires: CS212
+    - CS214: Operating Systems - Requires: CS212
+
+    Fourth Semester (Level 4):
+    - CS314: Machine Learning - Requires: CS313
+    - CS315: Big Data Analysis - Requires: IS311
+    - Advanced Specialty Courses - Vary by specialization
+    - CS316: Advanced Operating Systems - Requires: CS214
+    - Various electives with prerequisites
+
+    Specialization-Specific Prerequisites:
+    - Computer Science electives: CS311, CS312, CS313
+    - Information Systems electives: IS311, IS312, IS314
+    - Information Technology electives: IT311, IT313, IT314
+    - Software Engineering electives: SE311, SE312, SE313
+
+42. GRADUATION PROJECT PREREQUISITES (Article 21)
+    Category: Project Prerequisites
+    
+    Rule Name: Project Eligibility Requirements
+    Original Text: "Only students who have passed minimum 85 credit hours may register 
+    in Graduation Project (1)."
+    Numeric Values:
+    - Minimum credit hours for PR411: 85
+    - PR411 is prerequisite for PR412
+    - Registration: Consecutive semesters (Fall-Spring or Spring-Fall)
+    
+    Project Sequence:
+    - PR411: Graduation Project (1) - Prerequisite: 85+ credit hours
+    - PR412: Graduation Project (2) - Prerequisite: PR411 completion
+
+================================================================================
+XVI. GENERAL REGULATIONS AND POLICIES
+================================================================================
+
+43. COURSE CODE SYSTEM (Article 30)
+    Category: Course Coding System
+    
+    Rule Name: Course Code Structure
+    Original Text: "Course codes consist of three digits: first digit represents 
+    academic level, middle digit is discipline within specialty, last digit distinguishes 
+    courses at same level within discipline."
+    Numeric Values:
+    
+    Course Code Format: XXX
+    - First digit: Academic Level
+      * 0/1 = Freshman
+      * 1 = Sophomore  
+      * 2 = Junior
+      * 3 = Senior
+      * 4 = Electives across all levels
+    
+    Department Codes:
+    - CS = Computer Science
+    - IS = Information Systems
+    - IT = Information Technology
+    - SE = Software Engineering
+    - UNV = University Requirements
+    - BS = Basic Sciences
+    - TR = Training
+    - PR = Projects
+
+44. COURSE VARIATION AUTHORIZATION (Article 2)
+    Category: Program Flexibility
+    
+    Rule Name: Program Course Modifications
+    Original Text: "Other programs/specializations may be created per university regulations. 
+    Department may disable some courses if necessary when meeting program requirements and 
+    Faculty Council approves based on necessity."
+    Numeric Values: N/A
+    
+    Requirements:
+    - Faculty Council must approve
+    - Department Council recommendation
+    - Reason: Meeting program requirements
+    - Documentation required
+
+45. STUDY DURATION LIMITS (Article 4-w)
+    Category: Time to Degree
+    
+    Rule Name: Maximum Study Duration
+    Original Text: "To obtain Bachelor's degree, student must complete study successfully 
+    within minimum three academic years (8 regular semesters) passing 132 credit hours."
+    Numeric Values:
+    - Minimum: 3 academic years (6-8 semesters)
+    - Regular semesters: 8 maximum
+    - Credit hours required: 132
+    - Additional attempts: May request with approval
+    
+    Calculation:
+    - Fall + Spring = 1 year
+    - Summer optional
+    - Maximum without dismissal: 8 semesters
+
+================================================================================
+XVII. COURSE DISTRIBUTION BY SPECIALIZATION
+================================================================================
+
+46. COMPUTER SCIENCE SPECIALIZATION (Article 20)
+    Category: Specialization Requirements
+    
+    Rule Name: Computer Science Program Requirements
+    Original Text: "Computer Science specialization (60 credit hours): Applied Sciences 
+    (38 mandatory credit hours), Electives (10 credit hours), Project (6 credit hours), 
+    Training (3 credit hours, non-credit bearing)"
+    Numeric Values:
+    - Total specialization: 60 credit hours
+    - Mandatory applied sciences: 38 credit hours
+    - Electives: 10 credit hours
+    - Graduation project: 6 credit hours  
+    - Training: 3 credit hours (non-credit)
+    
+    Core Mandatory Courses Include:
+    - CS311: Computer Security - 3 credits
+    - CS312: Computer Organization - 3 credits
+    - CS313: Artificial Intelligence - 3 credits
+    - CS314: Machine Learning - 3 credits
+    - CS315: Big Data Analysis - 3 credits
+    - CS316: Advanced Operating Systems - 3 credits
+    - CS411: Computation Theory - 3 credits
+    - CS412: Internet of Things - 3 credits
+    - CS413: Problem Solving & Decision Making - 3 credits
+    - CS414: Data Science - 3 credits
+    - CS415: Cloud Computing - 3 credits
+    - CS416: Compilers - 3 credits
+    - PR411/PR412: Graduation Projects - 6 credits combined
+
+    Elective Courses (Choose 10 credit hours):
+    - CS321: Cryptography - 3 credits
+    - CS322: Network & Internet Security - 3 credits
+    - CS423: Mobile Computing - 3 credits
+    - CS424: Mobile Application Programming - 3 credits
+    - CS331: Human Computer Interaction - 3 credits
+    - CS332: Knowledge Discovery - 3 credits
+    - CS433: Selected Topics in AI - 3 credits
+    - CS434: High Performance Computing - 3 credits
+    - CS342: Data Models and Visualization - 3 credits
+    - CS443: Natural Language Processing - 3 credits
+
+47. INFORMATION SYSTEMS SPECIALIZATION (Article 20)
+    Category: Specialization Requirements
+    
+    Rule Name: Information Systems Program Requirements
+    Original Text: "Information Systems specialization (60 credit hours): Applied Sciences 
+    (38 mandatory credit hours), Electives (10 credit hours), Project (6 credit hours), 
+    Training (3 credit hours, non-credit bearing)"
+    Numeric Values:
+    - Total specialization: 60 credit hours
+    - Mandatory applied sciences: 38 credit hours
+    - Electives: 10 credit hours
+    - Graduation project: 6 credit hours
+    - Training: 3 credit hours (non-credit)
+    
+    Core Mandatory Courses Include:
+    - IS311: Analysis and Design of Information Systems - 3 credits
+    - IS312: Database Management Systems - 3 credits
+    - IS313: File Management & Processing - 3 credits
+    - IS314: Information Retrieval - 3 credits
+    - IS315: Data Warehousing - 3 credits
+    - IS316: Data Analytics & Management - 3 credits
+    - IS317: Web-based Information Systems Development - 3 credits
+    - IS318: Information Theory & Data Compression - 3 credits
+    - IS411: Data Mining - 3 credits
+    - IS412: Information Systems Project Management - 3 credits
+    - IS413: Selected Topics in IS Engineering - 3 credits
+    - PR421/PR422: Graduation Projects - 6 credits combined
+
+    Elective Courses (Choose 10 credit hours):
+    - IS321: Selected Topics in Data Engineering - 3 credits
+    - IS322: Cloud Databases - 3 credits
+    - IS331: Enterprise Information Systems - 3 credits
+    - IS332: Management Information Systems - 3 credits
+    - IS341: IS Quality Assurance - 3 credits
+    - IS342: IS Security & Risk Management - 3 credits
+    - IS351: Data Processing & Analysis - 3 credits
+    - IS414: Selected Topics in Databases - 3 credits
+    - IS415: IS Development Methodologies - 3 credits
+    - IS423: Distributed Databases - 3 credits
+    - IS424: Selected Topics in Advanced IS - 3 credits
+    - IS433: E-Business - 3 credits
+    - IS434: Business Process Management - 3 credits
+    - IS444: IS Audit & Control - 3 credits
+
+48. INFORMATION TECHNOLOGY SPECIALIZATION (Article 20)
+    Category: Specialization Requirements
+    
+    Rule Name: Information Technology Program Requirements
+    Original Text: "Information Technology specialization (60 credit hours): Applied Sciences 
+    (38 mandatory credit hours), Electives (10 credit hours), Project (6 credit hours), 
+    Training (3 credit hours, non-credit bearing)"
+    Numeric Values:
+    - Total specialization: 60 credit hours
+    - Mandatory applied sciences: 38 credit hours
+    - Electives: 10 credit hours
+    - Graduation project: 6 credit hours
+    - Training: 3 credit hours (non-credit)
+    
+    Core Mandatory Courses Include:
+    - IT311: Computer Graphics - 3 credits
+    - IT312: Pattern Recognition - 3 credits
+    - IT313: Information & Computer Network Security - 3 credits
+    - IT314: Signals & Systems - 3 credits
+    - IT315: Microprocessors - 3 credits
+    - IT316: Image Processing - 3 credits
+    - IT317: Advanced Computer Networks - 3 credits
+    - IT318: Computer Architecture - 3 credits
+    - IT319: Digital Multimedia - 3 credits
+    - IT411: Robot Systems - 3 credits
+    - IT413: Communication Technology - 3 credits
+    - IT414: Cyber Security - 3 credits
+    - IT415: Cloud Computing Networks - 3 credits
+    - PR431/PR432: Graduation Projects - 6 credits combined
+
+    Elective Courses (Choose 10 credit hours):
+    - IT321: Network Operating Systems - 3 credits
+    - IT322: Blockchain Technology - 3 credits
+    - IT331: Embedded Systems - 3 credits
+    - IT332: Machine Vision - 3 credits
+    - IT341: Computer Animation - 3 credits
+    - IT342: Advanced Computer Graphics - 3 credits
+    - IT423: Mobile Networks - 3 credits
+    - IT424: Selected Topics in Networks - 3 credits
+    - IT433: Advanced Pattern Recognition - 3 credits
+    - IT434: Selected Topics in Embedded Systems - 3 credits
+    - IT443: Advanced Image Processing - 3 credits
+    - IT444: Selected Topics in Multimedia - 3 credits
+
+49. SOFTWARE ENGINEERING SPECIALIZATION (Article 20)
+    Category: Specialization Requirements
+    
+    Rule Name: Software Engineering Program Requirements
+    Original Text: "Software Engineering specialization (60 credit hours): Applied Sciences 
+    (38 mandatory for most), Electives (12 credit hours), Project (6 credit hours), 
+    Training (3 credit hours)"
+    Numeric Values:
+    - Total specialization: 60 credit hours
+    - Mandatory applied sciences: 38 credit hours (typical)
+    - Electives: 12 credit hours (variable per specialization track)
+    - Graduation project: 6 credit hours
+    - Training: 3 credit hours (non-credit)
+    
+    Core Mandatory Courses Include:
+    - SE311: Software Requirements Analysis - 3 credits
+    - SE312: Software Engineering for Internet Applications - 3 credits
+    - SE313: Software Design & Architecture - 3 credits
+    - SE314: Software Quality Assurance - 3 credits
+    - SE315: Advanced Software Engineering - 3 credits
+    - SE316: User Interface Design - 3 credits
+    - SE411: Software Project Management - 3 credits
+    - SE412: Software Testing & Validation - 3 credits
+    - SE413: Software Engineering Approach to HCI - 3 credits
+    - SE415: Ethics in Software Engineering - 3 credits
+    - SE416: Software Evolution & Maintenance - 3 credits
+    - SE417: Embedded Systems Software Design - 3 credits
+    - PR441/PR442: Graduation Projects - 6 credits combined
+
+    Elective Courses (Choose 12 credit hours):
+    - SE321: Software Security - 3 credits
+    - SE322: Design Patterns - 3 credits
+    - SE423: Software Usability Engineering - 3 credits
+    - SE424: Mobile Applications - 3 credits
+    - SE331: Software Development Management - 3 credits
+    - SE332: Web Application Development - 3 credits
+    - SE433: Games Development - 3 credits
+    - SE434: 3D Modeling & Design - 3 credits
+    - SE341: Selected Topics in Software Engineering (1) - 3 credits
+    - SE342: Professional Software Engineering Practice - 3 credits
+    - SE443: Formal Methods in Software Engineering - 3 credits
+    - SE444: Selected Topics in Software Engineering - 3 credits
+
+================================================================================
+XVIII. SUPPLEMENTARY REGULATIONS
+================================================================================
+
+50. COURSE SUBJECT AREA DISTRIBUTION TABLE (Article 9)
+    Category: Program Structure Standards
+    
+    Rule Name: Balanced Curriculum Distribution
+    Original Text: "Course distribution follows standard allocation percentages by subject area..."
+    Numeric Values:
+    
+    Subject Area Allocation:
+    - A. Humanities, ethical and Social Sciences (University Req): 8-10%
+    - B. Mathematics and Basic Sciences: 16-18%
+    - C. Basic Computing Sciences (Institution req.): 26-28%
+    - D. Applied Computing Sciences (Specialization): 28-30%
+    - E. Training: 3-5%
+    - F. Projects: 3-5%
+    - G. Optional (Institution character-identifying subjects): 4-16%
+    - Subtotal: 84-96%
+    - Total: 100%
+
+51. TRANSFER STUDENT CREDIT EVALUATION (Article 10)
+    Category: Transfer Credits
+    
+    Rule Name: Transferred Course Evaluation
+    Original Text: "Transferred students from other institutions receive credit hours 
+    for passed courses at level equivalent to or lower than current level following..."
+    Numeric Values:
+    - Credit transfer: Based on semester level
+    - GPA: Not transferred
+    - Prerequisites: Must meet for higher courses
+    - Matching: Per Faculty Council rules
+    
+    Level Advancement Rules:
+    - Student advances from level to equivalent or lower level courses
+    - Credit hours respected per level requirements
+    - GPA evaluated locally per current program
+
+52. TRAINING/INTERNSHIP REQUIREMENT (Article 20-e)
+    Category: Experiential Learning
+    
+    Rule Name: Mandatory Field Experience
+    Original Text: "Training (3 credit hours): Non-credit-bearing mandatory practical 
+    experience requirement for all students"
+    Numeric Values:
+    - Credit hours: 3 (mandatory)
+    - Grading: Non-credit-bearing (doesn't affect GPA)
+    - Requirement: Mandatory for graduation
+    - Term: Conducted per semester schedule
+    
+    Requirements:
+    - Placement with industry/organization
+    - Supervised experience  
+    - Report/evaluation completion
+    - Counts toward graduation requirements
+
+================================================================================
+SUMMARY OF KEY NUMERIC THRESHOLDS
+================================================================================
+
+DEGREE REQUIREMENTS:
+- Total credit hours: 132
+- Minimum cumulative GPA: 2.0
+- Maximum study duration: 4 academic years (8 regular semesters)
+- Minimum study duration: 3 academic years (6 semesters)
+
+REGISTRATION LIMITS:
+- Minimum per semester: 2 credit hours
+- Maximum per semester (varies by level):
+  * Freshman: 27 credit hours
+  * Sophomore: 30 credit hours
+  * Junior: 22 credit hours
+  * Senior: 132 credit hours (to complete)
+- Summer semester minimum: 2 credit hours
+- Summer semester maximum: 7 credit hours
+
+ACADEMIC STANDING:
+- Minimum passing grade: 40% of course + 30% of final exam
+- Minimum GPA threshold: 2.0
+- Academic warning threshold: Below 2.0 CGPA
+- Honors minimum CGPA: 3.0
+- Very Good minimum: 3.0
+- Good range: 2.5-3.0
+
+ATTENDANCE:
+- Minimum attendance requirement: 42% of lectures
+- Absence limit for exam entry: Up to 58% (below 42% prevents exam)
+- Excessive absence threshold: 25%
+
+DEADLINES:
+- Add/drop deadline: End of week 2 from registration start
+- Course withdrawal deadline: End of week 7 from registration start
+- Deferred status request deadline: End of week 7 of semester
+
+DISMISSAL CONDITIONS:
+- Academic warning consecutive: 4 consecutive semesters maximum
+- Academic warning total: 6 non-consecutive semesters maximum
+- Duration dismissal: Exceeding 8 regular semesters
+- Leave of absence maximum: 4 consecutive or 6 non-consecutive semesters
+
+PROJECTS:
+- Graduation project prerequisite: 85+ credit hours passed
+- Project duration: 7 weeks per project (1 & 2)
+- Project credit hours: 6 total (3 each)
+- Minimum project grade: 40% of total, 15% final defense
+
+GRADING SCALE GPA:
+- A+ (4.0): 96-100%
+- A (3.7): 92-95%
+- A- (3.4): 88-91%
+- B+ (3.2): 84-87%
+- B (3.0): 80-83%
+- B- (2.8): 76-79%
+- C+ (2.6): 72-75%
+- C (2.4): 68-71%
+- C- (2.2): 64-67%
+- D+ (2.0): 60-63%
+- D (1.5): 55-59%
+- D- (1.0): 50-54%
+- F (0): Below 50%
+
+================================================================================
+This document contains all major rules, regulations, constraints, and provisions
+extracted from the Faculty of Computers and Informatics Bylaws for 2024.
+All numeric values, thresholds, and requirements have been clearly identified
+and organized by category for reference.
+================================================================================

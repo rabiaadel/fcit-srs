@@ -34,10 +34,10 @@ async function getMaxCreditsForSemester(studentId, semesterId) {
   // Level-based maximum
   const levelMax = C.CREDIT_LIMITS[student.current_level];
 
-  // CGPA-based limit
-  let cgpaMax = 20;
+  // CGPA-based limit — iterate descending (first match wins)
+  let cgpaMax = 40; // default for safety
   for (const rule of C.CGPA_CREDIT_LIMITS) {
-    if (student.cgpa >= rule.min && student.cgpa <= rule.max) {
+    if (student.cgpa >= rule.minCgpa) {
       cgpaMax = rule.maxCredits;
       break;
     }
@@ -183,7 +183,8 @@ async function canStudentRegisterCourse(studentId, courseId, semesterId) {
  */
 async function canWithdrawCourse(enrollmentId, studentId) {
   const enrollment = (await query(
-    `SELECT e.*, c.credits, c.name_en, c.code, sem.withdrawal_deadline, sem.semester_type
+    `SELECT e.*, c.credits, c.name_en, c.code,
+            sem.withdrawal_deadline, sem.add_drop_deadline, sem.semester_type
      FROM enrollments e
      JOIN course_offerings co ON co.id = e.offering_id
      JOIN courses c ON c.id = co.course_id
@@ -335,7 +336,19 @@ async function checkGraduationEligibility(studentId) {
     'SELECT check_graduation_eligibility($1) as eligibility',
     [studentId]
   );
-  return result.rows[0]?.eligibility || {};
+  const eligibility = result.rows[0]?.eligibility || {};
+
+  // Add status_ok — true when academic standing is not dismissed/withdrawn
+  // (the DB function bakes this into is_eligible but doesn't expose it separately)
+  const student = (await query(
+    'SELECT academic_status FROM students WHERE id = $1',
+    [studentId]
+  )).rows[0];
+  eligibility.status_ok = student
+    ? !['dismissed', 'withdrawn'].includes(student.academic_status)
+    : false;
+
+  return eligibility;
 }
 
 module.exports = {

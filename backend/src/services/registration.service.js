@@ -174,11 +174,14 @@ async function enterGrades(enrollmentId, grades, enteredById) {
       [enrollmentId]
     )).rows[0];
 
-    // Process retake if applicable
-    if (existing.is_improvement_retake) {
+    // Process retake grade logic (keeps best grade, clears others from CGPA)
+    // Must run for ALL retakes: both failed-course retakes AND voluntary improvement retakes
+    if (existing.attempt_number > 1 || existing.is_improvement_retake) {
+      // process_retake_grade marks only the best grade as is_counted_in_gpa=TRUE,
+      // then recomputes CGPA — handles both retake types correctly
       await client.query('SELECT process_retake_grade($1, $2)', [enrollment.student_id, enrollment.course_id]);
     } else {
-      // Recompute CGPA
+      // First attempt — just recompute CGPA
       await client.query('SELECT recompute_student_cgpa($1)', [enrollment.student_id]);
     }
 
@@ -285,6 +288,7 @@ async function finalizeSemester(semesterId, adminId) {
 async function getStudentSchedule(studentId, semesterId) {
   const res = await query(
     `SELECT e.id as enrollment_id, e.status, e.attempt_number,
+            e.total_grade, e.letter_grade, e.grade_points,
             c.code, c.name_ar, c.name_en, c.credits, c.category,
             co.section, co.schedule, co.room, co.capacity, co.enrolled_count,
             u.full_name_en as doctor_name,

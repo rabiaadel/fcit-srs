@@ -91,6 +91,7 @@ const getAvailableCourses = async (req, res, next) => {
               dep.code as department_code,
               -- check if already registered
               CASE WHEN e.id IS NOT NULL THEN TRUE ELSE FALSE END as already_registered,
+              e.id as enrollment_id,
               e.status as enrollment_status
        FROM course_offerings co
        JOIN courses c ON c.id = co.course_id
@@ -173,34 +174,39 @@ const withdrawCourse = async (req, res, next) => {
 const getTranscript = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const student = (await query('SELECT * FROM students WHERE user_id = $1', [userId])).rows[0];
-    if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+
+    const studentFull = (await query(
+      `SELECT s.*, u.full_name_ar, u.full_name_en FROM students s
+       JOIN users u ON u.id = s.user_id WHERE s.user_id = $1`,
+      [userId]
+    )).rows[0];
+    if (!studentFull) return res.status(404).json({ success: false, message: 'Student not found' });
 
     const transcript = await query(
       `SELECT * FROM v_student_transcript WHERE student_id = $1 ORDER BY semester_id, course_code`,
-      [student.id]
+      [studentFull.id]
     );
 
     const gpaHistory = await query(
       `SELECT sg.*, sem.label, sem.semester_type FROM semester_gpa_records sg
        JOIN semesters sem ON sem.id = sg.semester_id
        WHERE sg.student_id = $1 ORDER BY sem.start_date`,
-      [student.id]
+      [studentFull.id]
     );
 
     return res.json({
       success: true,
       data: {
         student: {
-          studentCode: student.student_code,
-          fullNameAr: (await query('SELECT full_name_ar FROM users WHERE id = $1', [userId])).rows[0]?.full_name_ar,
-          fullNameEn: (await query('SELECT full_name_en FROM users WHERE id = $1', [userId])).rows[0]?.full_name_en,
-          specialization: student.specialization,
-          currentLevel: student.current_level,
-          cgpa: student.cgpa,
-          totalCreditsPassed: student.total_credits_passed,
-          academicStatus: student.academic_status,
-          gpaClassification: gpaService.getCGPAClassification(parseFloat(student.cgpa)),
+          studentCode: studentFull.student_code,
+          fullNameAr: studentFull.full_name_ar,
+          fullNameEn: studentFull.full_name_en,
+          specialization: studentFull.specialization,
+          currentLevel: studentFull.current_level,
+          cgpa: studentFull.cgpa,
+          totalCreditsPassed: studentFull.total_credits_passed,
+          academicStatus: studentFull.academic_status,
+          gpaClassification: gpaService.getCGPAClassification(parseFloat(studentFull.cgpa)),
         },
         courses: transcript.rows,
         gpaHistory: gpaHistory.rows,

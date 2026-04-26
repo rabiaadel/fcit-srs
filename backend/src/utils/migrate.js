@@ -6,6 +6,7 @@ const logger = require('./logger');
 
 async function runMigrations() {
   const client = await pool.connect();
+  let failed = false;
   try {
     logger.info('Running database migrations...');
     const schemaPath = path.join('/app/database', 'schema.sql');
@@ -24,10 +25,11 @@ async function runMigrations() {
     logger.info('Migrations complete');
   } catch (err) {
     logger.error('Migration error', { error: err.message });
-    process.exit(1);
+    failed = true;
   } finally {
     client.release();
-    await pool.end();
+    await pool.end().catch(() => {});
+    if (failed) process.exit(1);
   }
 }
 

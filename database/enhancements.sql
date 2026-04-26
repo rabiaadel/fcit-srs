@@ -227,7 +227,7 @@ $$ LANGUAGE plpgsql;
 -- -------------------------------------------------------
 -- Dashboard statistics views
 -- -------------------------------------------------------
-CREATE VIEW v_admin_dashboard_stats AS
+CREATE OR REPLACE VIEW v_admin_dashboard_stats AS
 SELECT
     (SELECT COUNT(*) FROM students WHERE academic_status = 'active') AS active_students,
     (SELECT COUNT(*) FROM students WHERE academic_status = 'warning') AS warning_students,
@@ -239,7 +239,7 @@ SELECT
     (SELECT AVG(cgpa)::NUMERIC(4,3) FROM students WHERE academic_status IN ('active','warning')) AS avg_cgpa;
 
 -- Students per specialization
-CREATE VIEW v_specialization_stats AS
+CREATE OR REPLACE VIEW v_specialization_stats AS
 SELECT
     s.specialization,
     COUNT(*) AS total,
@@ -250,7 +250,7 @@ WHERE s.specialization IS NOT NULL
 GROUP BY s.specialization;
 
 -- Semester credit load distribution
-CREATE VIEW v_semester_load_distribution AS
+CREATE OR REPLACE VIEW v_semester_load_distribution AS
 SELECT
     sem.label,
     sem.semester_type,

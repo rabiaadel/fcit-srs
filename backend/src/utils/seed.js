@@ -6,6 +6,7 @@ const logger = require('./logger');
 
 async function runSeeds() {
   const client = await pool.connect();
+  let failed = false;
   try {
     logger.info('Running seeds...');
     const seedsDir = path.join('/app/database', 'seeds');
@@ -25,10 +26,11 @@ async function runSeeds() {
     logger.info('All seeds complete');
   } catch (err) {
     logger.error('Seed error', { error: err.message });
-    process.exit(1);
+    failed = true;
   } finally {
     client.release();
-    await pool.end();
+    await pool.end().catch(() => {});
+    if (failed) process.exit(1);
   }
 }
 

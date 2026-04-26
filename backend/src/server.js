@@ -31,7 +31,7 @@ app.use(helmet({
 
 const corsOptions = {
   origin: (origin, callback) => {
-    const allowed = (process.env.CORS_ORIGINS || 'http://localhost:3001').split(',');
+    const allowed = (process.env.CORS_ORIGINS || 'http://localhost:3002').split(',');
     if (!origin || allowed.includes(origin)) {
       callback(null, true);
     } else {
@@ -85,8 +85,12 @@ app.get('/health', async (req, res) => {
   });
 });
 
-// ── Prometheus metrics ────────────────────────────────────────────────────────
+// ── Prometheus metrics (restrict to internal/prometheus only) ─────────────────
 app.get('/metrics', async (req, res) => {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    return res.status(403).json({ success: false, message: 'Forbidden' });
+  }
   res.set('Content-Type', promRegister.contentType);
   res.end(await promRegister.metrics());
 });
@@ -100,7 +104,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 // ── Start server ──────────────────────────────────────────────────────────────
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   logger.info(`FCIT SRS Backend running on port ${PORT}`, {
     env: process.env.NODE_ENV,
     port: PORT,
@@ -108,13 +112,15 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received, shutting down gracefully');
-  process.exit(0);
-});
-process.on('SIGINT', () => {
-  logger.info('SIGINT received, shutting down gracefully');
-  process.exit(0);
-});
+const shutdown = (signal) => {
+  logger.info(`${signal} received, shutting down gracefully`);
+  server.close(() => {
+    const { pool } = require('./config/database');
+    pool.end().then(() => process.exit(0));
+  });
+  setTimeout(() => process.exit(1), 10000);
+};
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 
 module.exports = app;

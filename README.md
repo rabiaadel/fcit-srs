@@ -38,7 +38,7 @@ That single command:
 - Configures demo accounts
 - Verifies health of all services
 
-**Then open:** `http://localhost:3001`
+**Then open:** `http://localhost:3002`
 
 ---
 
@@ -51,7 +51,7 @@ That single command:
 │  ┌──────────────┐   ┌──────────────┐   ┌────────────────┐  │
 │  │   Frontend   │   │   Backend    │   │   PostgreSQL   │  │
 │  │  React + Nginx│──▶│ Node/Express │──▶│  pg 16-alpine  │  │
-│  │  Port: 3001  │   │  Port: 3000  │   │  Port: 5432    │  │
+│  │  Port: 3002  │   │  Port: 3000  │   │  Port: 5432    │  │
 │  └──────────────┘   └──────────────┘   └────────────────┘  │
 │         │                  │                               │
 │         │            ┌─────▼──────┐   ┌──────────────┐    │
@@ -73,7 +73,7 @@ That single command:
 
 | Service     | URL                        | Notes                            |
 |-------------|----------------------------|----------------------------------|
-| Frontend    | http://localhost:3001      | Main application                 |
+| Frontend    | http://localhost:3002      | Main application                 |
 | Backend API | http://localhost:3000/api/v1 | REST API                       |
 | API Health  | http://localhost:3000/health | Health check endpoint           |
 | Prometheus  | http://localhost:9090      | Metrics collection               |

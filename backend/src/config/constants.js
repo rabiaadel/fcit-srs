@@ -30,12 +30,13 @@ module.exports = {
     min_per_semester: 2,
   },
 
-  // ── Credit limits by CGPA ─────────────────────────────────────────────────
+  // ── Credit limits by CGPA (Art. 11) ────────────────────────────────────────
+  // Applied in order (highest first); first rule where cgpa >= minCgpa wins.
+  // CGPA >= 3.0  → max 70  |  >= 2.5 → max 20  |  >= 0.0 (all others) → max 40
   CGPA_CREDIT_LIMITS: [
-    { min: 3.0, max: 4.0,  maxCredits: 20 },
-    { min: 2.5, max: 2.99, maxCredits: 20 },
-    { min: 2.0, max: 2.49, maxCredits: 18 },
-    { min: 0.0, max: 1.99, maxCredits: 15 },
+    { minCgpa: 3.0, maxCredits: 70 },
+    { minCgpa: 2.5, maxCredits: 20 },
+    { minCgpa: 0.0, maxCredits: 40 },
   ],
 
   // ── Registration Deadlines ─────────────────────────────────────────────────

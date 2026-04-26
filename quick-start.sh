@@ -41,8 +41,13 @@ step "STEP 1: Environment Setup"
 if [ ! -f ".env" ]; then
   if [ -f ".env.example" ]; then
     cp .env.example .env
-    ok "Created .env from .env.example"
-    warn "Update JWT_SECRET and DB_PASSWORD before production!"
+    # Auto-generate strong secrets — no placeholder defaults in production
+    JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(64).toString('hex'))" 2>/dev/null || openssl rand -hex 64)
+    JWT_REFRESH_SECRET=$(node -e "console.log(require('crypto').randomBytes(64).toString('hex'))" 2>/dev/null || openssl rand -hex 64)
+    sed -i "s|^JWT_SECRET=.*|JWT_SECRET=${JWT_SECRET}|" .env
+    sed -i "s|^JWT_REFRESH_SECRET=.*|JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}|" .env
+    ok "Created .env from .env.example with generated JWT secrets"
+    warn "Review .env and update DB_PASSWORD before production deployment!"
   else
     err ".env.example not found."; exit 1
   fi
@@ -96,7 +101,7 @@ done; echo ""; ok "Backend API healthy"
 
 echo "Waiting for Frontend..."
 ATTEMPTS=0
-until curl -sf http://localhost:"${FRONTEND_PORT:-3001}"/index.html &>/dev/null; do
+until curl -sf http://localhost:"${FRONTEND_PORT:-3002}"/index.html &>/dev/null; do
   ATTEMPTS=$((ATTEMPTS+1))
   if [ $ATTEMPTS -ge 20 ]; then warn "Frontend still starting — it may need a moment"; break; fi
   echo -n "."; sleep 3
@@ -115,16 +120,16 @@ ok "Tables: $TABLES | Courses: $COURSES | Users: $USERS | Academic Rules: $RULES
 # ── STEP 7: Demo passwords ────────────────────────────────────────────────────
 step "STEP 7: Configuring Demo Passwords"
 docker-compose exec -T postgres psql -U "$USR" -d "$DB" <<'SQL'
-UPDATE users SET password_hash='$2b$10$8K1p/a0dL1LXMIgoEDFrwOfMQsA3eKFMkiuX8ehtOgQihtVhxG4bO', must_change_pw=FALSE WHERE email='admin@fci.tanta.edu.eg';
-UPDATE users SET password_hash='$2b$10$KCCV6NAZ5x1YUaKOLxbr8OQNl4Gx2GH0nRO9mPBJdE0DJkbTe8D.S', must_change_pw=FALSE WHERE email='dr.ahmed@fci.tanta.edu.eg';
-UPDATE users SET password_hash='$2b$10$kzqN0JjEZOqq3D5gYnSj9.mVNptjXCrN8j1XeD8EjX0tG.sR7aUzC', must_change_pw=FALSE WHERE email='s.2024cs001@fci.tanta.edu.eg';
+UPDATE users SET password_hash='$2b$10$Etxb2LkhfOSZeEZohUkZV.GqHV5D8BsyIEUIx0XSgV0YoLV/KLJ6O', must_change_pw=FALSE WHERE email='admin@fci.tanta.edu.eg';
+UPDATE users SET password_hash='$2b$10$cOqt6YZKmMqMr6noJ5ymiu7D6T08JdSNlVT3dXyM9f/.y9WHgT7tW', must_change_pw=FALSE WHERE email='dr.ahmed@fci.tanta.edu.eg';
+UPDATE users SET password_hash='$2b$10$q9U0EgCrA3BeXt7tgKNNReO7V6fPDy.k7v0QMRVfN2Sh3U4ay9zrC', must_change_pw=FALSE WHERE email='s.2024cs001@fci.tanta.edu.eg';
 SQL
 ok "Demo passwords set"
 
 # ── Done ──────────────────────────────────────────────────────────────────────
 step "✅  SYSTEM READY!"
 echo -e "${BOLD}Access Points:${NC}"
-echo -e "  ${GREEN}→${NC} Frontend:     ${BOLD}http://localhost:${FRONTEND_PORT:-3001}${NC}"
+echo -e "  ${GREEN}→${NC} Frontend:     ${BOLD}http://localhost:${FRONTEND_PORT:-3002}${NC}"
 echo -e "  ${GREEN}→${NC} Backend API:  http://localhost:${BACKEND_PORT:-3000}/api/v1"
 echo -e "  ${GREEN}→${NC} Prometheus:   http://localhost:9090"
 echo -e "  ${GREEN}→${NC} Grafana:      http://localhost:3050  (admin / admin123)"

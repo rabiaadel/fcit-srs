@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 import { useAuth, AuthProvider } from './contexts/AuthContext';
 import { studentAPI, doctorAPI, adminAPI, sharedAPI, authAPI } from './services/api';
@@ -179,7 +179,12 @@ const LoginPage = () => {
     try {
       const { user: u } = await login(email, password);
       toast.success(`Welcome back, ${u.fullNameEn}!`);
-      navigate(`/${u.role}`, { replace: true });
+      // Force password change if required by admin
+      if (u.mustChangePw) {
+        navigate('/change-password', { replace: true });
+      } else {
+        navigate(`/${u.role}`, { replace: true });
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
     } finally {
@@ -668,8 +673,7 @@ const DoctorDashboard = () => {
 };
 
 const CourseRosterPage = () => {
-  const { pathname } = useLocation();
-  const offeringId = pathname.split('/').pop();
+  const { offeringId } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [grades, setGrades] = useState({});
@@ -896,8 +900,7 @@ const AdminStudentsPage = () => {
 };
 
 const AdminStudentDetailPage = () => {
-  const { pathname } = useLocation();
-  const studentId = pathname.split('/').pop();
+  const { studentId } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -1211,6 +1214,10 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
   if (loading) return <div style={{ display:'flex', justifyContent:'center', alignItems:'center', minHeight:'100vh', fontSize:14, color:'#6b7280' }}>Loading FCIT SRS…</div>;
   if (!user) return <Navigate to="/login" replace />;
+  // If admin forced a password reset, only allow the change-password page
+  if (user.mustChangePw && window.location.pathname !== '/change-password') {
+    return <Navigate to="/change-password" replace />;
+  }
   if (allowedRoles && !allowedRoles.includes(user.role)) return <Navigate to={`/${user.role}`} replace />;
   return <Layout>{children}</Layout>;
 };

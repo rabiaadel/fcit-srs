@@ -106,10 +106,11 @@ function calculateCGPA(allEnrollments) {
  * Get CGPA classification (Art. 18, 20)
  */
 function getCGPAClassification(cgpa) {
-  for (const c of CGPA_CLASSIFICATIONS) {
-    if (cgpa >= c.min && cgpa < c.max) return c.label;
-    if (cgpa === 4.0) return 'Excellent';
-  }
+  if (cgpa >= 3.5) return 'Excellent';
+  if (cgpa >= 3.0) return 'Very Good';
+  if (cgpa >= 2.5) return 'Good';
+  if (cgpa >= 2.0) return 'Satisfactory';
+  if (cgpa >= 1.0) return 'Weak';
   return 'Poor';
 }
 

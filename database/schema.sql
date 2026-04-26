@@ -12,26 +12,26 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- ENUMERATIONS
 -- =============================================================================
 
-CREATE TYPE user_role AS ENUM ('admin', 'doctor', 'student');
-CREATE TYPE semester_type AS ENUM ('fall', 'spring', 'summer');
-CREATE TYPE semester_status AS ENUM ('upcoming', 'registration', 'active', 'grading', 'closed');
-CREATE TYPE enrollment_status AS ENUM ('registered', 'withdrawn', 'excused_withdrawn', 'dropped', 'completed');
-CREATE TYPE grade_code AS ENUM ('A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F','P','W','Abs','I','Con');
-CREATE TYPE specialization_code AS ENUM ('CS', 'IS', 'IT', 'SE');
-CREATE TYPE course_category AS ENUM ('university_req', 'math_science', 'basic_computing', 'applied_computing', 'elective', 'project', 'training');
-CREATE TYPE student_level AS ENUM ('freshman', 'sophomore', 'junior', 'senior');
-CREATE TYPE academic_status AS ENUM ('active', 'warning', 'probation', 'dismissed', 'graduated', 'on_leave', 'withdrawn');
-CREATE TYPE track_type AS ENUM ('science_math', 'science_science');
-CREATE TYPE warning_type AS ENUM ('academic', 'attendance', 'dismissal');
-CREATE TYPE leave_status AS ENUM ('pending', 'approved', 'rejected');
-CREATE TYPE training_status AS ENUM ('not_started', 'in_progress', 'completed', 'failed');
-CREATE TYPE project_status AS ENUM ('not_started', 'in_progress', 'submitted', 'passed', 'failed');
+DO $$ BEGIN CREATE TYPE user_role AS ENUM ('admin', 'doctor', 'student'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE semester_type AS ENUM ('fall', 'spring', 'summer'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE semester_status AS ENUM ('upcoming', 'registration', 'active', 'grading', 'closed'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE enrollment_status AS ENUM ('registered', 'withdrawn', 'excused_withdrawn', 'dropped', 'completed'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE grade_code AS ENUM ('A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F','P','W','Abs','I','Con'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE specialization_code AS ENUM ('CS', 'IS', 'IT', 'SE'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE course_category AS ENUM ('university_req', 'math_science', 'basic_computing', 'applied_computing', 'elective', 'project', 'training'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE student_level AS ENUM ('freshman', 'sophomore', 'junior', 'senior'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE academic_status AS ENUM ('active', 'warning', 'probation', 'dismissed', 'graduated', 'on_leave', 'withdrawn'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE track_type AS ENUM ('science_math', 'science_science'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE warning_type AS ENUM ('academic', 'attendance', 'dismissal'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE leave_status AS ENUM ('pending', 'approved', 'rejected'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE training_status AS ENUM ('not_started', 'in_progress', 'completed', 'failed'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE project_status AS ENUM ('not_started', 'in_progress', 'submitted', 'passed', 'failed'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- =============================================================================
 -- CORE USER TABLES
 -- =============================================================================
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email           VARCHAR(255) UNIQUE NOT NULL,
     password_hash   VARCHAR(255) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE users (
     updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE refresh_tokens (
+CREATE TABLE IF NOT EXISTS refresh_tokens (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     token_hash  VARCHAR(255) NOT NULL UNIQUE,
@@ -60,7 +60,7 @@ CREATE TABLE refresh_tokens (
 -- FACULTY STRUCTURE
 -- =============================================================================
 
-CREATE TABLE departments (
+CREATE TABLE IF NOT EXISTS departments (
     id          SERIAL PRIMARY KEY,
     code        VARCHAR(10) UNIQUE NOT NULL,   -- CS, IS, IT, SE
     name_ar     VARCHAR(255) NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE departments (
     is_active   BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE doctors (
+CREATE TABLE IF NOT EXISTS doctors (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id         UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     department_id   INT REFERENCES departments(id),
@@ -83,7 +83,7 @@ CREATE TABLE doctors (
 -- STUDENTS
 -- =============================================================================
 
-CREATE TABLE students (
+CREATE TABLE IF NOT EXISTS students (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id             UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     student_code        VARCHAR(20) UNIQUE NOT NULL,   -- e.g. 2024CS0001
@@ -118,7 +118,7 @@ CREATE TABLE students (
 -- ACADEMIC CALENDAR
 -- =============================================================================
 
-CREATE TABLE academic_years (
+CREATE TABLE IF NOT EXISTS academic_years (
     id          SERIAL PRIMARY KEY,
     year_label  VARCHAR(20) UNIQUE NOT NULL,   -- e.g. 2024-2025
     start_date  DATE NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE academic_years (
     is_current  BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE semesters (
+CREATE TABLE IF NOT EXISTS semesters (
     id                      SERIAL PRIMARY KEY,
     academic_year_id        INT NOT NULL REFERENCES academic_years(id),
     semester_type           semester_type NOT NULL,
@@ -155,7 +155,7 @@ CREATE TABLE semesters (
 -- COURSES
 -- =============================================================================
 
-CREATE TABLE courses (
+CREATE TABLE IF NOT EXISTS courses (
     id              SERIAL PRIMARY KEY,
     code            VARCHAR(10) UNIQUE NOT NULL,   -- e.g. CS311, BS113
     name_ar         VARCHAR(255) NOT NULL,
@@ -174,7 +174,7 @@ CREATE TABLE courses (
     created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE course_prerequisites (
+CREATE TABLE IF NOT EXISTS course_prerequisites (
     id              SERIAL PRIMARY KEY,
     course_id       INT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
     prereq_course_id INT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
@@ -187,7 +187,7 @@ CREATE TABLE course_prerequisites (
 -- COURSE OFFERINGS (per semester)
 -- =============================================================================
 
-CREATE TABLE course_offerings (
+CREATE TABLE IF NOT EXISTS course_offerings (
     id              SERIAL PRIMARY KEY,
     semester_id     INT NOT NULL REFERENCES semesters(id),
     course_id       INT NOT NULL REFERENCES courses(id),
@@ -205,7 +205,7 @@ CREATE TABLE course_offerings (
 -- ENROLLMENTS
 -- =============================================================================
 
-CREATE TABLE enrollments (
+CREATE TABLE IF NOT EXISTS enrollments (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     student_id          UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
     offering_id         INT NOT NULL REFERENCES course_offerings(id),
@@ -240,7 +240,7 @@ CREATE TABLE enrollments (
 -- ATTENDANCE
 -- =============================================================================
 
-CREATE TABLE attendance_sessions (
+CREATE TABLE IF NOT EXISTS attendance_sessions (
     id              SERIAL PRIMARY KEY,
     offering_id     INT NOT NULL REFERENCES course_offerings(id),
     session_date    DATE NOT NULL,
@@ -250,7 +250,7 @@ CREATE TABLE attendance_sessions (
     created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE attendance_records (
+CREATE TABLE IF NOT EXISTS attendance_records (
     id              SERIAL PRIMARY KEY,
     session_id      INT NOT NULL REFERENCES attendance_sessions(id) ON DELETE CASCADE,
     enrollment_id   UUID NOT NULL REFERENCES enrollments(id) ON DELETE CASCADE,
@@ -261,7 +261,7 @@ CREATE TABLE attendance_records (
 );
 
 -- Materialized view for fast attendance % calculation
-CREATE TABLE attendance_summary (
+CREATE TABLE IF NOT EXISTS attendance_summary (
     enrollment_id       UUID PRIMARY KEY REFERENCES enrollments(id) ON DELETE CASCADE,
     total_sessions      INT DEFAULT 0,
     attended_sessions   INT DEFAULT 0,
@@ -275,7 +275,7 @@ CREATE TABLE attendance_summary (
 -- =============================================================================
 
 -- GPA per semester per student
-CREATE TABLE semester_gpa_records (
+CREATE TABLE IF NOT EXISTS semester_gpa_records (
     id              SERIAL PRIMARY KEY,
     student_id      UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
     semester_id     INT NOT NULL REFERENCES semesters(id),
@@ -290,7 +290,7 @@ CREATE TABLE semester_gpa_records (
 );
 
 -- Academic warnings tracker
-CREATE TABLE academic_warnings (
+CREATE TABLE IF NOT EXISTS academic_warnings (
     id              SERIAL PRIMARY KEY,
     student_id      UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
     semester_id     INT NOT NULL REFERENCES semesters(id),
@@ -305,7 +305,7 @@ CREATE TABLE academic_warnings (
 );
 
 -- Leave of absence records
-CREATE TABLE academic_leaves (
+CREATE TABLE IF NOT EXISTS academic_leaves (
     id              SERIAL PRIMARY KEY,
     student_id      UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
     semester_id     INT NOT NULL REFERENCES semesters(id),
@@ -322,7 +322,7 @@ CREATE TABLE academic_leaves (
 -- GRADUATION PROJECTS
 -- =============================================================================
 
-CREATE TABLE graduation_projects (
+CREATE TABLE IF NOT EXISTS graduation_projects (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     student_id      UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
     -- Bylaw: PR411 and PR412, 3 credits each, 7 weeks each
@@ -349,7 +349,7 @@ CREATE TABLE graduation_projects (
 -- TRAINING / INTERNSHIP
 -- =============================================================================
 
-CREATE TABLE training_records (
+CREATE TABLE IF NOT EXISTS training_records (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     student_id      UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
     training_number INT NOT NULL CHECK (training_number IN (1, 2)),
@@ -373,7 +373,7 @@ CREATE TABLE training_records (
 -- =============================================================================
 
 -- Tracks retakes for bylaw enforcement
-CREATE TABLE course_retake_log (
+CREATE TABLE IF NOT EXISTS course_retake_log (
     id              SERIAL PRIMARY KEY,
     student_id      UUID NOT NULL REFERENCES students(id),
     course_id       INT NOT NULL REFERENCES courses(id),
@@ -392,7 +392,7 @@ CREATE TABLE course_retake_log (
 -- ANNOUNCEMENTS & NOTIFICATIONS
 -- =============================================================================
 
-CREATE TABLE announcements (
+CREATE TABLE IF NOT EXISTS announcements (
     id          SERIAL PRIMARY KEY,
     title       VARCHAR(500) NOT NULL,
     body        TEXT NOT NULL,
@@ -403,7 +403,7 @@ CREATE TABLE announcements (
     created_at  TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title       VARCHAR(255) NOT NULL,
@@ -417,7 +417,7 @@ CREATE TABLE notifications (
 -- ACADEMIC RULES META (for audit/reference)
 -- =============================================================================
 
-CREATE TABLE academic_rules (
+CREATE TABLE IF NOT EXISTS academic_rules (
     id          SERIAL PRIMARY KEY,
     rule_id     VARCHAR(50) UNIQUE NOT NULL,
     category    VARCHAR(100) NOT NULL,
@@ -432,7 +432,7 @@ CREATE TABLE academic_rules (
 -- SEED LOGS (track which seeds have run)
 -- =============================================================================
 
-CREATE TABLE seed_logs (
+CREATE TABLE IF NOT EXISTS seed_logs (
     id          SERIAL PRIMARY KEY,
     seed_name   VARCHAR(255) UNIQUE NOT NULL,
     run_at      TIMESTAMPTZ DEFAULT NOW(),
@@ -444,49 +444,49 @@ CREATE TABLE seed_logs (
 -- =============================================================================
 
 -- Users
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_users_national_id ON users(national_id);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_national_id ON users(national_id);
 
 -- Students
-CREATE INDEX idx_students_user_id ON students(user_id);
-CREATE INDEX idx_students_code ON students(student_code);
-CREATE INDEX idx_students_specialization ON students(specialization);
-CREATE INDEX idx_students_status ON students(academic_status);
-CREATE INDEX idx_students_level ON students(current_level);
+CREATE INDEX IF NOT EXISTS idx_students_user_id ON students(user_id);
+CREATE INDEX IF NOT EXISTS idx_students_code ON students(student_code);
+CREATE INDEX IF NOT EXISTS idx_students_specialization ON students(specialization);
+CREATE INDEX IF NOT EXISTS idx_students_status ON students(academic_status);
+CREATE INDEX IF NOT EXISTS idx_students_level ON students(current_level);
 
 -- Enrollments
-CREATE INDEX idx_enrollments_student ON enrollments(student_id);
-CREATE INDEX idx_enrollments_offering ON enrollments(offering_id);
-CREATE INDEX idx_enrollments_semester ON enrollments(semester_id);
-CREATE INDEX idx_enrollments_status ON enrollments(status);
-CREATE INDEX idx_enrollments_student_semester ON enrollments(student_id, semester_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_student ON enrollments(student_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_offering ON enrollments(offering_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_semester ON enrollments(semester_id);
+CREATE INDEX IF NOT EXISTS idx_enrollments_status ON enrollments(status);
+CREATE INDEX IF NOT EXISTS idx_enrollments_student_semester ON enrollments(student_id, semester_id);
 
 -- Courses
-CREATE INDEX idx_courses_code ON courses(code);
-CREATE INDEX idx_courses_category ON courses(category);
-CREATE INDEX idx_courses_level ON courses(level);
+CREATE INDEX IF NOT EXISTS idx_courses_code ON courses(code);
+CREATE INDEX IF NOT EXISTS idx_courses_category ON courses(category);
+CREATE INDEX IF NOT EXISTS idx_courses_level ON courses(level);
 
 -- Course offerings
-CREATE INDEX idx_offerings_semester ON course_offerings(semester_id);
-CREATE INDEX idx_offerings_course ON course_offerings(course_id);
-CREATE INDEX idx_offerings_doctor ON course_offerings(doctor_id);
+CREATE INDEX IF NOT EXISTS idx_offerings_semester ON course_offerings(semester_id);
+CREATE INDEX IF NOT EXISTS idx_offerings_course ON course_offerings(course_id);
+CREATE INDEX IF NOT EXISTS idx_offerings_doctor ON course_offerings(doctor_id);
 
 -- Attendance
-CREATE INDEX idx_attendance_enrollment ON attendance_records(enrollment_id);
-CREATE INDEX idx_attendance_session ON attendance_records(session_id);
+CREATE INDEX IF NOT EXISTS idx_attendance_enrollment ON attendance_records(enrollment_id);
+CREATE INDEX IF NOT EXISTS idx_attendance_session ON attendance_records(session_id);
 
 -- Warnings
-CREATE INDEX idx_warnings_student ON academic_warnings(student_id);
-CREATE INDEX idx_warnings_semester ON academic_warnings(semester_id);
+CREATE INDEX IF NOT EXISTS idx_warnings_student ON academic_warnings(student_id);
+CREATE INDEX IF NOT EXISTS idx_warnings_semester ON academic_warnings(semester_id);
 
 -- GPA records
-CREATE INDEX idx_gpa_student ON semester_gpa_records(student_id);
-CREATE INDEX idx_gpa_semester ON semester_gpa_records(semester_id);
+CREATE INDEX IF NOT EXISTS idx_gpa_student ON semester_gpa_records(student_id);
+CREATE INDEX IF NOT EXISTS idx_gpa_semester ON semester_gpa_records(semester_id);
 
 -- Notifications
-CREATE INDEX idx_notifications_user ON notifications(user_id);
-CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read = FALSE;
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read = FALSE;
 
 -- =============================================================================
 -- FUNCTIONS
@@ -502,14 +502,17 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to auto-update timestamps
+DROP TRIGGER IF EXISTS trg_users_updated_at ON users;
 CREATE TRIGGER trg_users_updated_at
     BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS trg_students_updated_at ON students;
 CREATE TRIGGER trg_students_updated_at
     BEFORE UPDATE ON students
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS trg_enrollments_updated_at ON enrollments;
 CREATE TRIGGER trg_enrollments_updated_at
     BEFORE UPDATE ON enrollments
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
@@ -586,11 +589,10 @@ BEGIN
     IF p_is_summer THEN RETURN 7; END IF;
     -- New students first semester (BYLAW: max 20)
     IF p_is_new_student THEN RETURN 20; END IF;
-    -- By CGPA
-    IF p_cgpa >= 3.0 THEN RETURN 20;   -- High performers: flexible, capped at level max
+    -- By CGPA (Art. 11): >=3.0→70, 2.5-3.0→20, <2.5→40
+    IF p_cgpa >= 3.0 THEN RETURN 70;
     ELSIF p_cgpa >= 2.5 THEN RETURN 20;
-    ELSIF p_cgpa >= 2.0 THEN RETURN 18;
-    ELSE RETURN 15;
+    ELSE RETURN 40;
     END IF;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
@@ -730,6 +732,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_enrollment_count ON enrollments;
 CREATE TRIGGER trg_enrollment_count
     AFTER INSERT OR UPDATE OR DELETE ON enrollments
     FOR EACH ROW EXECUTE FUNCTION update_offering_enrollment_count();
@@ -792,7 +795,7 @@ $$ LANGUAGE plpgsql;
 -- =============================================================================
 
 -- Student transcript view
-CREATE VIEW v_student_transcript AS
+CREATE OR REPLACE VIEW v_student_transcript AS
 SELECT
     s.id AS student_id,
     s.student_code,
@@ -825,7 +828,7 @@ JOIN semesters sem ON sem.id = e.semester_id
 ORDER BY sem.start_date, c.code;
 
 -- Current semester registrations
-CREATE VIEW v_current_registrations AS
+CREATE OR REPLACE VIEW v_current_registrations AS
 SELECT
     e.id AS enrollment_id,
     s.student_code,
@@ -847,7 +850,7 @@ JOIN semesters sem ON sem.id = e.semester_id
 WHERE sem.status IN ('registration', 'active', 'grading');
 
 -- Doctor's course roster
-CREATE VIEW v_doctor_courses AS
+CREATE OR REPLACE VIEW v_doctor_courses AS
 SELECT
     d.id AS doctor_id,
     u.full_name_en AS doctor_name,
@@ -867,7 +870,7 @@ JOIN courses c ON c.id = co.course_id
 JOIN semesters sem ON sem.id = co.semester_id;
 
 -- Graduation eligibility check
-CREATE VIEW v_graduation_eligibility AS
+CREATE OR REPLACE VIEW v_graduation_eligibility AS
 SELECT
     s.id AS student_id,
     s.student_code,

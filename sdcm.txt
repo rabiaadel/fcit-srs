@@ -1,0 +1,874 @@
+     Summary:                                              
+     1. Primary Request and Intent:                     
+        The user requested a comprehensive analysis, debugging, and optimization of the FCIT Student
+     Registration System (full-stack: React frontend, Express.js backend, PostgreSQL database, Docker
+     setup). The system is broken with recurring HTTP 401 errors and service conflicts. The user
+     explicitly asked for: full repository analysis, root cause investigation of 401s, system-wide fixes,
+      security hardening, environment/config cleanup, Docker optimization, code quality improvements, and
+      a final summary of all issues and fixes. The user is acting as a senior staff-level engineer and 
+     wants the project transformed into a production-ready system.
+                                                                
+     2. Key Technical Concepts:                                 
+        - JWT access + refresh token authentication flow (15m access, 7d refresh, token rotation)        
+        - bcrypt password hashing (10 rounds) — ROOT CAUSE of 401s: hashes didn't match passwords
+        - Express.js middleware chain: helmet, cors, rate-limit, compression, morgan                     
+        - PostgreSQL custom types (ENUMs), views, functions, triggers              
+        - Docker multi-stage builds (Node.js + nginx-unprivileged)                                       
+        - nginx reverse proxy (`/api/` → `backend:3000`)                                                 
+        - nginx `add_header` inheritance rules (location blocks override server-level headers)           
+        - React Context API for auth state management                                                    
+        - Axios interceptors for token refresh on 401                                                    
+        - Database idempotency (CREATE IF NOT EXISTS, DO $ EXCEPTION blocks)                             
+        - CORS origin validation with credentials                                                        
+        - Prometheus metrics collection via prom-client                                                  
+        - Academic bylaw enforcement (GPA calculation, registration validation, graduation eligibility)  
+                                                                                                         
+     3. Files and Code Sections:                                                                         
+                                                                                                         
+        - **`database/seeds/001_demo_users.sql`**                                  
+          - Contains demo user inserts with bcrypt password hashes
+          - CRITICAL FIX: All 3 password hashes were wrong — didn't match claimed passwords
+          - Changed all hashes to correctly generated ones:
+            ```sql
+            -- Admin password: Admin@2026!
+            '$2b$10$Etxb2LkhfOSZeEZohUkZV.GqHV5D8BsyIEUIx0XSgV0YoLV/KLJ6O'
+            -- Doctor password: Doctor@2026!
+            '$2b$10$cOqt6YZKmMqMr6noJ5ymiu7D6T08JdSNlVT3dXyM9f/.y9WHgT7tW'
+            -- Student password: Student@2026!
+            '$2b$10$q9U0EgCrA3BeXt7tgKNNReO7V6fPDy.k7v0QMRVfN2Sh3U4ay9zrC'
+            ```
+
+        - **`quick-start.sh`**
+          - Shell script for one-command startup; Step 7 re-sets demo passwords
+          - Updated all 3 bcrypt hashes to match the seed file corrections
+
+        - **`backend/src/controllers/auth.controller.js`**
+          - Login flow with timing-attack-safe bcrypt comparison
+          - Fixed the dummy hash used when user not found (was using an invalid-looking hash):
+            ```js
+            await bcrypt.compare(password,
+     '$2b$10$W2hZVsJqkGqLAHlzdb.sa.Ar7CqOq.wIBCTKPjZfg2mnRdI.8vD26');
+            ```
+
+        - **`backend/src/controllers/student.controller.js`**
+          - `getAvailableCourses` was missing `enrollment_id` in SELECT — frontend drop button got
+     `undefined`
+          - Added `e.id as enrollment_id` to the query SELECT list
+
+        - **`backend/src/services/registration.service.js`**
+          - `getStudentSchedule` was missing `e.total_grade, e.letter_grade, e.grade_points` — frontend
+     schedule page couldn't show grades
+          - Added those fields to the SELECT
+
+        - **`docker/nginx.conf`**
+          - Security headers (HSTS, X-Frame-Options, CSP, etc.) were set at server level but `location /
+     { add_header Cache-Control... }` silently overrode ALL of them
+          - Rewrote to include security headers explicitly inside each location block
+
+        - **`database/schema.sql`**
+          - All 14 CREATE TYPE statements lacked IF NOT EXISTS — caused errors when migrate.js re-ran
+     schema
+          - Changed to `DO $ BEGIN CREATE TYPE ... EXCEPTION WHEN duplicate_object THEN NULL; END $;`
+     pattern
+          - All 24 CREATE TABLE statements changed to `CREATE TABLE IF NOT EXISTS`
+          - Note: CREATE INDEX statements still need `IF NOT EXISTS` treatment (not yet done)
+
+        - **Key files READ but not yet modified**:
+          - `docker-compose.yml` — postgres, backend, frontend, prometheus, grafana services
+          - `.env` / `.env.example` — identical files with real secrets (security issue)
+          - `Dockerfile.backend` — multi-stage Node.js 20 Alpine build
+          - `Dockerfile.frontend` — multi-stage CRA build → nginx-unprivileged
+          - `backend/src/server.js` — Express app setup with all middleware
+          - `backend/src/middleware/auth.js` — JWT verify, role checking, token generation
+          - `backend/src/routes/index.js` — All API routes
+          - `backend/src/config/database.js` — PostgreSQL pool with query helper
+          - `backend/src/config/constants.js` — All bylaw constants
+          - `backend/src/services/bylaw.service.js` — Registration/graduation validation
+          - `backend/src/services/gpa.service.js` — Grade calculation
+          - `backend/src/middleware/errorHandler.js` — Central error/404 handler
+          - `backend/src/utils/migrate.js` — Runs schema.sql and enhancements.sql
+          - `backend/src/utils/seed.js` — Runs seed SQL files
+          - `backend/entrypoint.sh` — Waits for PG, runs migrate, seed, then server
+          - `frontend/src/App.jsx` — Full SPA with all pages (1442 lines)
+          - `frontend/src/contexts/AuthContext.jsx` — Auth state management
+          - `frontend/src/services/api.js` — Axios setup with token refresh interceptor
+          - `database/enhancements.sql` — Additional DB functions/views
+          - `database/seeds/002_initial_setup.sql` — Departments, academic years, semesters, rules
+          - `database/seeds/003_complete_curriculum.sql` — All courses, prerequisites, offerings
+
+     4. Errors and Fixes:
+        - **401 Root Cause — Wrong bcrypt hashes**: All 3 demo user password hashes in seeds didn't match
+      their claimed passwords (Admin@2026!, Doctor@2026!, Student@2026!). Verified via `bcrypt.compare()`
+      returning MISMATCH for all 3. Fixed by generating new hashes with `bcrypt.hash()` and updating
+     seeds + quick-start.sh.
+        - **Missing enrollment_id in course registration API**: Frontend drop button called
+     `handleDrop(r.enrollment_id, ...)` but the backend query didn't return `e.id as enrollment_id`.
+     Would result in API call to `/student/enrollments/undefined/drop`. Fixed by adding the field to the
+     SELECT.
+        - **Missing grade fields in schedule API**: Frontend schedule page displays `letter_grade`,
+     `total_grade`, `grade_points` but `getStudentSchedule()` didn't select them. Fixed by adding to
+     SELECT.
+        - **Nginx security header loss**: `add_header` in `location /` block overrides all server-level
+     `add_header` directives per nginx behavior. CSP, HSTS, X-Frame-Options etc. were silently dropped
+     for HTML responses. Fixed by moving headers into each location block.
+        - **Schema not idempotent**: `CREATE TYPE` without `IF NOT EXISTS` caused errors when
+     `migrate.js` re-ran after initial Docker `initdb.d` setup. Fixed with exception-handling DO blocks
+     for types and `IF NOT EXISTS` for tables. Still in progress for indexes.
+
+     5. Problem Solving:
+        - Identified all issues through systematic reading of every source file
+        - Verified password hash mismatch empirically with Node.js bcrypt test
+        - Traced the token flow end-to-end: frontend stores in localStorage → axios interceptor attaches
+     Bearer header → backend auth middleware verifies JWT → backend checks user exists
+        - Analyzed nginx header inheritance rules to explain missing security headers
+        - Identified double-initialization path (docker-compose initdb.d + entrypoint.sh migrate/seed)
+     and made schema idempotent to handle it
+
+     6. All User Messages:
+        - **Message 1**: Comprehensive instructions to analyze, debug, and optimize the entire
+     repository. Detailed 9-section instructions covering: full repo analysis, root cause investigation
+     (especially 401s), deep research, system-wide fixes, security hardening, environment cleanup,
+     Docker/deployment, code quality, and implementation rules. Requested final output with summary of
+     issues, root cause explanation, all fixes, architecture overview, and recommendations.
+
+     7. Pending Tasks:
+        - **Task #5 (IN PROGRESS)**: Make database schema idempotent — CREATE TABLE IF NOT EXISTS is
+     done, but CREATE INDEX statements in schema.sql still need `IF NOT EXISTS`. Also enhancements.sql
+     views/functions use CREATE OR REPLACE (already idempotent). Also need to fix `migrate.js` pool
+     handling (pool.end() before process.exit() race).
+        - **Task #3 (PENDING)**: Security hardening — `.env` cleanup (separate .env.example with
+     placeholder values from actual .env), ensure REACT_APP_API_URL works in Docker builds, CORS origin
+     hardening, review rate limiting configuration, Dockerfile security review.
+        - **Final deliverable**: The user asked for a comprehensive summary of all issues found, root
+     cause explanation, all applied fixes, final architecture overview, and recommendations for future
+     scaling/monitoring.
+
+     8. Current Work:
+        I was in the middle of **Task #5: Make database schema idempotent for reliable startup**. I had
+     just finished:
+        - Converting all 14 `CREATE TYPE` statements to use `DO $ BEGIN ... EXCEPTION WHEN
+     duplicate_object` pattern
+        - Converting all 24 `CREATE TABLE` statements to `CREATE TABLE IF NOT EXISTS`
+
+        The schema.sql indexes (lines ~446-489) still need `CREATE INDEX IF NOT EXISTS` treatment. The
+     views and functions in schema.sql use `CREATE VIEW` (not `IF NOT EXISTS`) and `CREATE OR REPLACE
+     FUNCTION` (already idempotent). The enhancements.sql already uses `CREATE OR REPLACE` for functions
+     and `CREATE VIEW` for views that also need attention.
+
+        After completing Task #5, I need to do Task #3 (security hardening), then provide the
+     comprehensive final summary the user requested.
+
+     9. Optional Next Step:
+        Continue Task #5 by adding `IF NOT EXISTS` to all `CREATE INDEX` statements in
+     `database/schema.sql` (there are ~20 indexes around lines 446-489), and handle `CREATE VIEW`
+     statements (make them `CREATE OR REPLACE VIEW`). Then fix `migrate.js` pool handling. After that,
+     proceed to Task #3 (security hardening: clean up .env, fix CORS, add REACT_APP_API_URL to
+     Dockerfile.frontend build args). Finally, produce the comprehensive summary the user requested with
+     "A summary of all issues found, Root cause explanation (especially for 401 errors), All applied
+     fixes, Final architecture overview, Any recommendations for future scaling or monitoring."
+
+     If you need specific details from before compaction (like exact code snippets, error messages, or
+     content you generated), read the full transcript at: /home/rabia/.claude/projects/-home-rabia-projec
+     ts-fcit-srs/5b2ae741-8cd5-46c8-8e26-6be84a3f7ac0.jsonl
+     Continue the conversation from where it left off without asking the user any further questions.
+     Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface
+     with "I'll continue" or similar. Pick up the last task as if the break never happened.
+  ⎿  Referenced file ../database/schema.sql
+  ⎿  Read ../docker/nginx.conf (64 lines)
+  ⎿  Read src/services/registration.service.js (315 lines)
+  ⎿  Read src/controllers/student.controller.js (284 lines)
+  ⎿  Read src/controllers/auth.controller.js (183 lines)
+
+∴ Thinking…
+
+  Let me continue where I left off. I need to:
+
+  1. Complete Task #5: Make database schema idempotent - still need to add IF NOT EXISTS to CREATE INDEX
+  statements and handle CREATE VIEW statements
+  2. Complete Task #3: Security hardening
+  3. Provide the comprehensive final summary
+
+  Let me start by reading the schema.sql to find the index and view statements that need fixing.
+
+                                                                         12:54 PM claude-opus-4-6
+● Let me read the schema.sql sections that still need idempotency fixes — indexes and views.
+
+● Read(/home/rabia/projects/fcit-srs/database/schema.sql · lines 440-519)
+  ⎿  Read 80 lines
+
+● Read(/home/rabia/projects/fcit-srs/database/enhancements.sql)
+  ⎿  Read 271 lines
+
+                                                                         12:54 PM claude-opus-4-6
+● Now let me also check the rest of schema.sql for any views and triggers that need the same treatment.
+
+● Read(/home/rabia/projects/fcit-srs/database/schema.sql · lines 515-614)
+  ⎿  Read 100 lines
+
+● Read(/home/rabia/projects/fcit-srs/backend/src/utils/migrate.js)
+  ⎿  Read 35 lines
+
+                                                                         12:54 PM claude-opus-4-6
+● Let me also read the rest of schema.sql to see if there are more views or triggers.
+
+● Read(/home/rabia/projects/fcit-srs/database/schema.sql · lines 612-711)
+  ⎿  Read 100 lines
+
+● Read(/home/rabia/projects/fcit-srs/database/schema.sql · lines 710-769)
+  ⎿  Read 60 lines
+
+● Read(/home/rabia/projects/fcit-srs/database/schema.sql · lines 768-827)
+  ⎿  Read 60 lines
+
+● Read(/home/rabia/projects/fcit-srs/database/schema.sql · lines 825-884)
+  ⎿  Read 60 lines
+
+● Read(/home/rabia/projects/fcit-srs/database/schema.sql · lines 884-913)
+  ⎿  Read 6 lines
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────
+  Showing detailed transcript · ctrl+o to toggle · ctrl+e to show all                            verbose
+      476 +CREATE INDEX IF NOT EXISTS idx_attendance_enrollment ON attendance_records(enrollment_i
+          +d);                                                                                    
+      477 +CREATE INDEX IF NOT EXISTS idx_attendance_session ON attendance_records(session_id);   
+      478  
+      479  -- Warnings
+      480 -CREATE INDEX idx_warnings_student ON academic_warnings(student_id);                    
+      481 -CREATE INDEX idx_warnings_semester ON academic_warnings(semester_id);                  
+      480 +CREATE INDEX IF NOT EXISTS idx_warnings_student ON academic_warnings(student_id);      
+      481 +CREATE INDEX IF NOT EXISTS idx_warnings_semester ON academic_warnings(semester_id);    
+      482  
+      483  -- GPA records
+      484 -CREATE INDEX idx_gpa_student ON semester_gpa_records(student_id);                      
+      485 -CREATE INDEX idx_gpa_semester ON semester_gpa_records(semester_id);                    
+      484 +CREATE INDEX IF NOT EXISTS idx_gpa_student ON semester_gpa_records(student_id);        
+      485 +CREATE INDEX IF NOT EXISTS idx_gpa_semester ON semester_gpa_records(semester_id);      
+      486  
+      487  -- Notifications
+      488 -CREATE INDEX idx_notifications_user ON notifications(user_id);                         
+      489 -CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read 
+          -= FALSE;                                                                               
+      488 +CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);           
+      489 +CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(user_id, is_read) 
+          +WHERE is_read = FALSE;                                                                 
+      490  
+      491  -- =============================================================================
+      492  -- FUNCTIONS
+
+● Now fix the triggers — they need DROP TRIGGER IF EXISTS before CREATE TRIGGER since PostgreSQL doesn't
+  support CREATE TRIGGER IF NOT EXISTS.                    
+                                                                
+● Update(~/projects/fcit-srs/database/schema.sql)          
+  ⎿  Added 3 lines                                         
+      502  $$ LANGUAGE plpgsql;                                  
+      503                                                  
+      504  -- Trigger to auto-update timestamps                 
+      505 +DROP TRIGGER IF EXISTS trg_users_updated_at ON users;                                         
+      506  CREATE TRIGGER trg_users_updated_at           
+      507      BEFORE UPDATE ON users                                                                    
+      508      FOR EACH ROW EXECUTE FUNCTION update_updated_at();                                        
+      509                                                                                                
+      510 +DROP TRIGGER IF EXISTS trg_students_updated_at ON students;                                   
+      511  CREATE TRIGGER trg_students_updated_at                                                    
+      512      BEFORE UPDATE ON students                                                                 
+      513      FOR EACH ROW EXECUTE FUNCTION update_updated_at();                                        
+      514                                                                                                
+      515 +DROP TRIGGER IF EXISTS trg_enrollments_updated_at ON enrollments;                             
+      516  CREATE TRIGGER trg_enrollments_updated_at                                                     
+      517      BEFORE UPDATE ON enrollments
+      518      FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+● Update(~/projects/fcit-srs/database/schema.sql)    
+  ⎿  Added 1 line                                          
+      733  END;                                                 
+      734  $$ LANGUAGE plpgsql;                            
+      735                                                       
+      736 +DROP TRIGGER IF EXISTS trg_enrollment_count ON enrollments;                            
+      737  CREATE TRIGGER trg_enrollment_count           
+      738      AFTER INSERT OR UPDATE OR DELETE ON enrollments   
+      739      FOR EACH ROW EXECUTE FUNCTION update_offering_enrollment_count();                         
+   
+● Now fix the views — change CREATE VIEW to CREATE OR REPLACE VIEW.                                      
+                                                                                                       
+● Update(~/projects/fcit-srs/database/schema.sql)                                                        
+  ⎿  Added 1 line, removed 1 line                                                                      
+      796  -- =============================================================================
+      797                                                        
+      798  -- Student transcript view                           
+      799 -CREATE VIEW v_student_transcript AS                                                    
+      799 +CREATE OR REPLACE VIEW v_student_transcript AS                                                
+      800  SELECT                                                
+      801      s.id AS student_id,                                                                       
+      802      s.student_code,                                                                         
+                                                                                                         
+● Update(~/projects/fcit-srs/database/schema.sql)                                                      
+  ⎿  Added 1 line, removed 1 line                                                                        
+      829  ORDER BY sem.start_date, c.code;                                                            
+      830                                                                                                
+      831  -- Current semester registrations                                                           
+      832 -CREATE VIEW v_current_registrations AS                                                        
+      832 +CREATE OR REPLACE VIEW v_current_registrations AS                                           
+      833  SELECT                                                                                        
+      834      e.id AS enrollment_id,                                                                  
+      835      s.student_code,                             
+                                                         
+● Update(~/projects/fcit-srs/database/schema.sql)                
+  ⎿  Added 1 line, removed 1 line
+      851  WHERE sem.status IN ('registration', 'active', 'grading');
+      852                                                                                                
+      853  -- Doctor's course roster                 
+      854 -CREATE VIEW v_doctor_courses AS                                                               
+      854 +CREATE OR REPLACE VIEW v_doctor_courses AS                                                  
+      855  SELECT                                          
+      856      d.id AS doctor_id,                        
+      857      u.full_name_en AS doctor_name,                    
+                    
+● Update(~/projects/fcit-srs/database/schema.sql)
+  ⎿  Added 1 line, removed 1 line                                                                        
+      871  JOIN semesters sem ON sem.id = co.semester_id;
+      872                                                                                                
+      873  -- Graduation eligibility check                                                             
+      874 -CREATE VIEW v_graduation_eligibility AS                                                
+      874 +CREATE OR REPLACE VIEW v_graduation_eligibility AS                                     
+      875  SELECT                                                
+      876      s.id AS student_id,
+      877      s.student_code,
+                                                                                                         
+● Now fix the views in enhancements.sql — they use CREATE VIEW without OR REPLACE.
+                                                                                                         
+● Update(~/projects/fcit-srs/database/enhancements.sql)                                                
+  ⎿  Added 1 line, removed 1 line                          
+      227  -- -------------------------------------------------------
+      228  -- Dashboard statistics views                         
+      229  -- -------------------------------------------------------
+      230 -CREATE VIEW v_admin_dashboard_stats AS                                                 
+      230 +CREATE OR REPLACE VIEW v_admin_dashboard_stats AS                                             
+      231  SELECT                                                
+      232      (SELECT COUNT(*) FROM students WHERE academic_status = 'active') AS active_students       
+           ,                                                                                           
+      233      (SELECT COUNT(*) FROM students WHERE academic_status = 'warning') AS warning_studen       
+           ts,                                                                                         
+                                                                                                         
+● Update(~/projects/fcit-srs/database/enhancements.sql)                                                
+  ⎿  Added 1 line, removed 1 line                                                                        
+      239      (SELECT AVG(cgpa)::NUMERIC(4,3) FROM students WHERE academic_status IN ('active','w     
+           arning')) AS avg_cgpa;                                                                        
+      240                                                                                              
+      241  -- Students per specialization                  
+      242 -CREATE VIEW v_specialization_stats AS                                                  
+      242 +CREATE OR REPLACE VIEW v_specialization_stats AS                                       
+      243  SELECT                                        
+      244      s.specialization,                                 
+      245      COUNT(*) AS total,
+
+● Update(~/projects/fcit-srs/database/enhancements.sql)                                                  
+  ⎿  Added 1 line, removed 1 line
+      250  GROUP BY s.specialization;                                                                    
+      251                                                                                              
+      252  -- Semester credit load distribution                 
+      253 -CREATE VIEW v_semester_load_distribution AS                                            
+      253 +CREATE OR REPLACE VIEW v_semester_load_distribution AS                                 
+      254  SELECT                                                
+      255      sem.label,
+      256      sem.semester_type,
+                                                                                                         
+● Now fix the migrate.js pool handling — pool.end() in finally + process.exit(1) in catch creates a race
+  condition.                                                                                             
+                                                                                                       
+● Update(src/utils/migrate.js)                             
+  ⎿  Added 1 line, removed 1 line                          
+      24      logger.info('Migrations complete');                
+      25    } catch (err) {                                
+      26      logger.error('Migration error', { error: err.message });
+      27 -    process.exit(1);                                                                           
+      27 +    process.exitCode = 1;                                                               
+      28    } finally {                                                                                  
+      29      client.release();                                                                          
+      30      await pool.end();
+                                                                                                         
+● Task #5 is complete. Moving to Task #3 — security hardening.                                         
+                                                                                                         
+● Let me read the security-critical files I need to audit.                                             
+                                                                
+  Read 4 files (ctrl+o to expand)                               
+                                                                 
+● Now let me check the Dockerfiles and the backend server/middleware for CORS config.
+                                                                 
+  Read 3 files (ctrl+o to expand)                                                                        
+                                                                                                         
+● Good. I see the issues clearly. Let me now apply all security hardening fixes:                         
+                                                                                                         
+  Issue 1: .env and .env.example are identical files with real secrets — .env.example should have        
+  placeholder values only.                                                                             
+                                                                                                         
+  Issue 2: The frontend Dockerfile doesn't pass REACT_APP_API_URL as a build arg, so CRA bakes in the    
+  default value at build time. Since the nginx proxy handles /api/ routing, this is actually fine — the  
+  default /api/v1 works correctly. No change needed.                                                     
+                                                                                                       
+  Issue 3: The /metrics and /health endpoints are exposed without auth — in production, Prometheus       
+  metrics shouldn't be publicly accessible.                                                              
+                                                                                                         
+  Issue 4: trust proxy is set to 1 which is correct for a single reverse-proxy setup (nginx).            
+                                                                                                         
+  Issue 5: CORS config is fine — properly validates against allowlist with credentials support.          
+                                                                                               
+  Let me fix the .env.example:                                                                           
+                                                                                                       
+● Write(~/projects/fcit-srs/.env.example)                                                                
+  ⎿  Added 9 lines, removed 9 lines                             
+       3  # Copy this to .env and update secrets before production use                                   
+       4  # =============================================================================                
+       5                                                         
+       6 -# ── Database ─────────────────────────────────────────────────────────────────                
+       6 +# -- Database -----------------------------------------------------------------              
+       7  DB_HOST=postgres                                                                               
+       8  DB_PORT=5432                                                                                   
+       9  DB_USER=postgres                                                                               
+      10 -DB_PASSWORD=postgres                                                                           
+      10 +DB_PASSWORD=CHANGE_ME_strong_password_here                                                   
+      11  DB_NAME=student_registration_system                                                            
+      12                                                                                               
+      13 -# ── Backend ──────────────────────────────────────────────────────────────────         
+      13 +# -- Backend ------------------------------------------------------------------         
+      14  NODE_ENV=development
+      15  BACKEND_PORT=3000
+      16  
+      17 -# CHANGE THESE IN PRODUCTION — generate with: openssl rand -hex 64                      
+      18 -JWT_SECRET=fcit-srs-jwt-secret-change-in-production-tanta-2024-xxxxxxxxxxxxxxxxxx       
+      19 -JWT_REFRESH_SECRET=fcit-srs-refresh-secret-change-in-production-tanta-2024-xxxxxxxxxx   
+      17 +# CHANGE THESE IN PRODUCTION -- generate with: openssl rand -hex 64                     
+      18 +JWT_SECRET=CHANGE_ME_generate_with_openssl_rand_hex_64                                  
+      19 +JWT_REFRESH_SECRET=CHANGE_ME_generate_with_openssl_rand_hex_64                          
+      20  JWT_EXPIRY=15m
+      21  JWT_REFRESH_EXPIRY=7d
+      22  
+     ...
+      24  LOG_LEVEL=info
+      25  CORS_ORIGINS=http://localhost:3001,http://localhost:8080
+      26  
+      27 -# ── Frontend ─────────────────────────────────────────────────────────────────         
+      27 +# -- Frontend -----------------------------------------------------------------         
+      28  FRONTEND_PORT=3001
+      29  REACT_APP_API_URL=/api/v1
+      30  REACT_APP_ENV=development
+      31  
+      32 -# ── Monitoring ───────────────────────────────────────────────────────────────         
+      32 +# -- Monitoring ---------------------------------------------------------------         
+      33  GRAFANA_USER=admin
+      34 -GRAFANA_PASSWORD=admin123                                                               
+      34 +GRAFANA_PASSWORD=CHANGE_ME_strong_password_here                                         
+                                  
+● Now secure the /metrics endpoint — it should only be accessible from the internal Docker network, not
+  from external requests proxied through nginx. The nginx config already only proxies /api/, so /metrics
+  and /health are only directly reachable on port 3000. But let me add a middleware to restrict /metrics
+  to internal IPs for defense in depth.                    
+                                                                 
+● Update(src/server.js)                                          
+  ⎿  Added 5 lines, removed 1 line                              
+      85    });                                            
+      86  });                                                                                            
+      87                                                                                                 
+      88 -// ── Prometheus metrics ────────────────────────────────────────────────────────              
+      88 +// ── Prometheus metrics (restrict to internal/prometheus only) ─────────────────              
+      89  app.get('/metrics', async (req, res) => {                                                    
+      90 +  const forwarded = req.headers['x-forwarded-for'];                                            
+      91 +  if (forwarded) {                                                                      
+      92 +    return res.status(403).json({ success: false, message: 'Forbidden' });                     
+      93 +  }                                                                                     
+      94    res.set('Content-Type', promRegister.contentType);                                           
+      95    res.end(await promRegister.metrics());                                 
+      96  });                                                                                          
+                                  
+● Now let me check the nginx CSP policy — the current one in the location / block should allow
+  connections to /api/ for the SPA to work. Let me also check if connect-src 'self' is sufficient.
+                                                                
+  Read 1 file (ctrl+o to expand)                           
+                                                                 
+● The CSP in nginx has connect-src 'self' which is correct — since the API calls go to /api/v1/... on the
+   same origin, 'self' covers it. Good.                         
+                                                                
+  Now let me check if the frontend's api.js handles the nginx proxy path correctly.                      
+                                                                                                         
+  Read 1 file (ctrl+o to expand)                                                                         
+                                                                                                         
+● The frontend api.js looks solid — the token refresh interceptor, queue for concurrent 401s, and proper
+  cleanup on failure are all well-implemented. One issue: the interceptor checks for                     
+  error.response?.data?.code === 'TOKEN_EXPIRED' but the backend auth middleware may not set that code.  
+  Let me check.                                                                                          
+                                                                                                         
+  Read 1 file (ctrl+o to expand)                                                                       
+                                                                                                         
+● Good — the backend does return code: 'TOKEN_EXPIRED' at line 24, matching what the frontend interceptor
+   expects. The auth flow is correctly wired.                                                          
+                                                                                                         
+  Now let me check the graceful shutdown in server.js — it calls process.exit(0) without closing the HTTP
+   server or database pool, which can drop in-flight requests.                                           
+                                                                                                         
+  Read 1 file (ctrl+o to expand)                                                                       
+                                                                                                       
+● Fix the graceful shutdown in server.js — close the HTTP server and database pool before exiting.       
+                                                                                                         
+● Update(src/server.js)                                                                                  
+  ⎿  Added 11 lines, removed 9 lines                                                                     
+      104  app.use(errorHandler);                                                                      
+      105                                                                                                
+      106  // ── Start server ──────────────────────────────────────────────────────────────
+      107 -app.listen(PORT, '0.0.0.0', () => {                                                         
+      107 +const server = app.listen(PORT, '0.0.0.0', () => {                                            
+      108    logger.info(`FCIT SRS Backend running on port ${PORT}`, {                                   
+      109      env: process.env.NODE_ENV,                                                                
+      110      port: PORT,                                                                               
+     ...                                                                                                 
+      112  });                                                                                         
+      113                                                                                                
+      114  // Graceful shutdown                                                    
+      115 -process.on('SIGTERM', () => {                                                               
+      116 -  logger.info('SIGTERM received, shutting down gracefully');                           
+      117 -  process.exit(0);                                                                     
+      118 -});                                                                                    
+      119 -process.on('SIGINT', () => {                                                           
+      120 -  logger.info('SIGINT received, shutting down gracefully');                            
+      121 -  process.exit(0);                                                                     
+      122 -});                                                                                    
+      115 +const shutdown = (signal) => {                                                         
+      116 +  logger.info(`${signal} received, shutting down gracefully`);                         
+      117 +  server.close(() => {                                                                 
+      118 +    const { pool } = require('./config/database');                                     
+      119 +    pool.end().then(() => process.exit(0));                                            
+      120 +  });                                                                                  
+      121 +  setTimeout(() => process.exit(1), 10000);                                            
+      122 +};                                                                                     
+      123 +process.on('SIGTERM', () => shutdown('SIGTERM'));                                      
+      124 +process.on('SIGINT', () => shutdown('SIGINT'));                                        
+      125  
+      126  module.exports = app;
+                                  
+● Now let me verify all changes are consistent by doing a quick scan of the modified files.
+                                                                
+● Bash(cd /home/rabia/projects/fcit-srs && git diff --stat)     
+  ⎿   .env.example                                  |  18 ++--  
+      .gitignore                                    |   1 +      
+      backend/src/controllers/auth.controller.js    |   3 +-                                             
+     … +10 lines (ctrl+o to expand)                              
+                                                           
+● Wait — I see .gitignore changed. Let me check that wasn't from a previous session edit and is correct. 
+                                                                                                         
+● Bash(git diff .gitignore)                                                                              
+  ⎿  diff --git a/.gitignore b/.gitignore                                                                
+     index 51d0793..e2f6089 100644                                                                       
+     --- a/.gitignore                                                                                    
+     … +7 lines (ctrl+o to expand)                                                                     
+                                                                                                         
+● That's from the previous session — just adds a db-extracted/ entry. Fine, harmless.                    
+  ⎿  Retrying in 0s · attempt 1/10                                                                     
+                                                                                                         
+● All tasks complete. Now let me produce the comprehensive final summary the user requested.           
+                                                                                                         
+  ---                                                                                                    
+  Comprehensive Analysis & Fix Report — FCIT Student Registration System                                 
+                                                                                                         
+  1. Summary of All Issues Found                                                                         
+                                                                                                         
+  #: 1                                                                                                   
+  Severity: CRITICAL                                                                                     
+  File(s): database/seeds/001_demo_users.sql, quick-start.sh                                             
+  Issue: All 3 demo user bcrypt password hashes did not match their documented passwords — root cause of 
+    all 401 errors                                                                                       
+  ────────────────────────────────────────                                                               
+  #: 2                                                                                                
+  Severity: HIGH                                                                                         
+  File(s): docker/nginx.conf                                                                           
+  Issue: Security headers (HSTS, X-Frame-Options, CSP, X-XSS-Protection) silently dropped on HTML     
+    responses due to nginx add_header inheritance rules                                               
+  ────────────────────────────────────────                                                            
+  #: 3
+  Severity: HIGH                                                                                         
+  File(s): database/schema.sql
+  Issue: Non-idempotent DDL (CREATE TYPE, CREATE TABLE, CREATE INDEX, CREATE VIEW, CREATE TRIGGER) caused
+                                                                                                       
+    migration failures on container restart
+  ────────────────────────────────────────
+  #: 4
+  Severity: HIGH
+  File(s): .env / .env.example
+  Issue: Identical files — .env.example contained real JWT secrets and DB passwords, committed to git
+  ────────────────────────────────────────
+  #: 5
+  Severity: MEDIUM
+  File(s): backend/src/controllers/student.controller.js
+  Issue: getAvailableCourses query missing e.id as enrollment_id — frontend drop button sent undefined to
+
+    API
+  ────────────────────────────────────────
+  #: 6
+  Severity: MEDIUM
+  File(s): backend/src/services/registration.service.js
+  Issue: getStudentSchedule query missing total_grade, letter_grade, grade_points — schedule page
+  couldn't
+    show grades
+  ────────────────────────────────────────
+  #: 7                                                                                                   
+  Severity: MEDIUM
+  File(s): database/enhancements.sql                                                                     
+  Issue: Views used CREATE VIEW instead of CREATE OR REPLACE VIEW — failed on re-run                   
+  ────────────────────────────────────────
+  #: 8
+  Severity: MEDIUM
+  File(s): backend/src/server.js
+  Issue: /metrics endpoint exposed without access control
+  ────────────────────────────────────────
+  #: 9
+  Severity: MEDIUM
+  File(s): backend/src/server.js
+  Issue: Graceful shutdown called process.exit(0) without closing HTTP server or DB pool — dropped
+    in-flight requests
+  ────────────────────────────────────────
+  #: 10                                                                                                  
+  Severity: LOW
+  File(s): backend/src/utils/migrate.js                                                                  
+  Issue: process.exit(1) in catch block raced with pool.end() in finally — pool never drained          
+
+  2. Root Cause Explanation — 401 Errors
+
+  The bcrypt hashes in 001_demo_users.sql were wrong. All three demo accounts (admin, doctor, student)   
+  had hashes that did not match their documented passwords:
+                                                                                                         
+  - Admin@2026! → hash returned MISMATCH                                                                 
+  - Doctor@2026! → hash returned MISMATCH
+  - Student@2026! → hash returned MISMATCH                                                               
+                                                                                                         
+  This meant bcrypt.compare() in auth.controller.js:login() always returned false, producing a 401 on    
+  every login attempt. The same wrong hashes were duplicated in quick-start.sh step 7. Both files were   
+  corrected with properly generated bcrypt hashes.                                                       
+                                                                                                       
+  3. All Applied Fixes (12 files, 119 insertions, 108 deletions)                                         
+  
+  database/seeds/001_demo_users.sql — Replaced all 3 bcrypt hashes with correctly generated ones matching
+   Admin@2026!, Doctor@2026!, Student@2026!                                                            
+                                                                                                         
+  quick-start.sh — Updated the same 3 bcrypt hashes to match the seed file                               
+  
+  docker/nginx.conf — Moved all security headers (HSTS, X-Frame-Options, X-Content-Type-Options,         
+  X-XSS-Protection, Referrer-Policy, CSP) into each location block since nginx drops parent-level      
+  add_header directives when a child block defines its own                                               
+                                                                                                       
+  database/schema.sql —                                                                                  
+  - 14 CREATE TYPE → wrapped in DO $$ BEGIN ... EXCEPTION WHEN duplicate_object blocks
+  - 24 CREATE TABLE → CREATE TABLE IF NOT EXISTS                                                         
+  - 22 CREATE INDEX → CREATE INDEX IF NOT EXISTS                                                       
+  - 4 CREATE VIEW → CREATE OR REPLACE VIEW                                                               
+  - 4 CREATE TRIGGER → DROP TRIGGER IF EXISTS + CREATE TRIGGER                                           
+                                                                                                         
+  database/enhancements.sql — 3 CREATE VIEW → CREATE OR REPLACE VIEW                                     
+                                                                                                         
+  backend/src/controllers/student.controller.js — Added e.id as enrollment_id to getAvailableCourses     
+  query                                                                                                  
+                                                                                                         
+  backend/src/services/registration.service.js — Added e.total_grade, e.letter_grade, e.grade_points to  
+  getStudentSchedule query
+                                                                                                         
+  backend/src/utils/migrate.js — Replaced process.exit(1) with process.exitCode = 1 to let pool.end()    
+  complete in finally block
+                                                                                                         
+  backend/src/server.js —                                                                                
+  - Restricted /metrics endpoint to non-proxied requests (blocks X-Forwarded-For header)
+  - Fixed graceful shutdown: properly closes HTTP server, drains DB pool, with 10s timeout fallback      
+                                                                                                       
+  .env.example — Replaced real secrets with CHANGE_ME_* placeholder values                               
+                                                                                                         
+  4. Architecture Overview                                                                               
+                                                                                                         
+  ┌──────────────────────────────────────────────────────┐                                               
+  │                  Docker Compose                       │                                              
+  │                                                       │
+  │  ┌─────────┐    ┌──────────┐    ┌────────────────┐   │                                               
+  │  │ Frontend │───▶│  Nginx   │───▶│ Backend (3000) │   │                                            
+  │  │ (React)  │    │ (:8080)  │    │  Express.js    │   │                                              
+  │  │ SPA      │    │          │    │                │   │
+  │  └─────────┘    │ /api/ ───┼───▶│ /api/v1/*      │   │                                               
+  │                  │  static  │    │ /metrics       │   │                                            
+  │                  └──────────┘    └───────┬────────┘   │
+  │                                          │            │                                              
+  │                               ┌──────────▼─────────┐ │ 
+  │                               │ PostgreSQL 16.3    │ │                                               
+  │                               │ (:5432)            │ │                                             
+  │                               └────────────────────┘ │
+  │                                                       │                                              
+  │  ┌───────────┐    ┌──────────┐                       │ 
+  │  │ Prometheus│───▶│ Grafana  │                       │                                               
+  │  │ (:9090)   │    │ (:3050)  │                       │                                             
+  │  └───────────┘    └──────────┘                       │
+  └──────────────────────────────────────────────────────┘
+                                                          
+  Auth Flow: JWT access tokens (15m) + refresh tokens (7d) with rotation. Refresh token hashes stored in
+  DB, revoked on use. Frontend axios interceptor queues concurrent 401s and retries after refresh.      
+                                                                                                  
+  Database: 24 tables, 14 custom ENUMs, 22 indexes, 8 views, 12 functions, 4 triggers. Fully idempotent
+  schema for reliable restarts.                                                                          
+                               
+  Academic Logic: Full FCIT bylaw enforcement — GPA grading scale, credit limits by CGPA, prerequisite   
+  checking, improvement retake grade capping (max B=3.0), academic warnings (consecutive/total),         
+  dismissal conditions, graduation eligibility (132 credits, 2.0 CGPA, training, project).      
+                                                                                                         
+  5. Recommendations                                                                                   
+                                                                                                         
+  Immediate:
+  - Run docker compose down -v && docker compose up --build to pick up all fixes (volume reset needed for
+   seed data)                                                                                            
+  - Generate real JWT secrets for any non-development deployment: openssl rand -hex 64                   
+                                                                                      
+  Short-term:                                                                                            
+  - Add automated tests — the backend has zero test files, making regressions invisible                
+  - Add request validation middleware (e.g., express-validator or zod) at route level — currently relying
+   on service-layer validation only                                                    
+  - Move the 1,442-line App.jsx into route-based code-split components
+                                                                                                         
+  Production readiness:
+  - Set up SSL termination (Let's Encrypt or load balancer) — HSTS headers are set but only meaningful   
+  over HTTPS                                                                                           
+  - Configure connection pooling (PgBouncer) between backend and PostgreSQL
+  - Add database backup automation (pg_dump cron or managed service snapshots)
+  - Pin Docker image tags for Prometheus and Grafana (currently :latest)
+  - Add log aggregation — the JSON file logging driver is fine for dev but needs ELK/Loki for production
+  observability
+
+✻ Sautéed for 46m 38s
+
+❯ Additional Requirements (Apply on top of previous instructions):                                       
+                                                                                                         
+  1. DB-EXTRACTED AS SOURCE OF TRUTH                                                                     
+                                                                                                         
+  * You MUST fully utilize the `db-extracted` folder.                                                    
+  * Treat it as the definitive source of business rules, constraints, and system behavior.               
+  * Validate the current backend, database schema, and logic against it.                                 
+  * Ensure the entire system strictly follows these bylaws with correct logic flow.                      
+                                                                                                         
+  2. FULL FRONTEND ALIGNMENT                                                                             
+                                                                                                         
+  * Ensure the frontend is completely aligned with:                                                      
+                                                                                                         
+    * Backend APIs                                                                                       
+    * Authentication system                                                                              
+    * Database-driven rules from `db-extracted`                                                          
+                                                                                                         
+  * Fix:                                                                                                 
+                                                                                                         
+    * Incorrect API calls (URLs, payloads, methods)                                                      
+    * Token handling (JWT in headers/cookies)                                                            
+    * State inconsistencies                                                                              
+    * UI logic that violates system rules                                                                
+                                                                                                         
+  * Ensure frontend reflects real backend behavior with no assumptions or hardcoding.                    
+                                                                                                         
+  3. PRODUCTION-READY ENV & AUTH                                                                         
+                                                                                                         
+  * Finalize the system for production:                                                                  
+                                                                                                         
+    * Proper `.env` structure across all services                                                        
+    * Secure JWT secret configuration                                                                    
+    * Correct token expiration and validation                                                            
+    * Secure password handling (hashing, salting)                                                        
+                                                                                                         
+  * Remove ALL hardcoded secrets and move them to environment variables.                                 
+                                                                                                         
+  4. END-TO-END SYSTEM VALIDATION                                                                        
+                                                                                                         
+  * Ensure the full flow works correctly:                                                                
+    Frontend → Backend → Database → Response → Frontend                                                  
+                                                                                                         
+  * Validate:                                                                                            
+                                                                                                         
+    * Authentication flow (fix 401 issues completely)                                                    
+    * Data integrity                                                                                     
+    * API consistency                                                                                    
+    * Service communication (including Docker)                                                           
+                                                                                                         
+  5. FINAL STATE REQUIREMENT                                                                             
+                                                                                                         
+  * The system must end up:                                                                              
+                                                                                                         
+    * Fully functional                                                                                   
+    * Fully aligned with `db-extracted`                                                                  
+    * Production-ready                                                                                   
+    * Secure and clean                                                                                   
+    * With zero conflicts between services                                                               
+                                                                                                         
+  Apply these requirements strictly while continuing your current analysis and implementation.           
+                                                                                                         
+
+● Let me explore the db-extracted folder to understand the authoritative business rules, then validate
+  the entire system against them.                                                                 
+
+  Searched for 1 pattern, read 3 files (ctrl+o to expand)                                                
+                                                                                                  
+● Excellent — now I have the complete bylaw source of truth. Let me now systematically validate the      
+  backend services against these rules. I'll start by reading the key service files that implement bylaw 
+  logic.                                                                                  
+                                                                                                         
+  Read 3 files (ctrl+o to expand)                                                                        
+                                                                                                         
+● I've identified several discrepancies between the bylaws and the code. Let me now create tasks and     
+  start fixing them systematically.                                                       
+                                                                                          
+● Found a critical mismatch: the CGPA-based credit limits in constants.js and the DB function are        
+  completely wrong compared to the bylaws. Fixing now.                                                   
+                                                                                                         
+● Update(backend/src/config/constants.js)                                                                
+  ⎿  Added 4 lines, removed 4 lines                                                                      
+      30      min_per_semester: 2,                                                                       
+      31    },                                                                                           
+      32                                                                           
+      33 -  // ── Credit limits by CGPA ─────────────────────────────────────────────────                
+      33 +  // ── Credit limits by CGPA (Art. 11) ────────────────────────────────────────               
+      34    CGPA_CREDIT_LIMITS: [
+      35 -    { min: 3.0, max: 4.0,  maxCredits: 20 },                                                   
+      35 +    { min: 3.0, max: 4.0,  maxCredits: 70 },                                            
+      36      { min: 2.5, max: 2.99, maxCredits: 20 },                                                   
+      37 -    { min: 2.0, max: 2.49, maxCredits: 18 },                                            
+      38 -    { min: 0.0, max: 1.99, maxCredits: 15 },                                            
+      37 +    { min: 2.0, max: 2.49, maxCredits: 40 },                                            
+      38 +    { min: 0.0, max: 1.99, maxCredits: 70 },                                            
+      39    ],
+      40  
+      41    // ── Registration Deadlines ─────────────────────────────────────────────────
+                                  
+● Now fix the corresponding DB function.                               
+                                                                       
+● Update(database/schema.sql)                                          
+  ⎿  Added 4 lines, removed 4 lines                         
+      589      IF p_is_summer THEN RETURN 7; END IF;                   
+      590      -- New students first semester (BYLAW: max 20)
+      591      IF p_is_new_student THEN RETURN 20; END IF;                                               
+      592 -    -- By CGPA                                                                                
+      593 -    IF p_cgpa >= 3.0 THEN RETURN 20;   -- High performers: flexible, capped at level ma       
+          -x                                                                                             
+      592 +    -- By CGPA (Art. 11)                                                                      
+      593 +    IF p_cgpa >= 3.0 THEN RETURN 70;                                                   
+      594      ELSIF p_cgpa >= 2.5 THEN RETURN 20;                                                       
+      595 -    ELSIF p_cgpa >= 2.0 THEN RETURN 18;                                                
+      596 -    ELSE RETURN 15;                                                                    
+      595 +    ELSIF p_cgpa >= 2.0 THEN RETURN 40;                                                
+      596 +    ELSE RETURN 70;                                                                    
+      597      END IF;
+      598  END;
+      599  $$ LANGUAGE plpgsql IMMUTABLE;
+
+● Now validating the frontend. Let me read the key frontend files.         
+                                                   
+  Read 2 files (ctrl+o to expand)                           
+  ⎿  Please run /login · API Error: 403 {"error":{"message":"pre-consume quota failed, user quota: 
+     ＄2.340110, need quota: ＄3.418064 (request id:                       
+     2026042618200968612349mffasvSA)","type":"new_api_error"},"type":"error"}
+                                                                                                         
+✻ Worked for 4m 22s                                         
+                                                                                                         
+  4 tasks (1 done, 1 in progress, 2 open)                                          
+  ✔ Fix CGPA-based credit limits to match bylaws                                                         
+  ◼ Validate and fix frontend alignment with backend APIs                                                
+  ◻ Validate specialization courses against db-extracted                                                 
+  ◻ Final production hardening and comprehensive summary                                                 
+                                                                                   
+─────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯  
+─────
+
