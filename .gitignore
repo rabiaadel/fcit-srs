@@ -11,4 +11,3 @@ prometheus_data/
 grafana_data/
 *.local
 ./db-extracted/
-sdcm.txt
