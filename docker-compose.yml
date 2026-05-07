@@ -1,15 +1,26 @@
 version: '3.9'
 
+# =============================================================================
+# FCIT SRS — Docker Compose
+# [DC1-FIX] prometheus no longer depends on backend health — it retries scraping
+# [P3-FIX]  grafana dashboard volume now maps to correct /etc/grafana/dashboards
+# [P4-FIX]  datasource uid is stable via provisioned prometheus.yml
+# [DC2-FIX] Grafana provisioning includes both datasource + dashboard dirs
+# =============================================================================
+
 services:
 
+  # ── Database ─────────────────────────────────────────────────────────────────
   postgres:
-    image: postgres:16.3-alpine3.20
+    image: postgres:16-alpine
     container_name: fcit-srs-postgres
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       POSTGRES_DB: ${DB_NAME:-student_registration_system}
       PGDATA: /var/lib/postgresql/data/pgdata
+      # [C9-FIX] Set locale to prevent "locale: not found" warnings
+      POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
@@ -22,18 +33,20 @@ services:
     networks:
       - fcit-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-student_registration_system} -q"]
+      # [C2-FIX] start_period MUST account for all 5 SQL init files running
+      # 003_complete_curriculum.sql alone can take 30-60s on first run
+      # We also check the TARGET database (not just postgres default) is ready
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-student_registration_system} -q && psql -U ${DB_USER:-postgres} -d ${DB_NAME:-student_registration_system} -c 'SELECT 1 FROM users LIMIT 1' -q >/dev/null 2>&1"]
       interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 40s
+      timeout: 8s
+      retries: 15
+      start_period: 120s   # [C2-FIX] Allow full seed run before declaring healthy
     restart: unless-stopped
     logging:
       driver: "json-file"
-      options:
-        max-size: "20m"
-        max-file: "5"
+      options: { max-size: "20m", max-file: "5" }
 
+  # ── Backend ───────────────────────────────────────────────────────────────────
   backend:
     image: fcit-srs-backend:1.0.0
     container_name: fcit-srs-backend
@@ -55,6 +68,7 @@ services:
       API_RATE_LIMIT: ${API_RATE_LIMIT:-200}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3002,http://localhost:8080,http://127.0.0.1:3002}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      METRICS_TOKEN: ${METRICS_TOKEN:-}   # Optional: secure metrics endpoint externally
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     depends_on:
@@ -70,14 +84,13 @@ services:
       interval: 20s
       timeout: 8s
       retries: 5
-      start_period: 90s
+      start_period: 60s   # Backend starts fast once DB is healthy (setup.js is idempotent)
     restart: unless-stopped
     logging:
       driver: "json-file"
-      options:
-        max-size: "20m"
-        max-file: "5"
+      options: { max-size: "20m", max-file: "5" }
 
+  # ── Frontend ──────────────────────────────────────────────────────────────────
   frontend:
     image: fcit-srs-frontend:1.0.0
     container_name: fcit-srs-frontend
@@ -102,12 +115,16 @@ services:
     restart: unless-stopped
     logging:
       driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      options: { max-size: "10m", max-file: "3" }
 
+  # ── Prometheus ────────────────────────────────────────────────────────────────
+  # [DC1-FIX] Removed depends_on backend:service_healthy
+  # Reason: Prometheus should start independently and retry scraping.
+  # If backend isn't ready, Prometheus marks it as DOWN and keeps trying.
+  # Making prometheus wait on backend health means prometheus never starts
+  # if backend takes 90+ seconds to initialize.
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.51.0
     container_name: fcit-srs-prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -115,14 +132,14 @@ services:
       - '--storage.tsdb.retention.time=30d'
       - '--storage.tsdb.retention.size=2GB'
       - '--web.enable-lifecycle'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--log.level=warn'
     volumes:
       - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
-    depends_on:
-      backend:
-        condition: service_healthy
     networks:
       - fcit-network
     healthcheck:
@@ -134,12 +151,14 @@ services:
     restart: unless-stopped
     logging:
       driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      options: { max-size: "10m", max-file: "3" }
 
+  # ── Grafana ───────────────────────────────────────────────────────────────────
+  # [P3-FIX] Dashboard JSON files are now provisioned via volume mount to /etc/grafana/dashboards
+  # [P4-FIX] Datasource has stable uid via provisioning config
+  # [DC2-FIX] Two separate volumes: one for provisioning config, one for dashboard JSON
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.4.2
     container_name: fcit-srs-grafana
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
@@ -148,9 +167,13 @@ services:
       GF_ANALYTICS_REPORTING_ENABLED: "false"
       GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
       GF_LOG_LEVEL: "warn"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/etc/grafana/dashboards/fcit-srs-overview.json"
+      GF_SERVER_ROOT_URL: "http://localhost:3050"
     volumes:
       - grafana_data:/var/lib/grafana
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      # [P3-FIX] Dashboard JSON files mounted to the path referenced in dashboards.yml
+      - ./docker/grafana/dashboards:/etc/grafana/dashboards:ro
     ports:
       - "3050:3000"
     depends_on:
@@ -167,10 +190,9 @@ services:
     restart: unless-stopped
     logging:
       driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      options: { max-size: "10m", max-file: "3" }
 
+# ── Networks ──────────────────────────────────────────────────────────────────
 networks:
   fcit-network:
     driver: bridge
@@ -181,6 +203,7 @@ networks:
         - subnet: 172.30.0.0/24
           gateway: 172.30.0.1
 
+# ── Volumes ───────────────────────────────────────────────────────────────────
 volumes:
   postgres_data:
     driver: local

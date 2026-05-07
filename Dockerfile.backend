@@ -18,7 +18,7 @@ ENV NODE_ENV=production \
     NODE_OPTIONS="--max-old-space-size=512" \
     PORT=3000
 
-RUN apk add --no-cache netcat-openbsd bash curl
+RUN apk add --no-cache netcat-openbsd bash curl postgresql-client
 
 WORKDIR /app
 

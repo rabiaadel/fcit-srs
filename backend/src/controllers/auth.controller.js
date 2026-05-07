@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const { query, withTransaction } = require('../config/database');
 const { generateTokens, verifyRefreshToken } = require('../middleware/auth');
 const logger = require('../utils/logger');
+const { recordLogin } = require('../middleware/metrics');
 
 const login = async (req, res, next) => {
   try {
@@ -19,11 +20,13 @@ const login = async (req, res, next) => {
 
     if (!user) {
       await bcrypt.compare(password, '$2b$10$W2hZVsJqkGqLAHlzdb.sa.Ar7CqOq.wIBCTKPjZfg2mnRdI.8vD26');
+      recordLogin('failure', 'unknown');
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
+      recordLogin('failure', user.role);
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
@@ -55,6 +58,7 @@ const login = async (req, res, next) => {
     }
 
     logger.info('User logged in', { userId: user.id, role: user.role });
+    recordLogin('success', user.role);
 
     return res.json({
       success: true,

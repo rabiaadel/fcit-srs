@@ -268,3 +268,59 @@ JOIN (
     GROUP BY e2.student_id, e2.semester_id
 ) sub ON sub.student_id = e.student_id AND sub.semester_id = sem.id
 GROUP BY sem.id, sem.label, sem.semester_type;
+
+-- =============================================================================
+-- ADMIN OVERRIDE SUPPORT  [C7-FIX]
+-- Adds columns to enrollments for tracking admin-forced registrations
+-- Uses ALTER TABLE ... IF NOT EXISTS to be safely idempotent
+-- =============================================================================
+
+ALTER TABLE enrollments
+  ADD COLUMN IF NOT EXISTS admin_override        BOOLEAN DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS admin_override_reason TEXT,
+  ADD COLUMN IF NOT EXISTS admin_override_by     UUID REFERENCES users(id);
+
+CREATE INDEX IF NOT EXISTS idx_enrollments_admin_override
+  ON enrollments(admin_override) WHERE admin_override = TRUE;
+
+-- =============================================================================
+-- COURSE LEVEL VALIDATION FUNCTION
+-- Returns TRUE if student level qualifies for course level
+-- [C5-FIX] Encapsulates level business rule in DB layer
+-- =============================================================================
+CREATE OR REPLACE FUNCTION student_level_to_int(p_level student_level)
+RETURNS INT AS $$
+BEGIN
+  RETURN CASE p_level
+    WHEN 'freshman'  THEN 1
+    WHEN 'sophomore' THEN 2
+    WHEN 'junior'    THEN 3
+    WHEN 'senior'    THEN 4
+    ELSE 0
+  END;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- View: active offerings enriched with registration window status
+-- Used by admin registration status page
+CREATE OR REPLACE VIEW v_registration_status AS
+SELECT
+  sem.id,
+  sem.label,
+  sem.semester_type,
+  sem.status,
+  sem.start_date,
+  sem.end_date,
+  sem.registration_end,
+  sem.add_drop_deadline,
+  ay.year_label,
+  COUNT(DISTINCT co.id)  AS total_offerings,
+  COUNT(DISTINCT e.student_id) FILTER (WHERE e.status = 'registered') AS registered_students,
+  COUNT(e.id) FILTER (WHERE e.status = 'registered') AS total_enrollments,
+  COUNT(e.id) FILTER (WHERE e.admin_override = TRUE) AS admin_override_count
+FROM semesters sem
+JOIN academic_years ay ON ay.id = sem.academic_year_id
+LEFT JOIN course_offerings co ON co.semester_id = sem.id AND co.is_active = TRUE
+LEFT JOIN enrollments e ON e.semester_id = sem.id
+GROUP BY sem.id, ay.year_label
+ORDER BY sem.start_date DESC;

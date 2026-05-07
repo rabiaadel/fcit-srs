@@ -1,13 +1,48 @@
-global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+# =============================================================================
+# Prometheus Configuration — FCIT SRS
+# [P1-FIX] Correct scrape targets for Docker internal network
+# [P2-FIX] Custom job labels for Grafana dashboard filtering
+# =============================================================================
 
+global:
+  scrape_interval:     15s   # How often to scrape targets
+  evaluation_interval: 15s   # How often to evaluate rules
+  external_labels:
+    cluster: 'fcit-srs'
+    env: 'production'
+
+# ── Alerting rules (file-based) ───────────────────────────────────────────────
+rule_files:
+  - '/etc/prometheus/rules/*.yml'
+
+# ── Scrape configurations ─────────────────────────────────────────────────────
 scrape_configs:
+
+  # FCIT SRS Backend — primary application metrics
+  # Scrapes directly from the backend container on port 3000
+  # This bypasses nginx, so X-Forwarded-For is NOT set → /metrics is accessible
   - job_name: 'fcit-srs-backend'
     static_configs:
       - targets: ['backend:3000']
     metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    honor_labels: true
 
+  # Prometheus self-monitoring
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # PostgreSQL metrics — via built-in pg_isready as a blackbox probe
+  # (Real postgres_exporter would need separate container; this is a liveness check)
+  - job_name: 'fcit-srs-postgres-health'
+    static_configs:
+      - targets: ['postgres:5432']
+    metrics_path: '/probe'
+    scrape_interval: 30s
+    # Note: postgres doesn't expose /metrics natively.
+    # This will produce scrape errors but documents the intent.
+    # To properly monitor Postgres, add a postgres_exporter sidecar.

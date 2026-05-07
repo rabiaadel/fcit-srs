@@ -1,0 +1,356 @@
+{
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "10.0.0" },
+    { "type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "1.0.0" },
+    { "type": "panel", "id": "stat", "name": "Stat" },
+    { "type": "panel", "id": "timeseries", "name": "Time series" },
+    { "type": "panel", "id": "gauge", "name": "Gauge" },
+    { "type": "panel", "id": "barchart", "name": "Bar chart" },
+    { "type": "panel", "id": "table", "name": "Table" }
+  ],
+  "uid": "fcit-srs-overview",
+  "title": "FCIT SRS — System Overview",
+  "description": "Production monitoring dashboard for FCIT Student Registration System",
+  "tags": ["fcit", "srs", "production"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "interval",
+        "type": "interval",
+        "label": "Interval",
+        "current": { "value": "1m" },
+        "options": [
+          { "text": "30s", "value": "30s" },
+          { "text": "1m",  "value": "1m" },
+          { "text": "5m",  "value": "5m" },
+          { "text": "10m", "value": "10m" }
+        ]
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Backend Status",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "uid": "prometheus" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "auto",
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } }, "type": "value" }
+          ]
+        }
+      },
+      "targets": [
+        {
+          "expr": "up{job=\"fcit-srs-backend\"}",
+          "legendFormat": "Backend",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Request Rate (req/s)",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "uid": "prometheus" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 50 },
+              { "color": "red", "value": 200 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(fcit_srs_http_requests_total[2m]))",
+          "legendFormat": "Total req/s",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Error Rate",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "uid": "prometheus" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.01 },
+              { "color": "red", "value": 0.05 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(fcit_srs_http_requests_total{status_code=~\"5..\"}[2m])) / sum(rate(fcit_srs_http_requests_total[2m]))",
+          "legendFormat": "Error %",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "P95 Latency",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "uid": "prometheus" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.5 },
+              { "color": "red", "value": 1.0 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(fcit_srs_http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "DB Connections",
+      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "uid": "prometheus" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value",
+        "graphMode": "area"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 15 },
+              { "color": "red", "value": 19 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "fcit_srs_db_pool_active_connections",
+          "legendFormat": "Active",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Memory (RSS)",
+      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "datasource": { "uid": "prometheus" },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "area" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 300000000 },
+              { "color": "red", "value": 480000000 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "fcit_srs_nodejs_external_memory_bytes + fcit_srs_process_resident_memory_bytes",
+          "legendFormat": "RSS",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "HTTP Request Rate by Status Class",
+      "description": "2xx = success, 4xx = client errors, 5xx = server errors",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "uid": "prometheus" },
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "5xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "#F2495C", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "4xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "2xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }] }
+        ]
+      },
+      "targets": [
+        { "expr": "sum(rate(fcit_srs_http_requests_total{status_code=~\"2..\"}[2m]))", "legendFormat": "2xx", "refId": "A" },
+        { "expr": "sum(rate(fcit_srs_http_requests_total{status_code=~\"4..\"}[2m]))", "legendFormat": "4xx", "refId": "B" },
+        { "expr": "sum(rate(fcit_srs_http_requests_total{status_code=~\"5..\"}[2m]))", "legendFormat": "5xx", "refId": "C" }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Request Latency Percentiles",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "uid": "prometheus" },
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "fieldConfig": {
+        "defaults": { "unit": "s", "custom": { "lineWidth": 2 } }
+      },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(fcit_srs_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p50", "refId": "A" },
+        { "expr": "histogram_quantile(0.90, sum(rate(fcit_srs_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p90", "refId": "B" },
+        { "expr": "histogram_quantile(0.95, sum(rate(fcit_srs_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p95", "refId": "C" },
+        { "expr": "histogram_quantile(0.99, sum(rate(fcit_srs_http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p99", "refId": "D" }
+      ]
+    },
+    {
+      "id": 20,
+      "type": "timeseries",
+      "title": "Login Attempts",
+      "gridPos": { "x": 0, "y": 12, "w": 8, "h": 6 },
+      "datasource": { "uid": "prometheus" },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "lineWidth": 2 } } },
+      "targets": [
+        { "expr": "rate(fcit_srs_login_attempts_total{result=\"success\"}[5m]) * 60", "legendFormat": "Success / min", "refId": "A" },
+        { "expr": "rate(fcit_srs_login_attempts_total{result=\"failure\"}[5m]) * 60", "legendFormat": "Failed / min", "refId": "B" }
+      ]
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "Course Enrollment Operations",
+      "gridPos": { "x": 8, "y": 12, "w": 8, "h": 6 },
+      "datasource": { "uid": "prometheus" },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [
+        { "expr": "rate(fcit_srs_enrollment_operations_total{operation=\"register\",result=\"success\"}[5m]) * 300", "legendFormat": "Registrations / 5m", "refId": "A" },
+        { "expr": "rate(fcit_srs_enrollment_operations_total{operation=\"drop\",result=\"success\"}[5m]) * 300", "legendFormat": "Drops / 5m", "refId": "B" },
+        { "expr": "rate(fcit_srs_enrollment_operations_total[5m]) * 300", "legendFormat": "Total / 5m", "refId": "C" }
+      ]
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "Grade Entry Operations",
+      "gridPos": { "x": 16, "y": 12, "w": 8, "h": 6 },
+      "datasource": { "uid": "prometheus" },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "fieldConfig": { "defaults": { "unit": "short" } },
+      "targets": [
+        { "expr": "rate(fcit_srs_grade_entries_total{result=\"success\"}[5m]) * 300", "legendFormat": "Saved / 5m", "refId": "A" },
+        { "expr": "rate(fcit_srs_grade_entries_total{result=\"error\"}[5m]) * 300", "legendFormat": "Errors / 5m", "refId": "B" }
+      ]
+    },
+    {
+      "id": 30,
+      "type": "timeseries",
+      "title": "Node.js Memory Usage",
+      "gridPos": { "x": 0, "y": 18, "w": 12, "h": 6 },
+      "datasource": { "uid": "prometheus" },
+      "options": { "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right" } },
+      "fieldConfig": { "defaults": { "unit": "bytes" } },
+      "targets": [
+        { "expr": "fcit_srs_nodejs_heap_size_used_bytes", "legendFormat": "Heap Used", "refId": "A" },
+        { "expr": "fcit_srs_nodejs_heap_size_total_bytes", "legendFormat": "Heap Total", "refId": "B" },
+        { "expr": "fcit_srs_process_resident_memory_bytes", "legendFormat": "RSS", "refId": "C" }
+      ]
+    },
+    {
+      "id": 31,
+      "type": "timeseries",
+      "title": "Database Pool",
+      "gridPos": { "x": 12, "y": 18, "w": 12, "h": 6 },
+      "datasource": { "uid": "prometheus" },
+      "options": { "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right" } },
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Active" }, "properties": [{ "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }] }
+        ]
+      },
+      "targets": [
+        { "expr": "fcit_srs_db_pool_active_connections", "legendFormat": "Active", "refId": "A" },
+        { "expr": "fcit_srs_db_pool_idle_connections", "legendFormat": "Idle", "refId": "B" }
+      ]
+    },
+    {
+      "id": 40,
+      "type": "timeseries",
+      "title": "Top API Routes by Request Count",
+      "gridPos": { "x": 0, "y": 24, "w": 24, "h": 7 },
+      "datasource": { "uid": "prometheus" },
+      "options": {
+        "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "right", "sortBy": "sum", "sortDesc": true }
+      },
+      "fieldConfig": { "defaults": { "unit": "reqps" } },
+      "targets": [
+        { "expr": "topk(10, sum by(route, method)(rate(fcit_srs_http_requests_total[5m])))", "legendFormat": "{{method}} {{route}}", "refId": "A" }
+      ]
+    }
+  ]
+}

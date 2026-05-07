@@ -1,13 +1,143 @@
-node_modules/
+# ═══════════════════════════════════════════════════════════════════
+# FCIT SRS — Optimized .gitignore
+# Last updated: 2026-05-07
+# ═══════════════════════════════════════════════════════════════════
+
+# ───────────────────────────────────────────────────────────────────
+# ENVIRONMENT & SECRETS  (never commit these)
+# ───────────────────────────────────────────────────────────────────
 .env
-*.log
-logs/
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+.secret
+
+# ───────────────────────────────────────────────────────────────────
+# NODE.JS
+# ───────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.yarn/
+.npm/
+package-lock.json.bak
+
+# ───────────────────────────────────────────────────────────────────
+# FRONTEND — React / CRA build artifacts
+# ───────────────────────────────────────────────────────────────────
+frontend/build/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/dist/
+
+# ───────────────────────────────────────────────────────────────────
+# BACKEND — runtime artifacts
+# ───────────────────────────────────────────────────────────────────
 backend/logs/
-dist/
-build/
-.DS_Store
+backend/dist/
+backend/coverage/
+backend/.nyc_output/
+*.pid
+*.seed
+
+# ───────────────────────────────────────────────────────────────────
+# LOGS  (all sources)
+# ───────────────────────────────────────────────────────────────────
+logs/
+*.log
+*.log.*
+log/
+
+# ───────────────────────────────────────────────────────────────────
+# DOCKER — local volumes & override files
+# ───────────────────────────────────────────────────────────────────
 postgres_data/
 prometheus_data/
 grafana_data/
+backend_logs/
+docker-compose.override.yml
+docker-compose.local.yml
+.docker/
+
+# ───────────────────────────────────────────────────────────────────
+# DB-EXTRACTED — large binary files only
+# (JSON/TXT bylaw files ARE tracked — they are the source of truth)
+# ───────────────────────────────────────────────────────────────────
+db-extracted/bylaw-2024.pdf
+FCIT_SRS_SDLC_Documentation_v2.pdf
+
+# ───────────────────────────────────────────────────────────────────
+# OTHER LARGE PDFs
+# ───────────────────────────────────────────────────────────────────
+*.pdf
+
+# ───────────────────────────────────────────────────────────────────
+# OPERATING SYSTEM
+# ───────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ───────────────────────────────────────────────────────────────────
+# EDITORS & IDEs
+# ───────────────────────────────────────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.history/
+*.sublime-project
+*.sublime-workspace
+
+# ───────────────────────────────────────────────────────────────────
+# TESTING & COVERAGE
+# ───────────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+
+# ───────────────────────────────────────────────────────────────────
+# MISCELLANEOUS
+# ───────────────────────────────────────────────────────────────────
 *.local
-./db-extracted/
+*.bak
+*.orig
+*.tmp
+*.temp
+tmp/
+temp/
+.cache/
+
+# ───────────────────────────────────────────────────────────────────
+# INTENTIONALLY TRACKED (reference guide)
+# ───────────────────────────────────────────────────────────────────
+# frontend/src/              React source
+# frontend/public/           static assets
+# frontend/package.json      dependency manifest
+# backend/src/               Express source
+# backend/package.json       dependency manifest
+# database/schema.sql        full DDL
+# database/enhancements.sql  views + functions
+# database/seeds/            all seed files
+# docker/                    nginx, prometheus, grafana config
+# docker-compose.yml         orchestration
+# Dockerfile.*               all build definitions
+# db-extracted/*.json        bylaw JSON (source of truth)
+# db-extracted/*.txt         extracted bylaw text
+# .claude.md                 AI session tracking
+# README.md                  project documentation

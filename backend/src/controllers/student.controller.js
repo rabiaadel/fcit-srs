@@ -75,6 +75,11 @@ const getDashboard = async (req, res, next) => {
 };
 
 // ── Get available courses for registration ───────────────────────────────────
+// [C5-FIX] Now filters courses by student level AND semester registration state
+// Students ONLY see courses at or below their academic level.
+// The level mapping: freshman=1, sophomore=2, junior=3, senior=4
+const LEVEL_MAP = { freshman: 1, sophomore: 2, junior: 3, senior: 4 };
+
 const getAvailableCourses = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -83,13 +88,26 @@ const getAvailableCourses = async (req, res, next) => {
     const student = (await query('SELECT * FROM students WHERE user_id = $1', [userId])).rows[0];
     if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
 
-    // Get all offerings for the semester
+    // [C5-FIX] Determine numeric level for this student
+    const studentLevelNum = LEVEL_MAP[student.current_level] || 1;
+
+    // [C8-FIX] Verify registration is actually open for this semester
+    const semester = (await query('SELECT * FROM semesters WHERE id = $1', [semesterId])).rows[0];
+    if (!semester) return res.status(404).json({ success: false, message: 'Semester not found' });
+
+    const registrationOpen = semester.status === 'registration';
+    const addDropOpen = semester.status === 'active' && new Date() <= new Date(semester.add_drop_deadline);
+    const canRegisterNew = registrationOpen; // Only during registration window
+    const canDropAdd = addDropOpen;          // Only within add/drop window
+
+    // Get all offerings for the semester, filtering by student's level
     const offerings = await query(
       `SELECT co.id as offering_id, co.section, co.capacity, co.enrolled_count, co.schedule, co.room,
-              c.id as course_id, c.code, c.name_ar, c.name_en, c.credits, c.category, c.level, c.is_mandatory,
+              c.id as course_id, c.code, c.name_ar, c.name_en, c.credits, c.category,
+              c.level as course_level, c.is_mandatory,
               u.full_name_en as doctor_name,
               dep.code as department_code,
-              -- check if already registered
+              -- Check if already registered
               CASE WHEN e.id IS NOT NULL THEN TRUE ELSE FALSE END as already_registered,
               e.id as enrollment_id,
               e.status as enrollment_status
@@ -100,21 +118,56 @@ const getAvailableCourses = async (req, res, next) => {
        LEFT JOIN departments dep ON dep.id = c.department_id
        LEFT JOIN enrollments e ON e.offering_id = co.id AND e.student_id = $1
          AND e.status IN ('registered','completed')
-       WHERE co.semester_id = $2 AND co.is_active = TRUE AND c.is_active = TRUE
+       WHERE co.semester_id = $2
+         AND co.is_active = TRUE
+         AND c.is_active = TRUE
+         -- [C5-FIX] LEVEL FILTER: students only see courses up to their level
+         -- A sophomore (level 2) can see level 1 and 2 courses.
+         -- A freshman cannot see level 3 or 4 courses.
+         AND c.level <= $3
+         -- Also filter by specialization: show general courses + student's specialization courses
+         AND (c.department_id IS NULL
+              OR dep.code = $4::text
+              OR dep.code IS NULL)
        ORDER BY c.level, c.code`,
-      [student.id, semesterId]
+      [student.id, semesterId, studentLevelNum, student.specialization || 'CS']
     );
 
-    // For each offering, check if student meets prerequisites
+    // For each offering, check if student meets prerequisites and registration window
     const enriched = await Promise.all(offerings.rows.map(async (o) => {
-      if (!o.already_registered) {
-        const check = await bylawService.canStudentRegisterCourse(student.id, o.course_id, semesterId);
-        return { ...o, can_register: check.allowed, register_block_reason: check.reason };
+      if (o.already_registered) {
+        return { ...o, can_register: false, register_block_reason: 'Already registered' };
       }
-      return { ...o, can_register: false, register_block_reason: 'Already registered' };
+
+      // [C8-FIX] Block registration outside of open windows
+      if (!canRegisterNew && !canDropAdd) {
+        return {
+          ...o,
+          can_register: false,
+          register_block_reason: `Registration is closed. Current semester status: ${semester.status}`
+        };
+      }
+
+      const check = await bylawService.canStudentRegisterCourse(student.id, o.course_id, semesterId);
+      return {
+        ...o,
+        can_register: check.allowed,
+        register_block_reason: check.reason,
+        registration_window_open: canRegisterNew || canDropAdd,
+      };
     }));
 
-    return res.json({ success: true, data: enriched });
+    return res.json({
+      success: true,
+      data: enriched,
+      meta: {
+        semester_status: semester.status,
+        registration_open: canRegisterNew,
+        add_drop_open: canDropAdd,
+        student_level: student.current_level,
+        student_level_num: studentLevelNum,
+      }
+    });
   } catch (err) { next(err); }
 };
 
