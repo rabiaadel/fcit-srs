@@ -137,7 +137,7 @@ temp/
 # docker/                    nginx, prometheus, grafana config
 # docker-compose.yml         orchestration
 # Dockerfile.*               all build definitions
-# db-extracted/*.json        bylaw JSON (source of truth)
-# db-extracted/*.txt         extracted bylaw text
-# .claude.md                 AI session tracking
-# README.md                  project documentation
+db-extracted/*.json        bylaw JSON (source of truth)
+db-extracted/*.txt         extracted bylaw text
+.claude.md                 AI session tracking
+README.md                  project documentation
