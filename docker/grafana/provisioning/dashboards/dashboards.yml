@@ -1,18 +1,12 @@
-# =============================================================================
-# Grafana Dashboard Provisioning
-# [P3-FIX] Correct path that matches the Docker volume mount
-# =============================================================================
-
 apiVersion: 1
 
 providers:
-  - name: 'FCIT SRS Dashboards'
-    orgId: 1
-    folder: 'FCIT SRS'
-    folderUid: 'fcit-srs'
-    type: file
+  - name:    'FCIT SRS Dashboards'
+    orgId:   1
+    type:    file
     disableDeletion: false
-    allowUiUpdates: true
     updateIntervalSeconds: 30
+    allowUiUpdates: true
     options:
-      path: /etc/grafana/dashboards     # [P3-FIX] Must match volume mount in docker-compose
+      path:            /etc/grafana/dashboards
+      foldersFromFilesStructure: false

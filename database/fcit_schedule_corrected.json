@@ -1,0 +1,318 @@
+{
+  "source": "info.pdf — FCIT Tanta University Schedule",
+  "generated": "2026-05-27",
+  "corrections_applied": [
+    {
+      "id": "FIX-001",
+      "severity": "CRITICAL",
+      "description": "IT317 (Advanced Computer Networks) was assigned to Dr. Marian Wagdy — corrected to IT212 (Computer Network Technology). The duplicate IT317 entry for Dr. Marian is removed; IT317 belongs exclusively to Dr. Tahani Alam in Y3-IT-T2."
+    }
+  ],
+  "issues_flagged": [
+    {
+      "id": "ISSUE-002",
+      "severity": "HIGH",
+      "year": 3, "dept": "CS", "term": 1,
+      "description": "SCHEDULING CONFLICT: Both IT311 (Computer Graphics) and CS313 (Artificial Intelligence) are assigned to Dr. Ahmed Salim on Sunday 7:00–9:00 Online. One must be moved.",
+      "courses": ["IT311", "CS313"],
+      "instructor": "Dr. Ahmed Salim",
+      "day": "Sunday", "time": "7:00-9:00"
+    },
+    {
+      "id": "ISSUE-003",
+      "severity": "MEDIUM",
+      "year": 4, "dept": "IT", "term": 1,
+      "description": "UNMATCHED COURSE: 'المتحكمات الدقيقة' taught by Dr. Tahani Alam does not match any course code in the IT bylaw. Closest match: IT315 (Microprocessors) — but that is a Year-3 mandatory already in the schedule. Needs clarification.",
+      "instructor": "Dr. Tahani Alam",
+      "day": "Saturday", "time": "11:00-01:00"
+    },
+    {
+      "id": "ISSUE-004",
+      "severity": "MEDIUM",
+      "year": 4, "dept": "IT", "term": 1,
+      "description": "UNMATCHED COURSE: 'الواقع الافتراضي' (Virtual Reality) taught by Dr. Marian Wagdy does not exist in the IT bylaw (mandatory or elective). Possible intent: IT341 (Computer Animation) or IT342 (Advanced Computer Graphics). Needs correction.",
+      "instructor": "Dr. Marian Wagdy",
+      "day": "Tuesday", "time": "9:00-11:00"
+    },
+    {
+      "id": "ISSUE-005",
+      "severity": "MEDIUM",
+      "year": 4, "dept": "IT", "term": 2,
+      "description": "UNMATCHED COURSE: 'معالجة الاشارات الرقمية' (Digital Signal Processing) taught by Dr. Marwa Salama does not exist in the IT bylaw. Closest matches: IT314 (Signals and Systems, prereq) or IT316 (Image Processing). Needs clarification.",
+      "instructor": "Dr. Marwa Salama",
+      "day": "Tuesday", "time": "9:00-11:00"
+    },
+    {
+      "id": "ISSUE-006",
+      "severity": "MEDIUM",
+      "year": 4, "dept": "CS", "term": 1,
+      "description": "UNMATCHED COURSE: 'مفاهيم لغات الحاسب' taught by Dr. Hanaa Abd Al-Hadi does not match any CS bylaw course name. CS416 is 'المترجمات' (Compilers). Possible rename error or wrong code mapping.",
+      "instructor": "Dr. Hanaa Abd Al-Hadi",
+      "day": "Wednesday", "time": "7:00-9:00"
+    },
+    {
+      "id": "ISSUE-007",
+      "severity": "MEDIUM",
+      "year": 4, "dept": "IS", "term": 2,
+      "description": "UNMATCHED COURSE: 'ادارة ونمذجة البيانات الكبيرة' taught by Dr. Ibrahim Gad does not exist in IS bylaw. Possible intent: IS316 (Data Analytics and Management) which is already scheduled for Y3-IS-T2. Needs clarification.",
+      "instructor": "Dr. Ibrahim Gad",
+      "day": "Sunday", "time": "7:00-9:00"
+    },
+    {
+      "id": "ISSUE-008",
+      "severity": "MEDIUM",
+      "year": 4, "dept": "IS", "term": 2,
+      "description": "UNMATCHED COURSE: 'هيكليات خدمة التوجه' (Service-Oriented Architecture) taught by Assoc. Prof. Meiman Manqri does not exist in IS bylaw by that name. Closest: IS415 (IS Development Methodologies). Needs clarification.",
+      "instructor": "Assoc. Prof. Meiman Manqri",
+      "day": "Monday", "time": "11:00-01:00"
+    },
+    {
+      "id": "ISSUE-009",
+      "severity": "LOW",
+      "year": 3, "dept": "IT", "term": 2,
+      "description": "DUPLICATE LISTING: IT319 (Digital Multimedia) also appears in Y4-IT-T2 with the same instructor (Dr. Marian Wagdy). If these are two separate sections for different years that is acceptable — confirm intentional.",
+      "course": "IT319",
+      "instructor": "Dr. Marian Wagdy"
+    },
+    {
+      "id": "ISSUE-010",
+      "severity": "LOW",
+      "year": 3, "dept": "IS", "term": 2,
+      "description": "DUPLICATE LISTING: IS321 (Selected Topics in Data Engineering) also appears in Y4-IS-T2 with the same instructor (Dr. Hani Al-Ghayish). Confirm intentional multi-year offering.",
+      "course": "IS321",
+      "instructor": "Dr. Hani Al-Ghayish"
+    },
+    {
+      "id": "ISSUE-011",
+      "severity": "LOW",
+      "year": 3, "dept": "IS", "term": 1,
+      "description": "POTENTIAL CONFLICT: IS313 (File Management) and IS311 (Analysis and Design of IS) are both listed for الأحد 11:00-01:00 in Y3-IS-T1, taught by different instructors in different rooms. Students may only attend one — confirm these are separate sections or for separate sub-groups.",
+      "courses": ["IS313", "IS311"],
+      "day": "Sunday", "time": "11:00-01:00"
+    }
+  ],
+
+  "instructors": [
+    { "id": "DR001", "name_ar": "د. أحمد سليم",            "name_en": "Dr. Ahmed Salim" },
+    { "id": "DR002", "name_ar": "د. ماريان وجدي",          "name_en": "Dr. Marian Wagdy" },
+    { "id": "DR003", "name_ar": "د. تهاني علام",            "name_en": "Dr. Tahani Alam" },
+    { "id": "DR004", "name_ar": "أ.م.د. مايدة",             "name_en": "Assoc. Prof. Dr. Mayda" },
+    { "id": "DR005", "name_ar": "د. وليد عبد الخالق",       "name_en": "Dr. Walid Abd Al-Khaliq" },
+    { "id": "DR006", "name_ar": "د. شيماء هجرس",           "name_en": "Dr. Shaimaa Hagras" },
+    { "id": "DR007", "name_ar": "د. هاني الغايش",           "name_en": "Dr. Hani Al-Ghayish" },
+    { "id": "DR008", "name_ar": "أ.م.د. مسامة / مسامه",     "name_en": "Assoc. Prof. Dr. Masama [OCR unclear]" },
+    { "id": "DR009", "name_ar": "د. إبراهيم جاد",           "name_en": "Dr. Ibrahim Gad" },
+    { "id": "DR010", "name_ar": "د. مروة سلامه",            "name_en": "Dr. Marwa Salama" },
+    { "id": "DR011", "name_ar": "أ.م.د. ميمان مانقري",      "name_en": "Assoc. Prof. Meiman Manqri" },
+    { "id": "DR012", "name_ar": "أ.م.د. منية / ممنية نيةربري","name_en": "Assoc. Prof. Dr. Monia [OCR unclear]" },
+    { "id": "DR013", "name_ar": "د. هناء عبد الهادي",       "name_en": "Dr. Hanaa Abd Al-Hadi" },
+    { "id": "DR014", "name_ar": "د. هناء عيسى",             "name_en": "Dr. Hanaa Issa" },
+    { "id": "DR015", "name_ar": "أ.د. نانسي الحفناوي",      "name_en": "Prof. Dr. Nancy Al-Hafnawi" },
+    { "id": "DR016", "name_ar": "د. مصطفى العشري",          "name_en": "Dr. Mostafa Al-Ashri" },
+    { "id": "DR017", "name_ar": "د. وليد سمير",              "name_en": "Dr. Walid Samir" },
+    { "id": "DR018", "name_ar": "د. أروه أبو الوفا",         "name_en": "Dr. Arwa Abu Al-Wafa" },
+    { "id": "DR019", "name_ar": "د. أروه عصام",              "name_en": "Dr. Arwa Essam" }
+  ],
+
+  "schedule": {
+
+    "year_1": {
+      "term_1": [
+        { "course_code": "BS112",  "course_name_ar": "رياضيات متقطعة",        "instructor_id": "DR004", "location": "المدرج المركزي العلوي", "day": "السبت",    "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "CS111",  "course_name_ar": "أساسيات علوم الحاسب",   "instructor_id": "DR008", "location": "Online",                "day": "الأحد",    "time": "11:00-01:00", "mode": "online" },
+        { "course_code": "IS111",  "course_name_ar": "مقدمة في نظم المعلومات","instructor_id": "DR012", "location": "Online",                "day": "الأحد",    "time": "7:00-9:00",   "mode": "online" },
+        { "course_code": "BS111",  "course_name_ar": "رياضيات 1",              "instructor_id": "DR015", "location": "Online",                "day": "الاثنين",  "time": "11:00-01:00", "mode": "online" },
+        { "course_code": "BS116",  "course_name_ar": "احصاء واحتمالات 1",     "instructor_id": "DR006", "location": "المدرج المركزي العلوي", "day": "الاثنين",  "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "UNV113", "course_name_ar": "لغة إنجليزية 1",        "instructor_id": "DR017", "location": "Online",                "day": "الاثنين",  "time": "01:00-03:00", "mode": "online" }
+      ],
+      "term_2": [
+        { "course_code": "BS115",  "course_name_ar": "إلكترونيات",             "instructor_id": "DR004", "location": "Online",                "day": "السبت",    "time": "07:00-09:00", "mode": "online",     "section": "A" },
+        { "course_code": "UNV120", "course_name_ar": "تسويق ومبيعات",         "instructor_id": "DR001", "location": "Online",                "day": "السبت",    "time": "11:00-01:00", "mode": "online" },
+        { "course_code": "BS113",  "course_name_ar": "رياضيات 2",              "instructor_id": "DR016", "location": "المدرج المركزي العلوي", "day": "الأحد",    "time": "11:00-01:00", "mode": "in-person" },
+        { "course_code": "BS115",  "course_name_ar": "إلكترونيات",             "instructor_id": "DR015", "location": "المدرج المركزي العلوي", "day": "الاثنين",  "time": "9:00-11:00",  "mode": "in-person",  "section": "B" },
+        { "course_code": "UNV114", "course_name_ar": "مهارات الاتصال",        "instructor_id": "DR018", "location": "Online",                "day": "الثلاثاء", "time": "07:00-09:00", "mode": "online" },
+        { "course_code": "UNV111", "course_name_ar": "كتابة التقارير الفنية", "instructor_id": "DR006", "location": "Online",                "day": "الأربعاء", "time": "07:00-09:00", "mode": "online" },
+        { "course_code": "CS112",  "course_name_ar": "برمجة هيكلية",          "instructor_id": "DR008", "location": "المدرج المركزي العلوي", "day": "الأربعاء", "time": "11:00-01:00", "mode": "in-person" }
+      ]
+    },
+
+    "year_2": {
+      "term_1": [
+        { "course_code": "BS114",  "course_name_ar": "رياضيات 3",              "instructor_id": "DR013", "location": "Online",                "day": "السبت",    "time": "7:00-9:00",   "mode": "online" },
+        { "course_code": "BS117",  "course_name_ar": "بحوث العمليات",          "instructor_id": "DR015", "location": "Online",                "day": "السبت",    "time": "01:00-03:00", "mode": "online" },
+        { "course_code": "CS211",  "course_name_ar": "برمجة شيئية",            "instructor_id": "DR008", "location": "المدرج المركزي العلوي", "day": "الثلاثاء", "time": "11:00-01:00", "mode": "in-person" },
+        { "course_code": "SE211",  "course_name_ar": "مقدمة في هندسة البرمجيات","instructor_id": "DR018","location": "المدرج المركزي العلوي","day": "الأربعاء", "time": "11:00-01:00", "mode": "in-person" },
+        { "course_code": "CS212",  "course_name_ar": "هياكل البيانات",         "instructor_id": "DR016", "location": "Online",                "day": "الخميس",   "time": "7:00-9:00",   "mode": "online" },
+        { "course_code": "IT211",  "course_name_ar": "تصميم منطقي",            "instructor_id": "DR004", "location": "Online",                "day": "الخميس",   "time": "01:00-03:00", "mode": "online" }
+      ],
+      "term_2": [
+        { "course_code": "IS211",  "course_name_ar": "مقدمة في نظم قواعد البيانات","instructor_id": "DR012","location": "Online","day": "الأحد","time": "07:00-09:00","mode": "online" },
+        { "course_code": "CS214",  "course_name_ar": "نظم التشغيل",            "instructor_id": "DR014", "location": "المدرج المركزي العلوي", "day": "الاثنين",  "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "IT212",  "course_name_ar": "تكنولوجيا شبكات الحاسب","instructor_id": "DR002", "location": "المدرج المركزي العلوي", "day": "الثلاثاء", "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "IS212",  "course_name_ar": "طرق الأمثلية",           "instructor_id": "DR015", "location": "المدرج المركزي العلوي", "day": "الثلاثاء", "time": "11:00-01:00", "mode": "in-person" },
+        { "course_code": "CS213",  "course_name_ar": "تصميم وتحليل الخوارزميات","instructor_id": "DR008","location": "المدرج المركزي العلوي","day": "الخميس","time": "11:00-01:00","mode": "in-person" }
+      ]
+    },
+
+    "year_3_CS": {
+      "term_1": [
+        {
+          "course_code": "IT311", "course_name_ar": "الرسم بالحاسب",
+          "instructor_id": "DR001", "location": "Online", "day": "الأحد", "time": "7:00-9:00", "mode": "online",
+          "issue_ref": "ISSUE-002",
+          "note": "CONFLICT with CS313 — same instructor, same time. One slot must be rescheduled."
+        },
+        {
+          "course_code": "CS313", "course_name_ar": "الذكاء الاصطناعي",
+          "instructor_id": "DR001", "location": "Online", "day": "الأحد", "time": "7:00-9:00", "mode": "online",
+          "issue_ref": "ISSUE-002",
+          "note": "CONFLICT with IT311 — same instructor, same time. One slot must be rescheduled."
+        },
+        { "course_code": "CS311",  "course_name_ar": "أمن الحاسب",              "instructor_id": "DR016", "location": "المدرج المركزي العلوي", "day": "الاثنين",  "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "IS311",  "course_name_ar": "تحليل وتصميم نظم المعلومات","instructor_id": "DR006","location": "المدرج المركزي السفلي","day": "الاثنين","time": "11:00-01:00","mode": "in-person" },
+        { "course_code": "CS312",  "course_name_ar": "تنظيم وبنية الحاسبات",    "instructor_id": "DR005", "location": "Online",                "day": "الأربعاء", "time": "11:00-01:00", "mode": "online" },
+        { "course_code": "CS331",  "course_name_ar": "تفاعل الانسان مع الحاسب", "instructor_id": "DR008", "location": "Online",                "day": "الخميس",   "time": "11:00-01:00", "mode": "online" }
+      ],
+      "term_2": [
+        { "course_code": "CS314",  "course_name_ar": "تعلم الآلة",              "instructor_id": "DR005", "location": "Online",                "day": "السبت",    "time": "11:00-01:00", "mode": "online" },
+        { "course_code": "CS332",  "course_name_ar": "اكتشاف المعرفة",          "instructor_id": "DR001", "location": "Online",                "day": "الأربعاء", "time": "07:00-09:00", "mode": "online" },
+        { "course_code": "CS411",  "course_name_ar": "نظرية الحاسبات",          "instructor_id": "DR016", "location": "المدرج المركزي العلوي", "day": "الأربعاء", "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "SE315",  "course_name_ar": "هندسة البرمجيات متقدم",   "instructor_id": "DR018", "location": "المدرج المركزي العلوي", "day": "الأربعاء", "time": "11:00-01:00", "mode": "in-person" },
+        { "course_code": "CS315",  "course_name_ar": "تحليل البيانات الكبيرة",  "instructor_id": "DR005", "location": "Online",                "day": "الخميس",   "time": "07:00-09:00", "mode": "online" },
+        { "course_code": "CS316",  "course_name_ar": "نظم تشغيل متقدم",         "instructor_id": "DR001", "location": "المدرج المركزي العلوي", "day": "الخميس",   "time": "7:00-9:00",   "mode": "in-person" }
+      ]
+    },
+
+    "year_3_IT": {
+      "term_1": [
+        { "course_code": "IT311",  "course_name_ar": "الرسم بالحاسب",          "instructor_id": "DR001", "location": "Online",                "day": "الأحد",    "time": "11:00-01:00", "mode": "online" },
+        { "course_code": "IT321",  "course_name_ar": "نظم تشغيل الشبكات",      "instructor_id": "DR007", "location": "Online",                "day": "الاثنين",  "time": "TBD",         "mode": "online",     "note": "Time not specified in schedule" },
+        { "course_code": "CS313",  "course_name_ar": "الذكاء الاصطناعي",       "instructor_id": "DR001", "location": "Online",                "day": "الثلاثاء", "time": "11:00-01:00", "mode": "online" },
+        { "course_code": "IT315",  "course_name_ar": "المعالجات الدقيقة",      "instructor_id": "DR003", "location": "Online",                "day": "الأربعاء", "time": "07:00-09:00", "mode": "online" },
+        { "course_code": "IT312",  "course_name_ar": "التعرف على الأنماط",     "instructor_id": "DR002", "location": "Online",                "day": "الخميس",   "time": "07:00-09:00", "mode": "online" },
+        { "course_code": "IT314",  "course_name_ar": "إشارات ونظم",            "instructor_id": "DR004", "location": "مدرج 2",                "day": "الخميس",   "time": "9:00-11:00",  "mode": "in-person" }
+      ],
+      "term_2": [
+        { "course_code": "IT319",  "course_name_ar": "الوسائط المتعددة الرقمية","instructor_id": "DR002", "location": "المدرج المركزي العلوي", "day": "الأحد",    "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "IT322",  "course_name_ar": "تكنولوجيا سلسلة الكتل", "instructor_id": "DR004", "location": "مدرج 3",                "day": "الأحد",    "time": "11:00-01:00", "mode": "in-person" },
+        { "course_code": "IT318",  "course_name_ar": "بنية الحاسبات",          "instructor_id": "DR018", "location": "Online",                "day": "الاثنين",  "time": "11:00-01:00", "mode": "online" },
+        {
+          "course_code": "IT317",  "course_name_ar": "شبكات الحاسب المتقدم",
+          "instructor_id": "DR003", "location": "Online", "day": "الخميس", "time": "07:00-09:00", "mode": "online",
+          "note": "CORRECT assignment: IT317 → Dr. Tahani Alam only. FIX-001 applied."
+        },
+        { "course_code": "IT316",  "course_name_ar": "معالجة الصور",            "instructor_id": "DR002", "location": "Online",                "day": "الخميس",   "time": "03:00-05:00", "mode": "online" }
+      ]
+    },
+
+    "year_3_IS": {
+      "term_1": [
+        { "course_code": "CS315",  "course_name_ar": "تعلم الآلة",              "instructor_id": "DR001", "location": "مدرج 3",                "day": "الأحد",    "time": "9:00-11:00",  "mode": "in-person", "note": "Listed as 'Machine Learning' for IS dept — bylaw maps to CS315 for IS" },
+        {
+          "course_code": "IS313",  "course_name_ar": "إدارة ومعالجة الملفات",
+          "instructor_id": "DR007", "location": "مدرج 3", "day": "الأحد", "time": "11:00-01:00", "mode": "in-person",
+          "issue_ref": "ISSUE-011",
+          "note": "Same time slot as IS311 — confirm separate sub-groups"
+        },
+        {
+          "course_code": "IS311",  "course_name_ar": "تحليل وتصميم نظم المعلومات",
+          "instructor_id": "DR006", "location": "المدرج المركزي السفلي", "day": "الأحد", "time": "11:00-01:00", "mode": "in-person",
+          "issue_ref": "ISSUE-011",
+          "note": "Same time slot as IS313 — confirm separate sub-groups"
+        },
+        { "course_code": "IS312",  "course_name_ar": "نظم إدارة قواعد البيانات","instructor_id": "DR006", "location": "مدرج 1",                "day": "الاثنين",  "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "CS313",  "course_name_ar": "الذكاء الاصطناعي",       "instructor_id": "DR001", "location": "Online",                "day": "الثلاثاء", "time": "07:00-09:00", "mode": "online" },
+        { "course_code": "IS351",  "course_name_ar": "معالجة وتحليل البيانات", "instructor_id": "DR012", "location": "مدرج 2",                "day": "الثلاثاء", "time": "9:00-11:00",  "mode": "in-person", "note": "Mapped to IS351 (Data Processing and Analysis) — elective for IS" }
+      ],
+      "term_2": [
+        { "course_code": "IS315",  "course_name_ar": "مستودع البيانات",         "instructor_id": "DR006", "location": "Online",                "day": "السبت",    "time": "07:00-09:00", "mode": "online" },
+        { "course_code": "IS317",  "course_name_ar": "تطوير نظم المعلومات المستندة إلى الويب","instructor_id": "DR009","location": "Online","day": "الأحد","time": "07:00-09:00","mode": "online" },
+        { "course_code": "IS413",  "course_name_ar": "موضوعات مختارة في نظم المعلومات 1","instructor_id": "DR006","location": "Online","day": "الثلاثاء","time": "07:00-09:00","mode": "online","note": "Listed as 'موضوعات مختارة في علوم البيانات' — mapped to IS413" },
+        { "course_code": "IS318",  "course_name_ar": "نظرية المعلومات وضغط البيانات","instructor_id": "DR012","location": "Online","day": "الثلاثاء","time": "11:00-01:00","mode": "online" },
+        { "course_code": "IS314",  "course_name_ar": "استرجاع المعلومات",        "instructor_id": "DR012", "location": "Online",                "day": "الأربعاء", "time": "07:00-09:00", "mode": "online" },
+        { "course_code": "IS321",  "course_name_ar": "موضوعات مختارة في هندسة البيانات","instructor_id": "DR007","location": "مدرج 3","day": "الخميس","time": "11:00-01:00","mode": "in-person","issue_ref": "ISSUE-010" }
+      ]
+    },
+
+    "year_4_CS": {
+      "term_1": [
+        { "course_code": "CS315",  "course_name_ar": "تحليل بيانات كبيرة",     "instructor_id": "DR005", "location": "المدرج المركزي السفلي", "day": "السبت",    "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "CS443",  "course_name_ar": "معالجة اللغات الطبيعية", "instructor_id": "DR002", "location": "المدرج المركزي العلوي", "day": "السبت",    "time": "11:00-01:00", "mode": "in-person" },
+        { "course_code": "SE321",  "course_name_ar": "أمن البرمجيات",           "instructor_id": "DR001", "location": "المدرج المركزي السفلي", "day": "الأحد",    "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "CS434",  "course_name_ar": "الحوسبة عالية الأداء",   "instructor_id": "DR005", "location": "المدرج المركزي السفلي", "day": "الاثنين",  "time": "9:00-11:00",  "mode": "in-person" },
+        {
+          "course_code": "UNKNOWN", "course_name_ar": "مفاهيم لغات الحاسب",
+          "instructor_id": "DR013", "location": "Online", "day": "الأربعاء", "time": "7:00-9:00", "mode": "online",
+          "issue_ref": "ISSUE-006",
+          "note": "Course name does not match any bylaw code. Possible intent: CS416 (Compilers)."
+        }
+      ],
+      "term_2": [
+        { "course_code": "CS331",  "course_name_ar": "تفاعل الانسان مع الحاسب","instructor_id": "DR013", "location": "المدرج المركزي العلوي", "day": "السبت",    "time": "07:00-09:00", "mode": "in-person" },
+        { "course_code": "CS332",  "course_name_ar": "اكتشاف المعرفة",          "instructor_id": "DR001", "location": "المدرج المركزي العلوي", "day": "الأحد",    "time": "07:00-09:00", "mode": "in-person" },
+        { "course_code": "CS416",  "course_name_ar": "المترجمات",               "instructor_id": "DR013", "location": "المدرج المركزي العلوي", "day": "الاثنين",  "time": "07:00-09:00", "mode": "in-person" },
+        { "course_code": "CS415",  "course_name_ar": "الحوسبة السحابية",        "instructor_id": "DR005", "location": "Online",                "day": "الاثنين",  "time": "11:00-01:00", "mode": "online" },
+        { "course_code": "CS433",  "course_name_ar": "موضوعات مختارة في الذكاء الاصطناعي","instructor_id": "DR016","location": "Online","day": "الثلاثاء","time": "TBD","mode": "online","note": "Time not specified in schedule" }
+      ]
+    },
+
+    "year_4_IT": {
+      "term_1": [
+        { "course_code": "IT415",  "course_name_ar": "شبكات الحوسبة السحابية", "instructor_id": "DR019", "location": "Online",                "day": "السبت",    "time": "7:00-9:00",   "mode": "online" },
+        {
+          "course_code": "UNKNOWN", "course_name_ar": "المتحكمات الدقيقة",
+          "instructor_id": "DR003", "location": "Online", "day": "السبت", "time": "11:00-01:00", "mode": "online",
+          "issue_ref": "ISSUE-003",
+          "note": "Does not match any IT bylaw course. Closest: IT315 (Microprocessors) but already offered Y3-IT-T1."
+        },
+        { "course_code": "CS315",  "course_name_ar": "تحليل بيانات كبيرة",     "instructor_id": "DR005", "location": "المدرج المركزي السفلي", "day": "الأحد",    "time": "9:00-11:00",  "mode": "in-person" },
+        {
+          "course_code": "UNKNOWN", "course_name_ar": "الواقع الافتراضي",
+          "instructor_id": "DR002", "location": "مدرج 1", "day": "الثلاثاء", "time": "9:00-11:00", "mode": "in-person",
+          "issue_ref": "ISSUE-004",
+          "note": "Virtual Reality not in IT bylaw. Possible intent: IT341 (Computer Animation) or IT342 (Advanced Computer Graphics)."
+        },
+        { "course_code": "IT313",  "course_name_ar": "تأمين شبكات الحاسبات والمعلومات","instructor_id": "DR004","location": "المدرج المركزي العلوي","day": "الأربعاء","time": "9:00-11:00","mode": "in-person" }
+      ],
+      "term_2": [
+        { "course_code": "IT319",  "course_name_ar": "الوسائط المتعددة الرقمية","instructor_id": "DR002","location": "المدرج المركزي العلوي","day": "الأحد","time": "9:00-11:00","mode": "in-person","issue_ref": "ISSUE-009" },
+        { "course_code": "IT414",  "course_name_ar": "الأمن السيبراني",          "instructor_id": "DR004", "location": "مدرج 2",                "day": "الاثنين",  "time": "9:00-11:00",  "mode": "in-person" },
+        { "course_code": "IT413",  "course_name_ar": "تكنولوجيات الاتصالات",    "instructor_id": "DR018", "location": "مدرج 3",                "day": "الثلاثاء", "time": "11:00-01:00", "mode": "in-person" },
+        {
+          "course_code": "UNKNOWN", "course_name_ar": "معالجة الاشارات الرقمية",
+          "instructor_id": "DR010", "location": "مدرج 1", "day": "الثلاثاء", "time": "9:00-11:00", "mode": "in-person",
+          "issue_ref": "ISSUE-005",
+          "note": "Digital Signal Processing not in IT bylaw. Closest: IT314 (Signals and Systems) or IT316 (Image Processing)."
+        },
+        { "course_code": "IT411",  "course_name_ar": "الإنسان الآلي",           "instructor_id": "DR011", "location": "مدرج 2",                "day": "الأربعاء", "time": "9:00-11:00",  "mode": "in-person" }
+      ]
+    },
+
+    "year_4_IS": {
+      "term_1": [
+        { "course_code": "IS341",  "course_name_ar": "ضمان جودة نظم المعلومات","instructor_id": "DR009", "location": "Online",                "day": "السبت",    "time": "7:00-9:00",   "mode": "online" },
+        { "course_code": "IS411",  "course_name_ar": "التنقيب في البيانات",     "instructor_id": "DR006", "location": "مدرج 3",                "day": "السبت",    "time": "7:00-9:00",   "mode": "in-person", "note": "Different modality/room from IS341 same slot — confirm no student overlap" },
+        { "course_code": "IS412",  "course_name_ar": "إدارة مشروعات نظم المعلومات","instructor_id": "DR007","location": "مدرج 1","day": "السبت","time": "11:00-01:00","mode": "in-person" },
+        { "course_code": "CS315",  "course_name_ar": "تعلم الآلة",              "instructor_id": "DR001", "location": "مدرج 3",                "day": "TBD",      "time": "TBD",         "mode": "in-person", "note": "Time not clearly specified in schedule" },
+        { "course_code": "IS351",  "course_name_ar": "معالجة وتحليل البيانات", "instructor_id": "DR012", "location": "مدرج 2",                "day": "الأحد",    "time": "9:00-11:00",  "mode": "in-person", "issue_ref": "ISSUE-010" }
+      ],
+      "term_2": [
+        {
+          "course_code": "UNKNOWN", "course_name_ar": "ادارة ونمذجة البيانات الكبيرة",
+          "instructor_id": "DR009", "location": "Online", "day": "الأحد", "time": "07:00-09:00", "mode": "online",
+          "issue_ref": "ISSUE-007",
+          "note": "Not in IS bylaw by this name. Possible intent: IS316 (Data Analytics and Management)."
+        },
+        { "course_code": "IS342",  "course_name_ar": "أمن المعلومات",           "instructor_id": "DR006", "location": "مدرج 1",                "day": "الاثنين",  "time": "9:00-11:00",  "mode": "in-person" },
+        {
+          "course_code": "UNKNOWN", "course_name_ar": "هيكليات خدمة التوجه",
+          "instructor_id": "DR011", "location": "مدرج 1", "day": "الاثنين", "time": "11:00-01:00", "mode": "in-person",
+          "issue_ref": "ISSUE-008",
+          "note": "Service-Oriented Architecture not in IS bylaw by this name. Possible intent: IS415 (IS Development Methodologies)."
+        },
+        { "course_code": "IS414",  "course_name_ar": "موضوعات مختارة في قواعد البيانات","instructor_id": "DR006","location": "مدرج 3","day": "الثلاثاء","time": "9:00-11:00","mode": "in-person" },
+        { "course_code": "IS321",  "course_name_ar": "موضوعات مختارة في هندسة البيانات","instructor_id": "DR007","location": "مدرج 3","day": "الخميس","time": "11:00-01:00","mode": "in-person","issue_ref": "ISSUE-010" }
+      ]
+    }
+  }
+}

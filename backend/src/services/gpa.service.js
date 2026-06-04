@@ -1,15 +1,27 @@
 // =============================================================================
 // GPA Service - All grade calculation logic per FCIT Bylaws 2024
 // =============================================================================
-const { GRADE_SCALE, CGPA_CLASSIFICATIONS, MIN_PASSING_TOTAL_PCT, MIN_PASSING_FINAL_PCT } = require('../config/constants');
+const { MIN_PASSING_TOTAL_PCT, MIN_PASSING_FINAL_PCT } = require('../config/constants');
+const fs = require('fs');
+const path = require('path');
+
+// NOTE: Do NOT top-level require bylaw.service here.
+// bylaw.service.js also requires gpa.service.js, creating a circular dependency.
+// Node.js resolves circular deps by returning a partially-evaluated module, so
+// { getBylaw } would be undefined at the time gpa.service.js first loads.
+// Fix: use a lazy require() inside each function that needs getBylaw().
+// Node caches modules after first load so there is no performance penalty.
 
 /**
  * Convert a percentage score to grade points (Art. 17)
  */
 function percentageToPoints(pct) {
   if (pct === null || pct === undefined) return 0;
-  for (const g of GRADE_SCALE) {
-    if (pct >= g.minPct) return g.points;
+  // Lazy require breaks the circular dependency with bylaw.service
+  const { getBylaw } = require('./bylaw.service');
+  const scale = getBylaw().grading_system;
+  for (const g of scale) {
+    if (pct >= g.min_percent) return g.points;
   }
   return 0;
 }
@@ -19,46 +31,83 @@ function percentageToPoints(pct) {
  */
 function percentageToLetter(pct) {
   if (pct === null || pct === undefined) return 'F';
-  for (const g of GRADE_SCALE) {
-    if (pct >= g.minPct) return g.grade;
+  // Lazy require breaks the circular dependency with bylaw.service
+  const { getBylaw } = require('./bylaw.service');
+  const scale = getBylaw().grading_system;
+  for (const g of scale) {
+    if (pct >= g.min_percent) return g.grade;
   }
   return 'F';
 }
 
 /**
- * Convert letter grade to grade points
+ * Convert letter grade to grade points.
+ * [AUDIT-I-20 FIX] Reads from bylaw JSON grading_system instead of a hardcoded
+ * map, so any admin-configured grade scale changes are honoured automatically.
+ * Special grades (W, I, Con, P) that have no point value return null
+ * (excluded from GPA computation by calculateCGPA / calculateSemesterGPA).
  */
 function letterToPoints(letter) {
-  const map = {
+  // Special non-numeric grades — always null regardless of bylaw
+  if (['W', 'I', 'Con', 'P', null, undefined].includes(letter)) return null;
+
+  // Lazy require to avoid circular dependency (bylaw.service ↔ gpa.service)
+  try {
+    const { getBylaw } = require('./bylaw.service');
+    const scale = getBylaw().grading_system;
+    if (Array.isArray(scale) && scale.length > 0) {
+      const entry = scale.find(g => g.grade === letter);
+      if (entry !== undefined) return entry.points ?? 0;
+    }
+  } catch (_) {
+    // bylaw not yet loaded or circular dep — fall through to static fallback
+  }
+
+  // Static fallback — matches academic-regulations.json values exactly.
+  // Only reached if getBylaw() fails (e.g., during unit tests without filesystem).
+  const fallback = {
     'A+': 4.0, 'A': 3.7, 'A-': 3.4,
     'B+': 3.2, 'B': 3.0, 'B-': 2.8,
     'C+': 2.6, 'C': 2.4, 'C-': 2.2,
     'D+': 2.0, 'D': 1.5, 'D-': 1.0,
-    'F': 0.0, 'Abs': 0.0, 'W': null, 'I': null, 'Con': null, 'P': null,
+    'F':  0.0, 'Abs': 0.0,
   };
-  return map[letter] ?? null;
+  return fallback[letter] ?? null;
 }
 
 /**
- * Calculate total course grade from components
- * Grade breakdown: midterm(20%) + coursework(10%) + practical(10%) + final(60%)
- * Special rules: if final_exam < 30% -> automatic fail
+ * Calculate total course grade from components.
+ * Grades are raw marks: midterm(0-20) + coursework(0-10) + practical(0-10) + final(0-60) = 0-100
+ * Special rules: if final_exam < 30 -> automatic fail
  */
-function calculateTotalGrade({ midterm = 0, coursework = 0, practical = 0, final_exam = 0 }) {
-  const total = (midterm * 0.20) + (coursework * 0.10) + (practical * 0.10) + (final_exam * 0.60);
+function calculateTotalGrade({ midterm = null, coursework = null, practical = null, final_exam = null }) {
+  // [FIX-GRADE-NULL] When the doctor has not entered ANY component, return null
+  // so we never store a spurious total_grade=0 / letter_grade='F' for students
+  // who simply haven't been graded yet. (JS defaults only fire on `undefined`,
+  // not `null`, so we must guard explicitly here.)
+  if (midterm === null && coursework === null && practical === null && final_exam === null) {
+    return null;
+  }
+  const total =
+    parseFloat(midterm    ?? 0) +
+    parseFloat(coursework ?? 0) +
+    parseFloat(practical  ?? 0) +
+    parseFloat(final_exam ?? 0);
   return Math.round(total * 100) / 100;
 }
 
 /**
  * Determine if a student passed a course (Art. 16)
  * Requirements:
- *  - Total grade >= 50 (D- threshold)
- *  - Final exam >= 30% of final exam marks
- *  - Minimum total >= 40% NOT 50% (the 40% is total, 50% is D-)
+ *  - Total grade >= MIN_PASSING_TOTAL_PCT (40% per Art. 16)
+ *  - Final exam >= MIN_PASSING_FINAL_PCT (30% of final component)
+ *  - Grade below 40% = F; 40-49% = D- (0.7 pts); 50%+ = normal scale
  */
 function isCoursePassed(totalPct, finalExamPct) {
   if (finalExamPct < MIN_PASSING_FINAL_PCT) return false;
-  if (totalPct < 50) return false;  // Below D- = fail (50% minimum for D-)
+  // Art. 16: minimum total grade is 50% (D- grade starts at 50%).
+  // MIN_PASSING_TOTAL_PCT = 50 is correct — below 50% is an F.
+  if (totalPct < MIN_PASSING_TOTAL_PCT) return false;
   return true;
 }
 
@@ -78,7 +127,8 @@ function calculateSemesterGPA(enrollments) {
   }
 
   if (totalCredits === 0) return 0;
-  return Math.round((totalQualityPoints / totalCredits) * 1000) / 1000;
+  // Art. 18: semester GPA rounds to 2 decimal places
+  return Math.round((totalQualityPoints / totalCredits) * 100) / 100;
 }
 
 /**
@@ -127,10 +177,17 @@ function isPassingGrade(letterGrade) {
  */
 function validateGradeEntry({ midterm, coursework, practical, final_exam }) {
   const errors = [];
-  if (midterm < 0 || midterm > 100) errors.push('Midterm must be 0-100');
-  if (coursework < 0 || coursework > 100) errors.push('Coursework must be 0-100');
-  if (practical < 0 || practical > 100) errors.push('Practical must be 0-100');
-  if (final_exam < 0 || final_exam > 100) errors.push('Final exam must be 0-100');
+  const check = (name, val, max) => {
+    if (val === undefined || val === null || val === '') return;
+    const n = parseFloat(val);
+    if (isNaN(n))   errors.push(`${name} must be a number`);
+    else if (n < 0) errors.push(`${name} cannot be negative`);
+    else if (n > max) errors.push(`${name} cannot exceed ${max}`);
+  };
+  check('Midterm grade',    midterm,    20);
+  check('Coursework grade', coursework, 10);
+  check('Practical grade',  practical,  10);
+  check('Final exam grade', final_exam, 60);
   return errors;
 }
 

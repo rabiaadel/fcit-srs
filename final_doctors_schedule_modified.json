@@ -1,0 +1,750 @@
+{
+  "doctors": [
+    {
+      "name": "أ.د. نانسي الحفناوي",
+      "courses": [
+        {
+          "code": "BS111",
+          "semester": "الترم الأول",
+          "day": "Mon",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        },
+        {
+          "code": "BS115",
+          "semester": "الترم الثاني",
+          "day": "Mon",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "BS117",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "13:00",
+          "end": "15:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS212",
+          "semester": "الترم الثاني",
+          "day": "Tue",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Upper)"
+        }
+      ]
+    },
+    {
+      "name": "أ.م.د. أمنية البربري",
+      "courses": [
+        {
+          "code": "IS111",
+          "semester": "الترم الأول",
+          "day": "Sun",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS211",
+          "semester": "الترم الثاني",
+          "day": "Sun",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS351",
+          "semester": "الترم الأول",
+          "day": "Tue",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 2"
+        },
+        {
+          "code": "IS318",
+          "semester": "الترم الثاني",
+          "day": "Tue",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS314",
+          "semester": "الترم الثاني",
+          "day": "Wed",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        }
+      ]
+    },
+    {
+      "name": "أ.م.د. إيمان البقري",
+      "courses": [
+        {
+          "code": "IT411",
+          "semester": "الترم الثاني",
+          "day": "Wed",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 2"
+        },
+        {
+          "code": "IS415",
+          "semester": "الترم الثاني",
+          "day": "Mon",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Hall 1"
+        }
+      ]
+    },
+    {
+      "name": "د. أحمد سليم",
+      "courses": [
+        {
+          "code": "UNV112",
+          "semester": "الترم الثاني",
+          "day": "Sat",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        },
+        {
+          "code": "IT311",
+          "semester": "الترم الأول",
+          "day": "Sun",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS313",
+          "semester": "الترم الأول",
+          "day": "Sun",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS332",
+          "semester": "الترم الثاني",
+          "day": "Wed",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS316",
+          "semester": "الترم الثاني",
+          "day": "Thu",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "CS314",
+          "semester": "الترم الأول",
+          "day": "Sun",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 3"
+        },
+        {
+          "code": "SE321",
+          "semester": "الترم الأول",
+          "day": "Sun",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Lower)"
+        }
+      ]
+    },
+    {
+      "name": "د. أروى أبو الوفا",
+      "courses": [
+        {
+          "code": "UNV114",
+          "semester": "الترم الثاني",
+          "day": "Tue",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "SE211",
+          "semester": "الترم الأول",
+          "day": "Wed",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "SE315",
+          "semester": "الترم الثاني",
+          "day": "Wed",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "IT318",
+          "semester": "الترم الثاني",
+          "day": "Mon",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        },
+        {
+          "code": "IT415",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IT413",
+          "semester": "الترم الثاني",
+          "day": "Tue",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Hall 3"
+        }
+      ]
+    },
+    {
+      "name": "د. أسامة غنيم",
+      "courses": [
+        {
+          "code": "CS111",
+          "semester": "الترم الأول",
+          "day": "Sun",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS112",
+          "semester": "الترم الثاني",
+          "day": "Wed",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "CS211",
+          "semester": "الترم الأول",
+          "day": "Tue",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "CS213",
+          "semester": "الترم الثاني",
+          "day": "Thu",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "CS331",
+          "semester": "الترم الأول",
+          "day": "Thu",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        }
+      ]
+    },
+    {
+      "name": "د. إبراهيم جاد",
+      "courses": [
+        {
+          "code": "IS317",
+          "semester": "الترم الثاني",
+          "day": "Sun",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS341",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS413",
+          "semester": "الترم الثاني",
+          "day": "Sun",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        }
+      ]
+    },
+    {
+      "name": "د. تهاني علام",
+      "courses": [
+        {
+          "code": "IT317",
+          "semester": "الترم الثاني",
+          "day": "Thu",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IT315",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        }
+      ]
+    },
+    {
+      "name": "د. شيماء هجرس",
+      "courses": [
+        {
+          "code": "BS116",
+          "semester": "الترم الأول",
+          "day": "Mon",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "UNV111",
+          "semester": "الترم الثاني",
+          "day": "Wed",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS311",
+          "semester": "الترم الأول",
+          "day": "Mon",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Lower)"
+        },
+        {
+          "code": "IS311",
+          "semester": "الترم الأول",
+          "day": "Sun",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Lower)"
+        },
+        {
+          "code": "IS312",
+          "semester": "الترم الأول",
+          "day": "Mon",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 1"
+        },
+        {
+          "code": "IS315",
+          "semester": "الترم الثاني",
+          "day": "Sat",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS321",
+          "semester": "الترم الثاني",
+          "day": "Tue",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS411",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Hall 3"
+        },
+        {
+          "code": "IS342",
+          "semester": "الترم الثاني",
+          "day": "Mon",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 1"
+        },
+        {
+          "code": "IS414",
+          "semester": "الترم الثاني",
+          "day": "Tue",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 3"
+        }
+      ]
+    },
+    {
+      "name": "د. عايدة نصر",
+      "courses": [
+        {
+          "code": "BS112",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "BS115",
+          "semester": "الترم الثاني",
+          "day": "Sat",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IT211",
+          "semester": "الترم الأول",
+          "day": "Thu",
+          "start": "13:00",
+          "end": "15:00",
+          "room": "Online"
+        },
+        {
+          "code": "IT314",
+          "semester": "الترم الأول",
+          "day": "Thu",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 2"
+        },
+        {
+          "code": "IT322",
+          "semester": "الترم الثاني",
+          "day": "Sun",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Hall 3"
+        },
+        {
+          "code": "IT313",
+          "semester": "الترم الأول",
+          "day": "Wed",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "IT414",
+          "semester": "الترم الثاني",
+          "day": "Mon",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 2"
+        }
+      ]
+    },
+    {
+      "name": "د. مروة",
+      "courses": [
+        {
+          "code": "IT314",
+          "semester": "الترم الثاني",
+          "day": "Tue",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 1"
+        }
+      ]
+    },
+    {
+      "name": "د. مريان وجدي",
+      "courses": [
+        {
+          "code": "IT212",
+          "semester": "الترم الثاني",
+          "day": "Tue",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "IT312",
+          "semester": "الترم الأول",
+          "day": "Thu",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IT319",
+          "semester": "الترم الثاني",
+          "day": "Sun",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "IT316",
+          "semester": "الترم الثاني",
+          "day": "Thu",
+          "start": "15:00",
+          "end": "17:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS443",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "IT444",
+          "semester": "الترم الأول",
+          "day": "Tue",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Hall 1"
+        },
+        {
+          "code": "IT319",
+          "semester": "الترم الثاني",
+          "day": "Sun",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        }
+      ]
+    },
+    {
+      "name": "د. مصطفى العشري",
+      "courses": [
+        {
+          "code": "BS113",
+          "semester": "الترم الثاني",
+          "day": "Sun",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "CS212",
+          "semester": "الترم الأول",
+          "day": "Thu",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS311",
+          "semester": "الترم الأول",
+          "day": "Mon",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "CS411",
+          "semester": "الترم الثاني",
+          "day": "Wed",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "CS433",
+          "semester": "الترم الثاني",
+          "day": "Mon",
+          "start": "13:00",
+          "end": "15:00",
+          "room": "Online"
+        }
+      ]
+    },
+    {
+      "name": "د. هاني الغايش",
+      "courses": [
+        {
+          "code": "IT321",
+          "semester": "الترم الأول",
+          "day": "Wed",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "IS313",
+          "semester": "الترم الأول",
+          "day": "Sun",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Hall 3"
+        },
+        {
+          "code": "IS321",
+          "semester": "الترم الثاني",
+          "day": "Thu",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Hall 3"
+        },
+        {
+          "code": "IS412",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Hall 1"
+        },
+        {
+          "code": "IS421",
+          "semester": "الترم الثاني",
+          "day": "Thu",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Hall 3"
+        }
+      ]
+    },
+    {
+      "name": "د. هناء عبد الهادي",
+      "courses": [
+        {
+          "code": "BS114",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS413",
+          "semester": "الترم الأول",
+          "day": "Wed",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS331",
+          "semester": "الترم الثاني",
+          "day": "Sat",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Central Hall (Upper)"
+        },
+        {
+          "code": "CS416",
+          "semester": "الترم الثاني",
+          "day": "Mon",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Central Hall (Upper)"
+        }
+      ]
+    },
+    {
+      "name": "د. هناء عيسى",
+      "courses": [
+        {
+          "code": "CS214",
+          "semester": "الترم الثاني",
+          "day": "Mon",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Upper)"
+        }
+      ]
+    },
+    {
+      "name": "د. وليد سمير",
+      "courses": [
+        {
+          "code": "UNV113",
+          "semester": "الترم الأول",
+          "day": "Mon",
+          "start": "13:00",
+          "end": "15:00",
+          "room": "Online"
+        }
+      ]
+    },
+    {
+      "name": "د. وليد عبد الخالق",
+      "courses": [
+        {
+          "code": "CS312",
+          "semester": "الترم الأول",
+          "day": "Wed",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS314",
+          "semester": "الترم الثاني",
+          "day": "Sat",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS315",
+          "semester": "الترم الثاني",
+          "day": "Thu",
+          "start": "07:00",
+          "end": "09:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS315",
+          "semester": "الترم الأول",
+          "day": "Sat",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Lower)"
+        },
+        {
+          "code": "CS434",
+          "semester": "الترم الأول",
+          "day": "Mon",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Lower)"
+        },
+        {
+          "code": "CS415",
+          "semester": "الترم الثاني",
+          "day": "Mon",
+          "start": "11:00",
+          "end": "13:00",
+          "room": "Online"
+        },
+        {
+          "code": "CS315",
+          "semester": "الترم الأول",
+          "day": "Sun",
+          "start": "09:00",
+          "end": "11:00",
+          "room": "Central Hall (Lower)"
+        }
+      ]
+    }
+  ]
+}

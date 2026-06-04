@@ -2,8 +2,14 @@ const jwt = require('jsonwebtoken');
 const { query } = require('../config/database');
 const logger = require('../utils/logger');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'change-me-refresh-in-production';
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is not set. Set it in .env before starting the server.');
+}
+if (!process.env.JWT_REFRESH_SECRET) {
+  throw new Error('FATAL: JWT_REFRESH_SECRET environment variable is not set. Set it in .env before starting the server.');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 /**
  * Verify JWT access token and attach user to req

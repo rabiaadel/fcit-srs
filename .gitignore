@@ -1,143 +1,54 @@
-# ═══════════════════════════════════════════════════════════════════
-# FCIT SRS — Optimized .gitignore
-# Last updated: 2026-05-07
-# ═══════════════════════════════════════════════════════════════════
-
-# ───────────────────────────────────────────────────────────────────
-# ENVIRONMENT & SECRETS  (never commit these)
-# ───────────────────────────────────────────────────────────────────
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-*.crt
-*.p12
-secrets/
-.secret
-
-# ───────────────────────────────────────────────────────────────────
-# NODE.JS
-# ───────────────────────────────────────────────────────────────────
+# ─── Node / npm ───────────────────────────────────────────────────
 node_modules/
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-.pnpm-store/
-.yarn/
-.npm/
-package-lock.json.bak
+package-lock.json
 
-# ───────────────────────────────────────────────────────────────────
-# FRONTEND — React / CRA build artifacts
-# ───────────────────────────────────────────────────────────────────
+# ─── Build / dist ─────────────────────────────────────────────────
 frontend/build/
-frontend/.cache/
-frontend/.parcel-cache/
 frontend/dist/
-
-# ───────────────────────────────────────────────────────────────────
-# BACKEND — runtime artifacts
-# ───────────────────────────────────────────────────────────────────
-backend/logs/
 backend/dist/
-backend/coverage/
-backend/.nyc_output/
-*.pid
-*.seed
 
-# ───────────────────────────────────────────────────────────────────
-# LOGS  (all sources)
-# ───────────────────────────────────────────────────────────────────
-logs/
-*.log
-*.log.*
-log/
+# ─── Environment & secrets ────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.production
+backend/.env
+frontend/.env.local
+*.pem
+*.key
+*.cert
 
-# ───────────────────────────────────────────────────────────────────
-# DOCKER — local volumes & override files
-# ───────────────────────────────────────────────────────────────────
+# ─── Docker volumes & data ────────────────────────────────────────
 postgres_data/
 prometheus_data/
 grafana_data/
 backend_logs/
-docker-compose.override.yml
-docker-compose.local.yml
-.docker/
+db-extracted/
 
-# ───────────────────────────────────────────────────────────────────
-# DB-EXTRACTED — large binary files only
-# (JSON/TXT bylaw files ARE tracked — they are the source of truth)
-# ───────────────────────────────────────────────────────────────────
-db-extracted/bylaw-2024.pdf
-FCIT_SRS_SDLC_Documentation_v2.pdf
-
-# ───────────────────────────────────────────────────────────────────
-# OTHER LARGE PDFs
-# ───────────────────────────────────────────────────────────────────
-*.pdf
-
-# ───────────────────────────────────────────────────────────────────
-# OPERATING SYSTEM
-# ───────────────────────────────────────────────────────────────────
+# ─── IDE & OS ─────────────────────────────────────────────────────
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
-desktop.ini
-
-# ───────────────────────────────────────────────────────────────────
-# EDITORS & IDEs
-# ───────────────────────────────────────────────────────────────────
 .vscode/
-!.vscode/extensions.json
 .idea/
 *.swp
-*.swo
 *~
-.history/
-*.sublime-project
-*.sublime-workspace
 
-# ───────────────────────────────────────────────────────────────────
-# TESTING & COVERAGE
-# ───────────────────────────────────────────────────────────────────
+# ─── Logs ─────────────────────────────────────────────────────────
+logs/
+*.log
+backend/logs/
+
+# ─── Test artefacts ───────────────────────────────────────────────
 coverage/
 .nyc_output/
-*.lcov
-test-results/
 
-# ───────────────────────────────────────────────────────────────────
-# MISCELLANEOUS
-# ───────────────────────────────────────────────────────────────────
-*.local
+# ─── Backups ──────────────────────────────────────────────────────
 *.bak
+*.bak2
 *.orig
-*.tmp
-*.temp
-tmp/
-temp/
-.cache/
 
-# ───────────────────────────────────────────────────────────────────
-# INTENTIONALLY TRACKED (reference guide)
-# ───────────────────────────────────────────────────────────────────
-# frontend/src/              React source
-# frontend/public/           static assets
-# frontend/package.json      dependency manifest
-# backend/src/               Express source
-# backend/package.json       dependency manifest
-# database/schema.sql        full DDL
-# database/enhancements.sql  views + functions
-# database/seeds/            all seed files
-# docker/                    nginx, prometheus, grafana config
-# docker-compose.yml         orchestration
-# Dockerfile.*               all build definitions
-db-extracted/*.json        bylaw JSON (source of truth)
-db-extracted/*.txt         extracted bylaw text
-.claude.md                 AI session tracking
-README.md                  project documentation
+# ─── Archives (don't commit tarballs) ────────────────────────────
+*.tar.gz
+*.zip

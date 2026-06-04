@@ -1,0 +1,1868 @@
+{
+  "metadata": {
+    "source_pdf": "bylaw-2024-7-73-14-33(6).pdf",
+    "academic_year": "2025/2026",
+    "normalized_prerequisites": true,
+    "notes": "Built from the 2024 bylaw PDF tables. Obvious code/prerequisite typos were normalized to the confirmed course codes used across the curriculum. Term field added to course entries; term_distribution summary added."
+  },
+  "code_normalization": [
+    {
+      "raw": "BS112 in IS212",
+      "normalized": "BS113"
+    },
+    {
+      "raw": "BS115 in IS314",
+      "normalized": "BS116"
+    },
+    {
+      "raw": "BS117 in IT312",
+      "normalized": "BS116"
+    },
+    {
+      "raw": "IT315 in IT411",
+      "normalized": "IT314"
+    },
+    {
+      "raw": "CS315 in IS machine learning row",
+      "normalized": "CS314"
+    },
+    {
+      "raw": "BS214 in page 21 OCR",
+      "normalized": "BS114"
+    },
+    {
+      "raw": "ENG L113 in UNV121 row",
+      "normalized": "UNV113"
+    },
+    {
+      "raw": "CS351 in IS444 row",
+      "normalized": "IS351"
+    }
+  ],
+  "terms": {
+    "level_1": {
+      "university_requirements": {
+        "mandatory": [
+          {
+            "code": "UNV111",
+            "name_ar": "كتابة التقارير الفنية",
+            "name_en": "Technical Report Writing",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 1,
+            "term": 2
+          },
+          {
+            "code": "UNV112",
+            "name_ar": "قضايا مجتمعية",
+            "name_en": "Societal Issues",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 1,
+            "term": 1
+          },
+          {
+            "code": "UNV113",
+            "name_ar": "اللغة الإنجليزية (1)",
+            "name_en": "English Language (1)",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 1,
+            "term": 1
+          },
+          {
+            "code": "UNV114",
+            "name_ar": "مهارات الاتصال",
+            "name_en": "Communication Skills",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 1,
+            "term": 2
+          }
+        ],
+        "electives": [
+          {
+            "code": "UNV115",
+            "name_ar": "مبادئ علم النفس",
+            "name_en": "Fundamentals of Psychology",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 1,
+            "term": 1
+          },
+          {
+            "code": "UNV120",
+            "name_ar": "تسويق ومبيعات",
+            "name_en": "Marketing and Sales",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 1,
+            "term": 2
+          },
+          {
+            "code": "UNV116",
+            "name_ar": "مبادئ علم الاجتماع",
+            "name_en": "Fundamentals of Sociology",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 1,
+            "term": 1
+          },
+          {
+            "code": "UNV117",
+            "name_ar": "سياسات مقارنة",
+            "name_en": "Comparative Politics",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 1,
+            "term": 1
+          },
+          {
+            "code": "UNV118",
+            "name_ar": "موضوعات مختارة في الإنسانيات",
+            "name_en": "Selected Topics in Humanities",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 1,
+            "term": 1
+          }
+        ]
+      },
+      "college_requirements": {
+        "math_and_science": [
+          {
+            "code": "BS111",
+            "name_ar": "رياضيات (1)",
+            "name_en": "Math (1)",
+            "credits": 3,
+            "prerequisites": [],
+            "category": "math_science",
+            "level": 1,
+            "term": 1
+          },
+          {
+            "code": "BS112",
+            "name_ar": "تراكيب محددة",
+            "name_en": "Discrete Mathematics",
+            "credits": 3,
+            "prerequisites": [],
+            "category": "math_science",
+            "level": 1,
+            "term": 1
+          },
+          {
+            "code": "BS113",
+            "name_ar": "رياضيات (2)",
+            "name_en": "Math (2)",
+            "credits": 3,
+            "prerequisites": [
+              "BS111"
+            ],
+            "category": "math_science",
+            "level": 1,
+            "term": 2
+          },
+          {
+            "code": "BS115",
+            "name_ar": "إلكترونيات",
+            "name_en": "Electronics",
+            "credits": 3,
+            "prerequisites": [],
+            "category": "math_science",
+            "level": 1,
+            "term": 2
+          },
+          {
+            "code": "BS116",
+            "name_ar": "إحصاء واحتمالات (1)",
+            "name_en": "Probability and Statistics (1)",
+            "credits": 3,
+            "prerequisites": [],
+            "category": "math_science",
+            "level": 1,
+            "term": 1
+          }
+        ],
+        "basic_computing": [
+          {
+            "code": "CS111",
+            "name_ar": "أساسيات علوم الحاسب",
+            "name_en": "Fundamentals of Computer Science",
+            "credits": 3,
+            "prerequisites": [],
+            "category": "basic_computing",
+            "level": 1,
+            "term": 1
+          },
+          {
+            "code": "CS112",
+            "name_ar": "برمجة هيكلية",
+            "name_en": "Structured Programming",
+            "credits": 3,
+            "prerequisites": [],
+            "category": "basic_computing",
+            "level": 1,
+            "term": 2
+          },
+          {
+            "code": "IT111",
+            "name_ar": "أساسيات تكنولوجيا المعلومات",
+            "name_en": "Fundamentals of Information Technology",
+            "credits": 3,
+            "prerequisites": [],
+            "category": "basic_computing",
+            "level": 1,
+            "term": 2
+          },
+          {
+            "code": "IS111",
+            "name_ar": "مقدمة في نظم المعلومات",
+            "name_en": "Introduction to Information Systems",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "basic_computing",
+            "level": 1,
+            "term": 1
+          }
+        ]
+      }
+    },
+    "level_2": {
+      "university_requirements": {
+        "mandatory": [],
+        "electives": [
+          {
+            "code": "UNV119",
+            "name_ar": "الأخلاق والمهنية",
+            "name_en": "Ethics and Professionalism",
+            "credits": 2,
+            "prerequisites": [],
+            "category": "university_req",
+            "level": 2,
+            "term": 2
+          },
+          {
+            "code": "UNV121",
+            "name_ar": "اللغة الإنجليزية (2)",
+            "name_en": "English Language (2)",
+            "credits": 2,
+            "prerequisites": [
+              "UNV113"
+            ],
+            "category": "university_req",
+            "level": 2,
+            "term": 2
+          }
+        ]
+      },
+      "college_requirements": {
+        "math_and_science": [
+          {
+            "code": "BS114",
+            "name_ar": "رياضيات (3)",
+            "name_en": "Math (3)",
+            "credits": 3,
+            "prerequisites": [
+              "BS113"
+            ],
+            "category": "math_science",
+            "level": 2,
+            "term": 1
+          },
+          {
+            "code": "BS117",
+            "name_ar": "بحوث العمليات",
+            "name_en": "Operations Research",
+            "credits": 3,
+            "prerequisites": [
+              "BS111",
+              "BS116"
+            ],
+            "category": "math_science",
+            "level": 2,
+            "term": 2
+          }
+        ],
+        "basic_computing": [
+          {
+            "code": "CS211",
+            "name_ar": "برمجة شيئية",
+            "name_en": "Object Oriented Programming",
+            "credits": 3,
+            "prerequisites": [
+              "CS112"
+            ],
+            "category": "basic_computing",
+            "level": 2,
+            "term": 1
+          },
+          {
+            "code": "CS212",
+            "name_ar": "هياكل البيانات",
+            "name_en": "Data Structures",
+            "credits": 3,
+            "prerequisites": [
+              "CS112"
+            ],
+            "category": "basic_computing",
+            "level": 2,
+            "term": 1
+          },
+          {
+            "code": "SE211",
+            "name_ar": "مقدمة في هندسة البرمجيات",
+            "name_en": "Introduction to Software Engineering",
+            "credits": 3,
+            "prerequisites": [
+              "CS112"
+            ],
+            "category": "basic_computing",
+            "level": 2,
+            "term": 1
+          },
+          {
+            "code": "IS211",
+            "name_ar": "مقدمة في نظم قواعد البيانات",
+            "name_en": "Introduction to Database Systems",
+            "credits": 3,
+            "prerequisites": [
+              "CS112"
+            ],
+            "category": "basic_computing",
+            "level": 2,
+            "term": 2
+          },
+          {
+            "code": "IS212",
+            "name_ar": "طرق الأمثلية",
+            "name_en": "Optimization Methods",
+            "credits": 3,
+            "prerequisites": [
+              "BS113"
+            ],
+            "category": "basic_computing",
+            "level": 2,
+            "notes": "PDF had a code typo in the prerequisite column; normalized to BS113.",
+            "term": 2
+          },
+          {
+            "code": "IT211",
+            "name_ar": "تصميم المنطق الرقمي",
+            "name_en": "Digital Logic Design",
+            "credits": 3,
+            "prerequisites": [
+              "BS115"
+            ],
+            "category": "basic_computing",
+            "level": 2,
+            "term": 1
+          },
+          {
+            "code": "IT212",
+            "name_ar": "تكنولوجيا شبكات الحاسب",
+            "name_en": "Computer Network Technology",
+            "credits": 3,
+            "prerequisites": [
+              "CS111"
+            ],
+            "category": "basic_computing",
+            "level": 2,
+            "term": 2
+          },
+          {
+            "code": "CS213",
+            "name_ar": "تحليل وتصميم الخوارزميات",
+            "name_en": "Algorithms Analysis and Design",
+            "credits": 3,
+            "prerequisites": [
+              "CS212"
+            ],
+            "category": "basic_computing",
+            "level": 2,
+            "term": 2
+          },
+          {
+            "code": "CS214",
+            "name_ar": "نظم التشغيل",
+            "name_en": "Operating Systems",
+            "credits": 3,
+            "prerequisites": [
+              "CS212"
+            ],
+            "category": "basic_computing",
+            "level": 2,
+            "term": 2
+          }
+        ]
+      }
+    },
+    "level_3": {
+      "CS": {
+        "level_3": {
+          "mandatory": [
+            {
+              "code": "IS311",
+              "name_ar": "تحليل وتصميم نظم المعلومات",
+              "name_en": "Analysis and Design of Information Systems",
+              "credits": 3,
+              "prerequisites": [
+                "IS211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "CS311",
+              "name_ar": "أمن الحاسب",
+              "name_en": "Computer Security",
+              "credits": 3,
+              "prerequisites": [
+                "IT212"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "CS312",
+              "name_ar": "تنظيم وبنية الحاسبات",
+              "name_en": "Computer Organization and Architecture",
+              "credits": 3,
+              "prerequisites": [
+                "IT211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "CS313",
+              "name_ar": "الذكاء الاصطناعي",
+              "name_en": "Artificial Intelligence",
+              "credits": 3,
+              "prerequisites": [
+                "CS212"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "CS411",
+              "name_ar": "نظرية الحاسبات",
+              "name_en": "Computation Theory",
+              "credits": 3,
+              "prerequisites": [
+                "BS112"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IT311",
+              "name_ar": "الرسم بالحاسب",
+              "name_en": "Computer Graphics",
+              "credits": 3,
+              "prerequisites": [
+                "CS112"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "CS314",
+              "name_ar": "التعلم الآلي",
+              "name_en": "Machine Learning",
+              "credits": 3,
+              "prerequisites": [
+                "CS211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "notes": "Normalized from the bylaw typo that reused CS315 in the IS table.",
+              "term": 2
+            },
+            {
+              "code": "CS315",
+              "name_ar": "تحليل البيانات الضخمة",
+              "name_en": "Big Data Analysis",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "CS316",
+              "name_ar": "نظم التشغيل المتقدمة",
+              "name_en": "Advanced Operating Systems",
+              "credits": 3,
+              "prerequisites": [
+                "CS214"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "SE315",
+              "name_ar": "هندسة البرمجيات المتقدمة",
+              "name_en": "Advanced Software Engineering",
+              "credits": 3,
+              "prerequisites": [
+                "SE211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IS318",
+              "name_ar": "نظرية المعلومات وضغط البيانات",
+              "name_en": "Information Theory and Data Compression",
+              "credits": 3,
+              "prerequisites": [
+                "BS116"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            }
+          ],
+          "electives": [
+            {
+              "code": "CS321",
+              "name_ar": "التشفير",
+              "name_en": "Cryptography",
+              "credits": 3,
+              "prerequisites": [
+                "CS311"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "CS322",
+              "name_ar": "أمن الشبكات والإنترنت",
+              "name_en": "Network and Internet Security",
+              "credits": 3,
+              "prerequisites": [
+                "CS311"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "CS331",
+              "name_ar": "تفاعل الإنسان مع الحاسب",
+              "name_en": "Human Computer Interaction",
+              "credits": 3,
+              "prerequisites": [
+                "CS213"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "CS332",
+              "name_ar": "اكتشاف المعرفة",
+              "name_en": "Knowledge Discovery",
+              "credits": 3,
+              "prerequisites": [
+                "CS331"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IS351",
+              "name_ar": "معالجة البيانات والتحليل",
+              "name_en": "Data Processing and Analysis",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            }
+          ]
+        },
+        "level_4": {
+          "mandatory": [
+            {
+              "code": "CS412",
+              "name_ar": "إنترنت الأشياء",
+              "name_en": "Internet of Things (IoT)",
+              "credits": 3,
+              "prerequisites": [
+                "IT212"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "CS413",
+              "name_ar": "حل المشكلات واتخاذ القرارات",
+              "name_en": "Problem Solving and Decision Making",
+              "credits": 3,
+              "prerequisites": [
+                "CS213"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "CS315",
+              "name_ar": "تحليل البيانات الضخمة",
+              "name_en": "Big Data Analysis",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "CS311",
+              "name_ar": "أمن البرمجيات",
+              "name_en": "Programming Security",
+              "credits": 3,
+              "prerequisites": [
+                "IT212"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "CS332",
+              "name_ar": "اكتشاف المعرفة",
+              "name_en": "Knowledge Discovery",
+              "credits": 3,
+              "prerequisites": [
+                "CS331"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "CS331",
+              "name_ar": "تفاعل الإنسان مع الحاسب",
+              "name_en": "Human Computer Interaction",
+              "credits": 3,
+              "prerequisites": [
+                "CS213"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "CS414",
+              "name_ar": "علم البيانات",
+              "name_en": "Data Science",
+              "credits": 3,
+              "prerequisites": [
+                "CS314"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "CS322",
+              "name_ar": "مفاهيم لغات الحاسب",
+              "name_en": "Concepts of Programming Languages",
+              "credits": 3,
+              "prerequisites": [],
+              "category": "cs_specialization",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "CS415",
+              "name_ar": "الحوسبة السحابية",
+              "name_en": "Cloud Computing",
+              "credits": 3,
+              "prerequisites": [
+                "CS316"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "CS416",
+              "name_ar": "المترجمات",
+              "name_en": "Compilers",
+              "credits": 3,
+              "prerequisites": [
+                "CS411"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 2
+            }
+          ],
+          "electives": [
+            {
+              "code": "CS423",
+              "name_ar": "الحوسبة المتنقلة",
+              "name_en": "Mobile Computing",
+              "credits": 3,
+              "prerequisites": [
+                "CS316"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "CS424",
+              "name_ar": "برمجة تطبيقات المحمول",
+              "name_en": "Mobile Application Programming",
+              "credits": 3,
+              "prerequisites": [
+                "CS423"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "CS433",
+              "name_ar": "موضوعات مختارة في الذكاء الاصطناعي",
+              "name_en": "Selected Topics in Artificial Intelligence",
+              "credits": 3,
+              "prerequisites": [
+                "CS313"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "CS434",
+              "name_ar": "الحوسبة عالية الأداء",
+              "name_en": "High Performance Computing",
+              "credits": 3,
+              "prerequisites": [
+                "CS214"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "CS342",
+              "name_ar": "نماذج البيانات والتصور",
+              "name_en": "Data Models and Visualization",
+              "credits": 3,
+              "prerequisites": [
+                "IS351"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "CS443",
+              "name_ar": "معالجة اللغات الطبيعية",
+              "name_en": "Natural Language Processing",
+              "credits": 3,
+              "prerequisites": [
+                "CS314"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "IS444",
+              "name_ar": "موضوعات مختارة في نظم المعلومات المتقدمة",
+              "name_en": "Selected Topics in Advanced Information Systems",
+              "credits": 3,
+              "prerequisites": [
+                "IS351"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            }
+          ],
+          "projects": [
+            {
+              "code": "PR411",
+              "name_ar": "مشروع التخرج (1)",
+              "name_en": "Graduation Project (1)",
+              "credits": 3,
+              "prerequisites": [
+                "PASS_55_CREDITS"
+              ],
+              "category": "project",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "PR412",
+              "name_ar": "مشروع التخرج (2)",
+              "name_en": "Graduation Project (2)",
+              "credits": 3,
+              "prerequisites": [
+                "PR411"
+              ],
+              "category": "project",
+              "level": 4,
+              "term": 2
+            }
+          ]
+        }
+      },
+      "IS": {
+        "level_3": {
+          "mandatory": [
+            {
+              "code": "IS311",
+              "name_ar": "تحليل وتصميم نظم المعلومات",
+              "name_en": "Analysis and Design of Information Systems",
+              "credits": 3,
+              "prerequisites": [
+                "IS211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "IS342",
+              "name_ar": "أمن وإدارة مخاطر نظم المعلومات",
+              "name_en": "Information Systems Security and Risk Management",
+              "credits": 3,
+              "prerequisites": [
+                "IS313"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IS312",
+              "name_ar": "إدارة قواعد البيانات",
+              "name_en": "Database Management Systems",
+              "credits": 3,
+              "prerequisites": [
+                "IS211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "IS313",
+              "name_ar": "إدارة الملفات ومعالجتها",
+              "name_en": "File Management and Processing",
+              "credits": 3,
+              "prerequisites": [
+                "CS212"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "CS313",
+              "name_ar": "الذكاء الاصطناعي",
+              "name_en": "Artificial Intelligence",
+              "credits": 3,
+              "prerequisites": [
+                "CS212"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "IS314",
+              "name_ar": "استرجاع المعلومات",
+              "name_en": "Information Retrieval",
+              "credits": 3,
+              "prerequisites": [
+                "BS116"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IS315",
+              "name_ar": "مستودع البيانات",
+              "name_en": "Data Warehousing",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IS316",
+              "name_ar": "تحليل البيانات وإدارتها",
+              "name_en": "Data Analytics and Management",
+              "credits": 3,
+              "prerequisites": [
+                "IS212"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "IS317",
+              "name_ar": "تطوير نظم المعلومات المستندة إلى الويب",
+              "name_en": "Web-based Information Systems Development",
+              "credits": 3,
+              "prerequisites": [
+                "CS211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IS318",
+              "name_ar": "نظرية المعلومات وضغط البيانات",
+              "name_en": "Information Theory and Data Compression",
+              "credits": 3,
+              "prerequisites": [
+                "BS116"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "CS314",
+              "name_ar": "التعلم الآلي",
+              "name_en": "Machine Learning",
+              "credits": 3,
+              "prerequisites": [
+                "CS211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "notes": "Normalized from the bylaw typo that repeated CS315 in the IS table.",
+              "term": 1
+            }
+          ],
+          "electives": [
+            {
+              "code": "IS321",
+              "name_ar": "موضوعات مختارة في هندسة البيانات",
+              "name_en": "Selected Topics in Data Engineering",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IS322",
+              "name_ar": "قواعد البيانات السحابية",
+              "name_en": "Cloud Databases",
+              "credits": 3,
+              "prerequisites": [
+                "IS312"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IS331",
+              "name_ar": "نظم معلومات المؤسسية",
+              "name_en": "Enterprise Information Systems",
+              "credits": 3,
+              "prerequisites": [
+                "IS317"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IS332",
+              "name_ar": "نظم المعلومات الإدارية",
+              "name_en": "Management Information Systems",
+              "credits": 3,
+              "prerequisites": [
+                "IS412"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            }
+          ]
+        },
+        "level_4": {
+          "mandatory": [
+            {
+              "code": "IS411",
+              "name_ar": "التنقيب في البيانات",
+              "name_en": "Data Mining",
+              "credits": 3,
+              "prerequisites": [
+                "BS116"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "CS413",
+              "name_ar": "حل المشكلات واتخاذ القرارات",
+              "name_en": "Problem Solving and Decision Making",
+              "credits": 3,
+              "prerequisites": [
+                "CS213"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "IS434",
+              "name_ar": "هيكليات خدمة التوجه",
+              "name_en": "Service Oriented Architectures",
+              "credits": 3,
+              "prerequisites": [],
+              "category": "is_specialization",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS414",
+              "name_ar": "إدارة ونمذجة البيانات الكبيرة",
+              "name_en": "Big Data Management and Modeling",
+              "credits": 3,
+              "prerequisites": [],
+              "category": "is_specialization",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "CS414",
+              "name_ar": "علم البيانات",
+              "name_en": "Data Science",
+              "credits": 3,
+              "prerequisites": [
+                "CS314"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "IS412",
+              "name_ar": "إدارة مشاريع نظم المعلومات",
+              "name_en": "Information Systems Project Management",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "IS413",
+              "name_ar": "موضوعات مختارة في نظم المعلومات 1",
+              "name_en": "Selected Topics in Information Systems 1",
+              "credits": 3,
+              "prerequisites": [
+                "IS317"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "CS314",
+              "name_ar": "التعلم الآلي",
+              "name_en": "Machine Learning",
+              "credits": 3,
+              "prerequisites": [
+                "CS211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "notes": "Normalized from the bylaw typo that repeated CS315 in the IS table.",
+              "term": 1
+            },
+            {
+              "code": "IS321",
+              "name_ar": "موضوعات مختارة في هندسة البيانات",
+              "name_en": "Selected Topics in Data Engineering",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS414",
+              "name_ar": "موضوعات مختارة في قواعد البيانات",
+              "name_en": "Selected Topics in Databases",
+              "credits": 3,
+              "prerequisites": [
+                "IS312"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS415",
+              "name_ar": "منهجيات تطوير نظم المعلومات",
+              "name_en": "Information Systems Development Methodologies",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            }
+          ],
+          "electives": [
+            {
+              "code": "IS341",
+              "name_ar": "ضمان جودة نظم المعلومات",
+              "name_en": "Information Systems Quality Assurance",
+              "credits": 3,
+              "prerequisites": [
+                "IS111"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "IS342",
+              "name_ar": "أمن وإدارة مخاطر نظم المعلومات",
+              "name_en": "Information Systems Security and Risk Management",
+              "credits": 3,
+              "prerequisites": [
+                "IS313"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS351",
+              "name_ar": "معالجة البيانات والتحليل",
+              "name_en": "Data Processing and Analysis",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS423",
+              "name_ar": "قواعد البيانات الموزعة",
+              "name_en": "Distributed Databases",
+              "credits": 3,
+              "prerequisites": [
+                "IS211"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS424",
+              "name_ar": "موضوعات مختارة في نظم المعلومات المتقدمة",
+              "name_en": "Selected Topics in Advanced Information Systems",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS433",
+              "name_ar": "الأعمال الإلكترونية",
+              "name_en": "E-Business",
+              "credits": 3,
+              "prerequisites": [
+                "IS332"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS434",
+              "name_ar": "إدارة إجراءات الأعمال",
+              "name_en": "Business Process Management",
+              "credits": 3,
+              "prerequisites": [
+                "IS412"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS443",
+              "name_ar": "مراجعة ورقابة نظم المعلومات",
+              "name_en": "Information Systems Audit and Control",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IS444",
+              "name_ar": "موضوعات مختارة في نظم المعلومات المتقدمة 2",
+              "name_en": "Advanced Selected Topics in IS 2",
+              "credits": 3,
+              "prerequisites": [
+                "IS351"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 1
+            }
+          ],
+          "projects": [
+            {
+              "code": "PR421",
+              "name_ar": "مشروع التخرج (1)",
+              "name_en": "Graduation Project (1)",
+              "credits": 3,
+              "prerequisites": [
+                "PASS_55_CREDITS"
+              ],
+              "category": "project",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "PR422",
+              "name_ar": "مشروع التخرج (2)",
+              "name_en": "Graduation Project (2)",
+              "credits": 3,
+              "prerequisites": [
+                "PR421"
+              ],
+              "category": "project",
+              "level": 4,
+              "term": 2
+            }
+          ]
+        }
+      },
+      "IT": {
+        "level_3": {
+          "mandatory": [
+            {
+              "code": "IT312",
+              "name_ar": "التعرف على الأنماط",
+              "name_en": "Pattern Recognition",
+              "credits": 3,
+              "prerequisites": [
+                "BS116"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "notes": "PDF typo normalized from BS117 to BS116.",
+              "term": 1
+            },
+            {
+              "code": "IT313",
+              "name_ar": "تأمين شبكات الحاسبات والمعلومات",
+              "name_en": "Information and Computer Networks Security",
+              "credits": 3,
+              "prerequisites": [
+                "IT111"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "IT314",
+              "name_ar": "إشارات ونظم",
+              "name_en": "Signals and Systems",
+              "credits": 3,
+              "prerequisites": [
+                "BS114"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "IT315",
+              "name_ar": "المعالجات الدقيقة",
+              "name_en": "Microprocessors",
+              "credits": 3,
+              "prerequisites": [
+                "IT211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "SE315",
+              "name_ar": "هندسة البرمجيات متقدم",
+              "name_en": "Advanced Software Engineering",
+              "credits": 3,
+              "prerequisites": [],
+              "category": "it_specialization",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "SE315",
+              "name_ar": "هندسة البرمجيات المتقدمة",
+              "name_en": "Advanced Software Engineering",
+              "credits": 3,
+              "prerequisites": [
+                "SE211"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IT316",
+              "name_ar": "معالجة الصور",
+              "name_en": "Image Processing",
+              "credits": 3,
+              "prerequisites": [
+                "IT314"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IT317",
+              "name_ar": "شبكات الحاسب المتقدمة",
+              "name_en": "Advanced Computer Networks",
+              "credits": 3,
+              "prerequisites": [
+                "IT212"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IT311",
+              "name_ar": "الرسم بالحاسب",
+              "name_en": "Computer Graphics",
+              "credits": 3,
+              "prerequisites": [
+                "CS112"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "IT318",
+              "name_ar": "بنية الحاسبات",
+              "name_en": "Computer Architecture",
+              "credits": 3,
+              "prerequisites": [
+                "BS115"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IT319",
+              "name_ar": "الوسائط الرقمية المتعددة",
+              "name_en": "Digital Multimedia",
+              "credits": 3,
+              "prerequisites": [
+                "IT311"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "CS313",
+              "name_ar": "الذكاء الاصطناعي",
+              "name_en": "Artificial Intelligence",
+              "credits": 3,
+              "prerequisites": [
+                "CS212"
+              ],
+              "category": "applied_computing",
+              "level": 3,
+              "term": 1
+            }
+          ],
+          "electives": [
+            {
+              "code": "IT321",
+              "name_ar": "نظم تشغيل الشبكات",
+              "name_en": "Network Operating Systems",
+              "credits": 3,
+              "prerequisites": [
+                "CS214"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 1
+            },
+            {
+              "code": "IT322",
+              "name_ar": "تكنولوجيا سلسلة الكتل",
+              "name_en": "Blockchain Technology",
+              "credits": 3,
+              "prerequisites": [
+                "IT111"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IT331",
+              "name_ar": "الأنظمة المدمجة",
+              "name_en": "Embedded Systems",
+              "credits": 3,
+              "prerequisites": [
+                "BS115"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            },
+            {
+              "code": "IT332",
+              "name_ar": "رؤية الآلة",
+              "name_en": "Machine Vision",
+              "credits": 3,
+              "prerequisites": [
+                "IT315"
+              ],
+              "category": "elective",
+              "level": 3,
+              "term": 2
+            }
+          ]
+        },
+        "level_4": {
+          "mandatory": [
+            {
+              "code": "IT411",
+              "name_ar": "أنظمة الروبوتات",
+              "name_en": "Robot Systems",
+              "credits": 3,
+              "prerequisites": [
+                "IT314"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "notes": "PDF typo normalized from IT315 to IT314.",
+              "term": 1
+            },
+            {
+              "code": "IT413",
+              "name_ar": "تكنولوجيا الاتصالات",
+              "name_en": "Communication Technology",
+              "credits": 3,
+              "prerequisites": [
+                "IT317"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT414",
+              "name_ar": "الأمن السيبراني",
+              "name_en": "Cyber Security",
+              "credits": 3,
+              "prerequisites": [
+                "IT313"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "CS315",
+              "name_ar": "تحليل البيانات الضخمة",
+              "name_en": "Big Data Analysis",
+              "credits": 3,
+              "prerequisites": [
+                "IS311"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "IT313",
+              "name_ar": "تأمين شبكات الحاسبات والمعلومات",
+              "name_en": "Information and Computer Networks Security",
+              "credits": 3,
+              "prerequisites": [
+                "IT111"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "IT446",
+              "name_ar": "الواقع الافتراضي",
+              "name_en": "Virtual Reality",
+              "credits": 3,
+              "prerequisites": [],
+              "category": "it_specialization",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "IT314",
+              "name_ar": "المتحكمات الدقيقة",
+              "name_en": "Microcontrollers",
+              "credits": 3,
+              "prerequisites": [],
+              "category": "it_specialization",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "IT444",
+              "name_ar": "التنقيب في الوسائط المتعددة",
+              "name_en": "Multimedia Mining",
+              "credits": 3,
+              "prerequisites": [],
+              "category": "it_specialization",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT342",
+              "name_ar": "معالجة الإشارات الرقمية",
+              "name_en": "Digital Signal Processing",
+              "credits": 3,
+              "prerequisites": [],
+              "category": "it_specialization",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT416",
+              "name_ar": "الإنسان الآلي",
+              "name_en": "Robotics",
+              "credits": 3,
+              "prerequisites": [],
+              "category": "it_specialization",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT415",
+              "name_ar": "شبكات الحوسبة السحابية",
+              "name_en": "Cloud Computing Networks",
+              "credits": 3,
+              "prerequisites": [
+                "IT111"
+              ],
+              "category": "applied_computing",
+              "level": 4,
+              "term": 1
+            }
+          ],
+          "electives": [
+            {
+              "code": "IT341",
+              "name_ar": "الرسوميات الحاسوبية",
+              "name_en": "Computer Animation",
+              "credits": 3,
+              "prerequisites": [
+                "CS111"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT342",
+              "name_ar": "الرسم بالحاسب المتقدم",
+              "name_en": "Advanced Computer Graphics",
+              "credits": 3,
+              "prerequisites": [
+                "IT341"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT423",
+              "name_ar": "شبكات المحمول",
+              "name_en": "Mobile Networks",
+              "credits": 3,
+              "prerequisites": [
+                "IT321"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT424",
+              "name_ar": "موضوعات مختارة في شبكات الحاسب",
+              "name_en": "Selected Topics in Computer Networks",
+              "credits": 3,
+              "prerequisites": [
+                "IT317"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT433",
+              "name_ar": "التعرف على الأنماط المتقدم",
+              "name_en": "Advanced Pattern Recognition",
+              "credits": 3,
+              "prerequisites": [
+                "IT312"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT434",
+              "name_ar": "موضوعات مختارة في الأنظمة المدمجة والروبوتات",
+              "name_en": "Selected Topics in Embedded Systems and Robotic",
+              "credits": 3,
+              "prerequisites": [
+                "IT331"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT443",
+              "name_ar": "معالجة الصور المتقدمة",
+              "name_en": "Advanced Image Processing",
+              "credits": 3,
+              "prerequisites": [
+                "IT316"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            },
+            {
+              "code": "IT444",
+              "name_ar": "موضوعات مختارة في الوسائط المتعددة",
+              "name_en": "Selected Topics in Multimedia",
+              "credits": 3,
+              "prerequisites": [
+                "IT319"
+              ],
+              "category": "elective",
+              "level": 4,
+              "term": 2
+            }
+          ],
+          "projects": [
+            {
+              "code": "PR431",
+              "name_ar": "مشروع التخرج (1)",
+              "name_en": "Graduation Project (1)",
+              "credits": 3,
+              "prerequisites": [
+                "PASS_55_CREDITS"
+              ],
+              "category": "project",
+              "level": 4,
+              "term": 1
+            },
+            {
+              "code": "PR432",
+              "name_ar": "مشروع التخرج (2)",
+              "name_en": "Graduation Project (2)",
+              "credits": 3,
+              "prerequisites": [
+                "PR431"
+              ],
+              "category": "project",
+              "level": 4,
+              "term": 2
+            }
+          ]
+        }
+      }
+    }
+  },
+  "manual_curriculum_planning": {
+    "GEN": [
+            {
+        "year": 1,
+        "semesters": [
+          {
+            "semester": 1,
+            "courses": ["UNV112", "UNV117", "BS111", "UNV113", "BS112", "BS116", "CS111"]
+          },
+          {
+            "semester": 2,
+            "courses": ["BS111", "UNV120", "CS112", "UNV114", "BS115", "IT111", "UNV111"]
+          }
+        ]
+      },
+      {
+        "year": 2,
+        "semesters": [
+          {
+            "semester": 1,
+            "courses": ["BS117", "IT211","CS211","SE211","BS114","CS212"]
+          },
+          {
+            "semester": 2,
+            "courses": ["CS214","CS213","IT212","IS212","IS211","UNV119"]
+          }
+        ]
+      }
+    ],
+      "CS": [
+        {
+          "year": 3,
+          "semesters": [
+            {
+              "semester": 1,
+              "courses": ["CS311","CS313","IT311","CS331","IS311","CS312"]
+            },
+            {
+              "semester": 2,
+              "courses": ["SE315","CS314","CS316","CS411","CS315","CS332"]
+            }
+          ]
+        },
+        {
+          "year": 4,
+          "semesters": [
+            {
+              "semester": 1,
+              "courses": ["CS315","CS322","CS311","CS443","CS434","PR411"]
+            },
+            {
+              "semester": 2,
+              "courses": ["CS332","CS415","CS331","CS416","CS433","PR412"]
+            }
+          ]
+        }
+      ],
+    "IS": [
+      {
+        "year": 3,
+        "semesters": [
+          {
+            "semester": 1,
+            "courses": ["CS314","CS313","IS313","IS316","IS351","IS311"]
+          },
+          {
+            "semester": 2,
+            "courses": ["IS315","IS314","IS321","IS342","IS317","IS318"]
+          }
+        ]
+      },
+      {
+        "year": 4,
+        "semesters": [
+          {
+            "semester": 1,
+            "courses": ["IS411","IS341","IS412","IS444","CS314","PR421"]
+          },
+          {
+            "semester": 2,
+            "courses": ["IS414","IS434","IS414","IS321","IS342","PR422"]
+          }
+        ]
+      }
+    ],
+    "IT": [
+      {
+        "year": 3,
+        "semesters": [
+          {
+            "semester": 1,
+            "courses": ["IT315","CS313","IT311","IT314","IT321","IT312"]
+          },
+          {
+            "semester": 2,
+            "courses": ["SE315","IT316","IT319","IT318","IT317","IT322"]
+          }
+        ]
+      },
+      {
+        "year": 4,
+        "semesters": [
+          {
+            "semester": 1,
+            "courses": ["CS315","IT446","IT415","IT313","IT314","PR431"]
+          },
+          {
+            "semester": 2,
+            "courses": ["IT413","IT444","IT414","IT342","IT416","PR432"]
+          }
+        ]
+      }
+    ]
+  }
+}

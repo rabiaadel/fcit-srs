@@ -82,15 +82,16 @@ const validateCreateUser = (req, res, next) => {
   const validRoles = ['admin', 'doctor', 'student'];
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    errors.push('Valid email is required');
-  if (!password || password.length < 8)
-    errors.push('Password must be at least 8 characters');
+    errors.push('البريد الإلكتروني مطلوب وغير صالح');
+  // Password is optional — system auto-generates a secure temp password when not provided
+  if (password && password.length < 8)
+    errors.push('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
   if (!role || !validRoles.includes(role))
-    errors.push(`Role must be one of: ${validRoles.join(', ')}`);
+    errors.push(`الصلاحية غير صالحة`);
   if (!fullNameAr || fullNameAr.trim().length < 2)
-    errors.push('Arabic full name is required (min 2 characters)');
-  if (!fullNameEn || fullNameEn.trim().length < 2)
-    errors.push('English full name is required (min 2 characters)');
+    errors.push('الاسم بالعربي مطلوب (حرفين على الأقل)');
+  if (fullNameEn && fullNameEn.trim().length > 0 && fullNameEn.trim().length < 2)
+    errors.push('الاسم بالإنجليزي يجب أن يكون حرفين على الأقل');
 
   if (errors.length > 0) {
     return res.status(400).json({ success: false, message: errors[0], errors });
@@ -99,18 +100,36 @@ const validateCreateUser = (req, res, next) => {
 };
 
 /**
- * Validate semester status update
+ * Validate semester status — enforces state machine (BUG-003 fix)
  */
-const validateSemesterStatus = (req, res, next) => {
-  const { status } = req.body;
-  const valid = ['upcoming', 'registration', 'active', 'grading', 'closed'];
-  if (!status || !valid.includes(status)) {
-    return res.status(400).json({
-      success: false,
-      message: `Status must be one of: ${valid.join(', ')}`
-    });
+const VALID_TRANSITIONS = {
+  upcoming:     ['registration'],
+  registration: ['active', 'upcoming'],
+  active:       ['grading', 'registration'],
+  grading:      ['closed', 'active'],
+  closed:       [],
+};
+
+const validateSemesterStatus = async (req, res, next) => {
+  const { status: newStatus } = req.body;
+  const { semesterId } = req.params;
+  const allValid = ['upcoming','registration','active','grading','closed'];
+  if (!newStatus || !allValid.includes(newStatus)) {
+    return res.status(422).json({ success:false, message:`Status must be one of: ${allValid.join(', ')}` });
   }
-  next();
+  try {
+    const { query } = require('../config/database');
+    const sem = (await query('SELECT status FROM semesters WHERE id=$1',[semesterId])).rows[0];
+    if (!sem) return res.status(404).json({ success:false, message:'Semester not found' });
+    const allowed = VALID_TRANSITIONS[sem.status] || [];
+    if (!allowed.includes(newStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: `لا يمكن الانتقال من '${sem.status}' إلى '${newStatus}'. الانتقالات المسموحة: [${allowed.join(', ')||'لا يوجد'}]`,
+      });
+    }
+    next();
+  } catch(err) { next(err); }
 };
 
 module.exports = {

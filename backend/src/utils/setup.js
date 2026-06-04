@@ -1,15 +1,16 @@
 // =============================================================================
-// Unified DB Setup — migrate + seed in ONE process with ONE pool
+// Unified DB Setup — schema + migrations + seeds in ONE process
 //
-// [C4-FIX] Root cause: migrate.js and seed.js each call pool.end() after running.
-// Node.js caches modules. When entrypoint calls: node migrate.js && node seed.js
-// as SEPARATE processes → separate pools → WORKS.
-// But migrate.js itself does: require('../config/database') → runs schema → pool.end()
-// then seed.js does require('../config/database') → gets the SAME cached pool
-// which is already ended → "Cannot use a pool after calling end on the pool"
+// Flow:
+//   1. schema.sql          (base DDL)
+//   2. enhancements.sql    (views, helpers)
+//   3. migration_v3.sql    (curriculum_plans, bylaw_config tables)
+//   4. migration_v4.sql    (schema additions)
+//   5. migration_v5.sql    (section_label, constraint fixes)
+//   6. seeds/001–009       (idempotent data population)
 //
-// FIX: Run both in one process. Create pool once. Use it for both. Close once.
-// This also reduces startup time by ~2s (no second process spawn + connect).
+// Every seed file is idempotent (ON CONFLICT safe), so re-running is harmless.
+// The admin-exists check is a performance optimization to skip seeds on warm boots.
 // =============================================================================
 require('dotenv').config();
 const fs   = require('fs');
@@ -20,7 +21,6 @@ const logger = require('./logger');
 const DB_BASE = process.env.DB_MIGRATION_PATH || '/app/database';
 
 // Create a FRESH pool — not the cached one from config/database.js
-// This prevents any interference with the main application pool
 const pool = new Pool({
   host:     process.env.DB_HOST     || 'localhost',
   port:     parseInt(process.env.DB_PORT) || 5432,
@@ -44,41 +44,94 @@ async function runFile(client, filePath, label) {
   return true;
 }
 
+// Ordered list of schema/migration files to run before seeds
+const SCHEMA_FILES = [
+  'schema.sql',
+  'enhancements.sql',
+  'migration_v3.sql',
+  'migration_v4.sql',
+  'migration_v5.sql',
+];
+
 async function setup() {
-  let client;
+  let client = null;
   let exitCode = 0;
 
   try {
     client = await pool.connect();
     logger.info('Setup: connected to database');
 
-    // ── Migrations ────────────────────────────────────────────────────────────
-    logger.info('Running migrations...');
-    await runFile(client, path.join(DB_BASE, 'schema.sql'),       'Schema');
-    await runFile(client, path.join(DB_BASE, 'enhancements.sql'), 'Enhancements');
-    logger.info('Migrations complete');
+    // ── 1. Schema + migrations (always idempotent via IF NOT EXISTS / OR REPLACE) ──
+    logger.info('Running schema and migrations...');
+    for (const file of SCHEMA_FILES) {
+      await runFile(client, path.join(DB_BASE, file), `Schema:${file}`);
+    }
+    logger.info('Schema and migrations complete');
 
-    // ── Seeds ──────────────────────────────────────────────────────────────────
-    logger.info('Running seeds...');
-    const seedsDir = path.join(DB_BASE, 'seeds');
-    if (fs.existsSync(seedsDir)) {
-      const files = fs.readdirSync(seedsDir)
-        .filter(f => f.endsWith('.sql'))
-        .sort();
-      for (const file of files) {
-        await runFile(client, path.join(seedsDir, file), `Seed:${file}`);
+    // ── 2. Seeds — skip if admin already exists (performance guard) ──────────
+    const adminCheck = await client.query(
+      "SELECT id FROM users WHERE role = 'admin' LIMIT 1"
+    ).catch(() => ({ rows: [] }));
+
+    if (adminCheck.rows.length > 0) {
+      logger.info('Admin user already exists. Skipping seeds.');
+    } else {
+      logger.info('Running seeds...');
+      const seedsDir = path.join(DB_BASE, 'seeds');
+      if (fs.existsSync(seedsDir)) {
+        const files = fs.readdirSync(seedsDir)
+          .filter(f => f.endsWith('.sql'))
+          .sort();
+        for (const file of files) {
+          await runFile(client, path.join(seedsDir, file), `Seed:${file}`);
+        }
+      } else {
+        logger.warn('Seeds directory not found');
+      }
+      logger.info('All seeds complete');
+    }
+
+    // ── 3. Historical data — run when student count < 5 ──────────────────
+    // This covers both:
+    //   a) Fresh install (seeds just ran, only 1 demo student exists)
+    //   b) Re-seeded DB (someone wiped data)
+    // The guard < 5 is deliberate: demo student (1) is already there after
+    // seed 010; any count ≥ 5 means historical data was previously generated.
+    //
+    // ROOT CAUSE: generate-historical-data.js was never called from the
+    // entrypoint. This block fixes that by calling seedHistoricalData()
+    // directly from setup.js after seeds complete.
+    let studentCount = 0;
+    try {
+      const sc = await client.query('SELECT COUNT(*)::int AS n FROM students');
+      studentCount = sc.rows[0].n;
+    } catch (_) { /* table may not exist on very first boot */ }
+
+    if (studentCount < 5) {
+      logger.info(`Student count is ${studentCount} — running historical data seeder...`);
+      client.release();
+      client = null; // release before seedHistorical opens its own connection
+      try {
+        const { seedHistoricalData } = require('./seedHistorical');
+        await seedHistoricalData(pool, logger);
+        logger.info('Historical data seeding complete ✓');
+      } catch (histErr) {
+        logger.error('Historical data seeding failed (non-fatal)', {
+          error: histErr.message,
+          stack: histErr.stack?.slice(0, 800),
+        });
       }
     } else {
-      logger.warn('Seeds directory not found');
+      logger.info(`Student count is ${studentCount} — historical data already present, skipping.`);
     }
-    logger.info('All seeds complete');
+
+    logger.info('Database setup complete ✓');
 
   } catch (err) {
-    logger.error('Setup error', { error: err.message, stack: err.stack?.slice(0, 200) });
+    logger.error('Setup error', { error: err.message, stack: err.stack?.slice(0, 500) });
     exitCode = 1;
   } finally {
     if (client) client.release();
-    // Close THIS setup pool, not the application pool
     await pool.end().catch(() => {});
     if (exitCode !== 0) process.exit(exitCode);
   }

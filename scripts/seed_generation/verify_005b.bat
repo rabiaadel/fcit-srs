@@ -1,0 +1,5 @@
+docker exec fcit-srs-postgres psql -U postgres -d student_registration_system -c "SELECT COUNT(*) as active_offerings FROM course_offerings WHERE is_active = TRUE;"
+docker exec fcit-srs-postgres psql -U postgres -d student_registration_system -c "SELECT COUNT(*) as phantom_is421 FROM course_offerings WHERE course_id = (SELECT id FROM courses WHERE code = 'IS421');"
+docker exec fcit-srs-postgres psql -U postgres -d student_registration_system -c "SELECT COUNT(*) as completed_enrollments FROM enrollments WHERE status = 'completed';"
+docker exec fcit-srs-postgres psql -U postgres -d student_registration_system -c "SELECT code, SUM(credits) as passed_creds, total_credits_passed FROM students s JOIN enrollments e ON s.id = e.student_id JOIN course_offerings co ON e.offering_id = co.id JOIN courses c ON c.id = co.course_id WHERE e.status = 'completed' GROUP BY code, total_credits_passed LIMIT 5;"
+docker exec fcit-srs-postgres psql -U postgres -d student_registration_system -c "SELECT code, COUNT(*) as enroll_count FROM enrollments e JOIN students s ON s.id = e.student_id WHERE s.enrollment_year = 2023 AND s.specialization = 'CS' GROUP BY code LIMIT 1;"

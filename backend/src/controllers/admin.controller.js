@@ -6,11 +6,12 @@
 // [B2-FIX] createAnnouncement: triggers notification dispatch
 // [B2-FIX] updateSemesterStatus: triggers registration-open / grading notifications
 // =============================================================================
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { query, withTransaction } = require('../config/database');
 const registrationService = require('../services/registration.service');
 const bylawService = require('../services/bylaw.service');
 const notifService = require('../services/notification.service');
+const { generateStudentCode } = require('../utils/studentCode');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DASHBOARD
@@ -18,11 +19,10 @@ const notifService = require('../services/notification.service');
 // ─────────────────────────────────────────────────────────────────────────────
 const getDashboard = async (req, res, next) => {
   try {
-    // [B1-FIX] Inline stats instead of relying on potentially-missing view
-    const stats = (await query(
+    const statsResult = await query(
       `SELECT
          COUNT(*) FILTER (WHERE academic_status = 'active')   AS active_students,
-         COUNT(*) FILTER (WHERE academic_status = 'warning')  AS warning_students,
+         COUNT(*) FILTER (WHERE academic_status IN ('warning', 'probation'))  AS warning_students,
          COUNT(*) FILTER (WHERE academic_status = 'probation') AS probation_students,
          COUNT(*) FILTER (WHERE academic_status = 'dismissed') AS dismissed_students,
          COUNT(*) FILTER (WHERE academic_status = 'graduated') AS graduated_students,
@@ -30,9 +30,10 @@ const getDashboard = async (req, res, next) => {
          (SELECT COUNT(*) FROM courses WHERE is_active = TRUE) AS active_courses,
          (SELECT COUNT(*) FROM enrollments WHERE status = 'registered') AS current_enrollments,
          (SELECT ROUND(AVG(cgpa)::NUMERIC, 3)
-          FROM students WHERE academic_status IN ('active','warning')) AS avg_cgpa
+          FROM students WHERE academic_status IN ('active','warning','probation')) AS avg_cgpa
        FROM students`
-    )).rows[0];
+    );
+    const stats = statsResult.rows[0];
 
     // [B7-FIX] Use inline query instead of view (idempotent, no view dependency)
     const specStats = (await query(
@@ -55,13 +56,16 @@ const getDashboard = async (req, res, next) => {
     )).rows[0];
 
     const recentWarnings = (await query(
-      `SELECT aw.*, u.full_name_en, s.student_code, sem.label as semester_label
-       FROM academic_warnings aw
-       JOIN students s ON s.id = aw.student_id
+      `SELECT s.id as student_id, u.full_name_ar as student_name, s.student_code, s.cgpa, s.total_warnings, s.current_level, s.academic_status, s.total_credits_passed
+       FROM students s
        JOIN users u ON u.id = s.user_id
-       JOIN semesters sem ON sem.id = aw.semester_id
-       ORDER BY aw.issued_at DESC LIMIT 10`
+       WHERE s.academic_status IN ('warning', 'probation')
+       ORDER BY s.cgpa ASC LIMIT 10`
     )).rows;
+
+    recentWarnings.forEach(w => {
+      w.current_level = bylawService.creditsToLevel(w.total_credits_passed).name_ar;
+    });
 
     return res.json({
       success: true,
@@ -77,20 +81,39 @@ const getUsers = async (req, res, next) => {
   try {
     const { role, page = 1, limit = 20, search } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
+    
+    let baseSql = `FROM users u WHERE 1=1`;
+    const filterParams = [];
+    
+    if (role) { filterParams.push(role); baseSql += ` AND u.role = $${filterParams.length}`; }
+    if (search) {
+      filterParams.push(`%${search}%`);
+      baseSql += ` AND (u.full_name_en ILIKE $${filterParams.length} OR u.full_name_ar ILIKE $${filterParams.length} OR u.email ILIKE $${filterParams.length} OR u.national_id ILIKE $${filterParams.length})`;
+    }
+    
+    const countSql = `SELECT COUNT(*) ${baseSql}`;
+    const countRes = await query(countSql, filterParams);
+    const total = parseInt(countRes.rows[0].count, 10);
+    const totalPages = Math.ceil(total / limit);
+
     let sql = `SELECT u.id, u.email, u.role, u.full_name_ar, u.full_name_en,
                       u.is_active, u.last_login, u.national_id, u.phone, u.created_at
-               FROM users u WHERE 1=1`;
-    const params = [];
-    if (role) { params.push(role); sql += ` AND u.role = $${params.length}`; }
-    if (search) {
-      params.push(`%${search}%`);
-      sql += ` AND (u.full_name_en ILIKE $${params.length} OR u.email ILIKE $${params.length} OR u.national_id ILIKE $${params.length})`;
-    }
+               ${baseSql}`;
+    const params = [...filterParams];
     params.push(parseInt(limit)); sql += ` ORDER BY u.created_at DESC LIMIT $${params.length}`;
     params.push(offset);         sql += ` OFFSET $${params.length}`;
 
     const users = await query(sql, params);
-    return res.json({ success: true, data: { users: users.rows, page: parseInt(page), limit: parseInt(limit) } });
+    return res.json({ 
+      success: true, 
+      data: { 
+        users: users.rows, 
+        page: parseInt(page), 
+        limit: parseInt(limit),
+        total,
+        totalPages
+      } 
+    });
   } catch (err) { next(err); }
 };
 
@@ -98,17 +121,31 @@ const getUsers = async (req, res, next) => {
 const createUser = async (req, res, next) => {
   try {
     const {
-      email, password, role, fullNameAr, fullNameEn,
+      email, role, fullNameAr, fullNameEn,
       nationalId, phone, specialization, enrollmentYear,
       departmentId, academicTitle, track = 'science_math'
     } = req.body;
+    // Admin can create user without specifying a password — system auto-generates a secure temp one.
+    // User MUST change it on first login (must_change_pw = true).
+    // Generate password that ALWAYS satisfies: upper + lower + digit + special
+    const uppers='ABCDEFGHJKLMNPQRSTUVWXYZ', lowers='abcdefghijkmnpqrstuvwxyz', digits='23456789';
+    const rnd=(s)=>s[Math.floor(Math.random()*s.length)];
+    const mix=[rnd(uppers),rnd(lowers),rnd(digits),rnd(uppers),rnd(lowers),rnd(digits),rnd(uppers),rnd(lowers)];
+    // shuffle
+    for(let i=mix.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[mix[i],mix[j]]=[mix[j],mix[i]];}
+    const password = req.body.password || `Tp@${mix.join('')}!`;
 
-    if (!email || !password || !role || !fullNameAr || !fullNameEn) {
-      return res.status(400).json({ success: false, message: 'email, password, role, fullNameAr, fullNameEn required' });
+    const resolvedFullNameEn = fullNameEn && fullNameEn.trim() ? fullNameEn.trim() : fullNameAr.trim();
+
+    if (!email || !role || !fullNameAr) {
+      return res.status(400).json({ success: false, message: 'البريد الإلكتروني والصلاحية والاسم بالعربي مطلوبة' });
     }
+    // Only validate password strength if admin explicitly provided one
+    // (auto-generated passwords always meet requirements)
 
+    // Skip strength check for auto-generated passwords; only validate explicit passwords
     const strongPw = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{8,}$/;
-    if (!strongPw.test(password)) {
+    if (req.body.password && !strongPw.test(password)) {
       return res.status(400).json({ success: false, message: 'Password must include uppercase, lowercase, number, and special character (min 8 chars)' });
     }
 
@@ -116,22 +153,38 @@ const createUser = async (req, res, next) => {
       const hash = await bcrypt.hash(password, 10);
       const user = (await client.query(
         'INSERT INTO users (email, password_hash, role, full_name_ar, full_name_en, national_id, phone) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
-        [email.toLowerCase().trim(), hash, role, fullNameAr, fullNameEn, nationalId || null, phone || null]
+        [email.toLowerCase().trim(), hash, role, fullNameAr, resolvedFullNameEn, nationalId || null, phone || null]
       )).rows[0];
 
       if (role === 'student') {
         const year = enrollmentYear || new Date().getFullYear();
-        const specCode = (specialization || 'CS').toUpperCase();
-        const count = (await client.query(
-          'SELECT COUNT(*) FROM students WHERE enrollment_year = $1 AND specialization = $2',
-          [year, specCode]
-        )).rows[0].count;
-        const code = `${year}${specCode}${String(parseInt(count) + 1).padStart(4, '0')}`;
-        await client.query(
+        // New students default to level 1 (عام / General Program) — no specialization
+        // Specialization only applies for level 3+ students
+        const specCode = specialization ? specialization.toUpperCase() : null;
+        const codePrefix = specCode || 'GEN';
+        const code = await generateStudentCode(year, codePrefix, client);
+        const student = (await client.query(
           `INSERT INTO students (user_id, student_code, enrollment_year, specialization, track)
-           VALUES ($1, $2, $3, $4, $5)`,
+           VALUES ($1, $2, $3, $4, $5) RETURNING id`,
           [user.id, code, year, specCode, track]
-        );
+        )).rows[0];
+
+        // [C9-FIX] Auto-enroll freshman in Semester 1 courses if a registration semester is active
+        const activeSem = (await client.query(`SELECT id FROM semesters WHERE status = 'registration' ORDER BY start_date DESC LIMIT 1`)).rows[0];
+        console.log('AUTO-ENROLL TRIGGERED for student:', student.id, 'activeSem:', activeSem?.id);
+        if (activeSem) {
+          const insertRes = await client.query(
+            `INSERT INTO enrollments (student_id, offering_id, semester_id, status)
+             SELECT $1, co.id, $2, 'registered'
+             FROM course_offerings co
+             JOIN curriculum_plans cp ON cp.course_id = co.course_id
+             JOIN courses c ON c.id = co.course_id
+             WHERE co.semester_id = $2 AND cp.year_of_study = 1 AND cp.semester_in_year = 1 AND co.is_active = TRUE
+             ON CONFLICT DO NOTHING`,
+            [student.id, activeSem.id]
+          );
+          console.log('AUTO-ENROLL INSERT COUNT:', insertRes.rowCount);
+        }
 
       } else if (role === 'doctor') {
         // [B5-FIX] Resolve departmentId — use provided or fall back to first available dept
@@ -192,6 +245,182 @@ const resetPassword = async (req, res, next) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// BULK IMPORT EXCEL
+// ─────────────────────────────────────────────────────────────────────────────
+const validateUsersBulk = async (req, res, next) => {
+  try {
+    const { rows } = req.body;
+    if (!rows || !Array.isArray(rows) || rows.length === 0) {
+      return res.status(400).json({ success: false, message: 'لا توجد بيانات للتحقق' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const allowedRoles = ['admin', 'doctor', 'student'];
+    const previewData = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      // Normalize keys
+      const row = {};
+      Object.keys(r).forEach(k => { row[k.trim().toLowerCase()] = r[k]; });
+
+      const arabic_name = (row.arabic_name || '').toString().trim();
+      const english_name = (row.english_name || '').toString().trim();
+      const email = (row.email || '').toString().trim().toLowerCase();
+      const password = (row.password || '').toString();
+      const role = (row.role || '').toString().trim().toLowerCase();
+      const enrollment_year = parseInt(row.enrollment_year) || null;
+      const specialization = (row.specialization || '').toString().trim().toUpperCase() || null;
+      const department_id = parseInt(row.department_id) || null;
+      const academic_title = (row.academic_title || '').toString().trim() || null;
+
+      let isValid = true;
+      const errors = [];
+
+      if (!arabic_name) { isValid = false; errors.push('الاسم بالعربي مطلوب'); }
+      if (!email) { isValid = false; errors.push('البريد مطلوب'); }
+      else if (!emailRegex.test(email)) { isValid = false; errors.push('صيغة البريد غير صحيحة'); }
+      if (!password || password.length < 6) { isValid = false; errors.push('كلمة المرور يجب أن تكون 6 أحرف على الأقل'); }
+      if (!allowedRoles.includes(role)) { isValid = false; errors.push(`صلاحية غير صالحة. المسموح: ${allowedRoles.join(', ')}`); }
+
+      if (role === 'student') {
+        if (!enrollment_year) {
+          isValid = false;
+          errors.push(`Row ${i + 2}: enrollmentYear is required for students`);
+        } else if (enrollment_year < 2000 || enrollment_year > 2100) {
+          isValid = false;
+          errors.push('سنة الالتحاق غير صالحة');
+        }
+        if (!specialization) {
+          isValid = false;
+          errors.push(`Row ${i + 2}: specialization is required for students`);
+        }
+      } else if (role === 'doctor') {
+        if (!department_id) {
+          isValid = false;
+          errors.push(`Row ${i + 2}: departmentId is required for doctors`);
+        } else {
+          const deptExist = await query('SELECT id FROM departments WHERE id = $1 AND is_active = TRUE', [department_id]);
+          if (deptExist.rows.length === 0) {
+            isValid = false;
+            errors.push('القسم غير موجود أو غير مفعل');
+          }
+        }
+      }
+
+      // Check DB for duplicate email if format is ok
+      if (email && emailRegex.test(email)) {
+        const exist = await query('SELECT id FROM users WHERE email = $1', [email]);
+        if (exist.rows.length > 0) {
+          isValid = false;
+          errors.push('البريد الإلكتروني مسجل مسبقاً');
+        }
+      }
+
+      previewData.push({
+        rowNum: i + 2,
+        arabic_name,
+        english_name,
+        email,
+        password,
+        role,
+        enrollment_year,
+        specialization,
+        department_id,
+        academic_title,
+        isValid,
+        errors
+      });
+    }
+
+    return res.json({ success: true, data: previewData });
+  } catch (err) { next(err); }
+};
+
+const bulkImportUsers = async (req, res, next) => {
+  try {
+    const { users } = req.body;
+    if (!users || !Array.isArray(users) || users.length === 0) {
+      return res.status(400).json({ success: false, message: 'لا توجد بيانات للاستيراد' });
+    }
+
+    let imported = 0;
+    const failed = [];
+
+    await withTransaction(async (client) => {
+      for (let i = 0; i < users.length; i++) {
+        const u = users[i];
+        if (!u.isValid) {
+          failed.push({ email: u.email, reason: 'تم تخطيه (غير صالح)' });
+          continue;
+        }
+
+        const spName = `sp_user_${i}`;
+        await client.query(`SAVEPOINT ${spName}`);
+
+        try {
+          const hash = await bcrypt.hash(u.password, 10);
+          const resolvedEn = u.english_name && u.english_name.trim() ? u.english_name.trim() : u.arabic_name.trim();
+
+          const resDb = await client.query(
+            `INSERT INTO users (full_name_ar, full_name_en, email, password_hash, role, is_active, must_change_pw)
+             VALUES ($1, $2, $3, $4, $5, TRUE, TRUE) RETURNING id`,
+            [u.arabic_name.trim(), resolvedEn, u.email, hash, u.role]
+          );
+          const userId = resDb.rows[0].id;
+
+          // Insert into role-specific tables
+          if (u.role === 'student') {
+            const year = u.enrollment_year || new Date().getFullYear();
+            // Bulk-imported students default to GEN if specialization not provided
+            const specCode = u.specialization || null;
+            const codePrefix = specCode || 'GEN';
+            const studentCode = await generateStudentCode(year, codePrefix, client);
+            
+            await client.query(
+              'INSERT INTO students (user_id, student_code, enrollment_year, specialization) VALUES ($1, $2, $3, $4)',
+              [userId, studentCode, year, specCode]
+            );
+          } else if (u.role === 'doctor') {
+            let resolvedDeptId = u.department_id || null;
+            if (!resolvedDeptId) {
+              const firstDept = (await client.query(
+                'SELECT id FROM departments WHERE is_active = TRUE ORDER BY code LIMIT 1'
+              )).rows[0];
+              resolvedDeptId = firstDept?.id || null;
+            }
+            await client.query(
+              'INSERT INTO doctors (user_id, department_id, academic_title) VALUES ($1, $2, $3)',
+              [userId, resolvedDeptId, u.academic_title || 'Dr.']
+            );
+          }
+          // No separate table insert needed for admin role — admins are identified
+          // solely by users.role = 'admin'. There is no 'admins' table in the schema.
+
+          await client.query(`RELEASE SAVEPOINT ${spName}`);
+          imported++;
+        } catch (e) {
+          await client.query(`ROLLBACK TO SAVEPOINT ${spName}`);
+          console.error(`Bulk import row ${i} error:`, e.message || e);
+          
+          let reason = 'خطأ أثناء الحفظ';
+          if (e.code === '23505') {
+            reason = 'مستخدم موجود مسبقاً (الإيميل مكرر)';
+          }
+          failed.push({ email: u.email, reason });
+        }
+      }
+    });
+
+    return res.json({
+      success: true,
+      message: `تم استيراد ${imported} مستخدم بنجاح`,
+      data: { imported, failedCount: failed.length, failed }
+    });
+  } catch (err) { next(err); }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // STUDENT MANAGEMENT
 // ─────────────────────────────────────────────────────────────────────────────
 const getStudents = async (req, res, next) => {
@@ -229,11 +458,19 @@ const getStudents = async (req, res, next) => {
       query(countSql, params.slice(0, -2))
     ]);
 
+    // Format student level
+    students.rows.forEach(s => {
+      s.current_level = bylawService.creditsToLevel(s.total_credits_passed).name_ar;
+    });
+
     return res.json({
       success: true,
-      data: students.rows,
-      total: parseInt(countRes.rows[0]?.count || 0),
-      page: parseInt(page), limit: parseInt(limit)
+      data: {
+        students: students.rows,
+        total: parseInt(countRes.rows[0]?.count || 0),
+        page: parseInt(page),
+        limit: parseInt(limit)
+      }
     });
   } catch (err) { next(err); }
 };
@@ -249,26 +486,96 @@ const getStudentDetail = async (req, res, next) => {
     if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
 
     const [transcript, gpaHistory, warnings] = await Promise.all([
-      query('SELECT * FROM v_student_transcript WHERE student_id = $1 ORDER BY semester_id, course_code', [studentId]),
       query(
-        `SELECT sg.*, sem.label FROM semester_gpa_records sg
+        `SELECT t.*, sem.semester_type, ay.year_label 
+         FROM v_student_transcript t
+         JOIN semesters sem ON sem.id = t.semester_id
+         LEFT JOIN academic_years ay ON ay.id = sem.academic_year_id
+         WHERE t.student_id = $1 ORDER BY sem.start_date, t.course_code`, 
+         [studentId]
+      ),
+      query(
+        `SELECT sg.*, sem.label, sem.semester_type, ay.year_label 
+         FROM semester_gpa_records sg
          JOIN semesters sem ON sem.id = sg.semester_id
+         LEFT JOIN academic_years ay ON ay.id = sem.academic_year_id
          WHERE sg.student_id = $1 ORDER BY sem.start_date`,
         [studentId]
       ),
       query(
-        `SELECT aw.*, sem.label as semester_label
-         FROM academic_warnings aw JOIN semesters sem ON sem.id = aw.semester_id
+        `SELECT aw.*, sem.label as semester_label, sem.semester_type, ay.year_label
+         FROM academic_warnings aw 
+         JOIN semesters sem ON sem.id = aw.semester_id
+         LEFT JOIN academic_years ay ON ay.id = sem.academic_year_id
          WHERE aw.student_id = $1 ORDER BY aw.issued_at DESC`,
         [studentId]
-      ),
+      )
     ]);
 
     const eligibility = await bylawService.checkGraduationEligibility(studentId);
 
+    // Construct academicInfo
+    const academicInfo = {
+      cgpa: student.cgpa,
+      totalCreditsPassed: student.total_credits_passed,
+      consecutiveWarnings: student.consecutive_warnings,
+      totalWarnings: student.total_warnings,
+      academicStatus: student.academic_status,
+      requiredCredits: eligibility.credits_required || 138,
+      totalPoints: transcript.rows.reduce((sum, r) => sum + (Number(r.grade_points) * Number(r.credits) || 0), 0).toFixed(2)
+    };
+
+    // Group transcript into semesters array
+    const semestersMap = new Map();
+    
+    // First map the gpaHistory to get semester summaries
+    gpaHistory.rows.forEach(r => {
+      const sId = r.semester_id;
+      semestersMap.set(sId, {
+        semesterId: sId,
+        semesterName: r.label,
+        yearLabel: r.year_label,
+        gpa: r.semester_gpa,
+        courses: []
+      });
+    });
+
+    // Then push courses into their respective semesters
+    transcript.rows.forEach(r => {
+      const sId = r.semester_id;
+      if (!semestersMap.has(sId)) {
+        semestersMap.set(sId, {
+          semesterId: sId,
+          semesterName: r.semester_name,
+          yearLabel: r.year_label,
+          gpa: 0,
+          courses: []
+        });
+      }
+      semestersMap.get(sId).courses.push({
+        enrollmentId: r.enrollment_id,
+        courseCode: r.course_code,
+        courseName: r.course_name_ar || r.course_name_en || r.course_name,
+        credits: r.credits,
+        totalGrade: r.total_grade,
+        letterGrade: r.letter_grade
+      });
+    });
+
+    const semesters = Array.from(semestersMap.values()).sort((a, b) => b.semesterId - a.semesterId);
+
     return res.json({
       success: true,
-      data: { student, transcript: transcript.rows, gpaHistory: gpaHistory.rows, warnings: warnings.rows, eligibility }
+      data: { 
+        student, 
+        academicInfo,
+        semesters,
+        transcript: transcript.rows, 
+        gpaHistory: gpaHistory.rows, 
+        warnings: warnings.rows, 
+        eligibility, 
+        graduationEligibility: eligibility 
+      }
     });
   } catch (err) { next(err); }
 };
@@ -282,8 +589,80 @@ const getSemesters = async (req, res, next) => {
     const sems = (await query(
       'SELECT s.*, ay.year_label FROM semesters s JOIN academic_years ay ON ay.id = s.academic_year_id ORDER BY s.start_date DESC'
     )).rows;
+    
+    // Format semester label and compute dynamic status
+    sems.forEach(s => { 
+      s.label = bylawService.getSemesterLabel(s.semester_type, s.year_label) || s.label; 
+      s.status = bylawService.computeSemesterStatus(s);
+    });
+    
     return res.json({ success: true, data: sems });
   } catch (err) { next(err); }
+};
+
+// IT-1: Create new semester (finds/creates academic_year automatically)
+const createSemester = async (req, res, next) => {
+  try {
+    const {
+      yearLabel,           // e.g. "2025-2026"
+      semesterType,        // first | second | summer
+      label,               // e.g. "First Semester 2025"
+      startDate,
+      endDate,
+      registrationStart,
+      registrationEnd,
+      addDropDeadline,
+      withdrawalDeadline,
+      examStart,
+      examEnd,
+      minCredits = 2,
+      maxCreditsDefault = 20,
+    } = req.body;
+
+    if (!yearLabel || !semesterType || !label || !startDate || !endDate ||
+        !registrationStart || !registrationEnd) {
+      return res.status(400).json({ success: false, message: 'yearLabel, semesterType, label, startDate, endDate, registrationStart, registrationEnd are required' });
+    }
+
+    const validTypes = ['first', 'second', 'summer'];
+    if (!validTypes.includes(semesterType)) {
+      return res.status(400).json({ success: false, message: 'semesterType must be first, second, or summer' });
+    }
+
+    // Find or create academic year
+    let ayRow = (await query('SELECT id FROM academic_years WHERE year_label = $1', [yearLabel])).rows[0];
+    if (!ayRow) {
+      const yr = yearLabel.split('-');
+      ayRow = (await query(
+        'INSERT INTO academic_years (year_label, start_date, end_date) VALUES ($1, $2, $3) RETURNING id',
+        [yearLabel, `${yr[0]}-09-01`, `${yr[1] || (+yr[0]+1)}-07-31`]
+      )).rows[0];
+    }
+
+    // addDropDeadline defaults to 14 days after registrationStart
+    const addDrop = addDropDeadline ||
+      new Date(new Date(registrationStart).getTime() + 14 * 86400000).toISOString().slice(0, 10);
+    // withdrawalDeadline defaults to 7 weeks after startDate
+    const withdraw = withdrawalDeadline ||
+      new Date(new Date(startDate).getTime() + 49 * 86400000).toISOString().slice(0, 10);
+
+    const sem = (await query(
+      `INSERT INTO semesters
+         (academic_year_id, semester_type, label, status, start_date, end_date,
+          registration_start, registration_end, add_drop_deadline, withdrawal_deadline,
+          exam_start, exam_end, min_credits, max_credits_default)
+       VALUES ($1,$2,$3,'upcoming',$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       RETURNING *`,
+      [ayRow.id, semesterType, label, startDate, endDate,
+       registrationStart, registrationEnd, addDrop, withdraw,
+       examStart || null, examEnd || null, minCredits, maxCreditsDefault]
+    )).rows[0];
+
+    return res.status(201).json({ success: true, message: 'Semester created', data: { ...sem, year_label: yearLabel } });
+  } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ success: false, message: 'A semester of this type already exists for this academic year' });
+    next(err);
+  }
 };
 
 const updateSemesterStatus = async (req, res, next) => {
@@ -314,6 +693,18 @@ const updateSemesterStatus = async (req, res, next) => {
 const finalizeSemester = async (req, res, next) => {
   try {
     const { semesterId } = req.params;
+    // Guard: only finalize semesters in 'grading' status
+    const sem = (await query('SELECT * FROM semesters WHERE id = $1', [semesterId])).rows[0];
+    if (!sem) return res.status(404).json({ success:false, message:'Semester not found' });
+    
+    const computedStatus = bylawService.computeSemesterStatus(sem);
+    
+    if (computedStatus !== 'grading') {
+      return res.status(400).json({
+        success: false,
+        message: `لا يمكن إنهاء الفصل إلا عندما يكون في حالة الدرجات. الحالة الحالية: ${computedStatus}`,
+      });
+    }
     const result = await registrationService.finalizeSemester(semesterId, req.user.id);
     return res.json({ success: true, message: 'Semester finalized', data: result });
   } catch (err) {
@@ -325,34 +716,85 @@ const finalizeSemester = async (req, res, next) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // COURSE OFFERINGS
 // ─────────────────────────────────────────────────────────────────────────────
+// [FIX-SCHED-1] Helper: checks whether `doctorId` already has a schedule slot that
+// overlaps with any slot in `slots` array [{day, startTime, endTime}], optionally
+// excluding `excludeOfferingId` (used during updates).
+async function checkDoctorScheduleConflict(client, doctorId, slots, excludeOfferingId = null) {
+  if (!doctorId || !slots || slots.length === 0) return null;
+  for (const slot of slots) {
+    const conflict = (await client.query(
+      `SELECT dss.offering_id, c.code AS course_code, dss.day_of_week, dss.start_time, dss.end_time
+       FROM doctor_schedule_slots dss
+       JOIN course_offerings co ON co.id = dss.offering_id
+       JOIN courses c ON c.id = co.course_id
+       WHERE co.doctor_id = $1
+         AND dss.day_of_week = $2
+         AND dss.start_time < $4::time          -- existing starts before new ends
+         AND dss.end_time   > $3::time          -- existing ends   after new starts
+         ${excludeOfferingId ? 'AND dss.offering_id != $5' : ''}`,
+      excludeOfferingId
+        ? [doctorId, slot.day, slot.startTime, slot.endTime, excludeOfferingId]
+        : [doctorId, slot.day, slot.startTime, slot.endTime]
+    )).rows[0];
+    if (conflict) {
+      return `تعارض في الجدول: الدكتور لديه محاضرة (${conflict.course_code}) في نفس الوقت (${conflict.day_of_week} ${conflict.start_time}–${conflict.end_time})`;
+    }
+  }
+  return null;
+}
+
 const createOffering = async (req, res, next) => {
   try {
-    const { semesterId, courseId, doctorId, section = 'A', capacity = 60, schedule, room } = req.body;
+    const { semesterId, courseId, doctorId, capacity = 60, schedule, room } = req.body;
     if (!semesterId || !courseId) {
       return res.status(400).json({ success: false, message: 'semesterId and courseId required' });
     }
-    const offering = (await query(
-      'INSERT INTO course_offerings (semester_id, course_id, doctor_id, section, capacity, schedule, room) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *',
-      [semesterId, courseId, doctorId || null, section, capacity, schedule ? JSON.stringify(schedule) : null, room || null]
-    )).rows[0];
-
-    // [B2-FIX] Notify assigned doctor
-    if (doctorId) {
-      const doctorUser = (await query(
-        'SELECT u.id FROM doctors d JOIN users u ON u.id = d.user_id WHERE d.id = $1', [doctorId]
-      )).rows[0];
-      const courseInfo = (await query('SELECT code, name_en FROM courses WHERE id = $1', [courseId])).rows[0];
-      const semInfo = (await query('SELECT label FROM semesters WHERE id = $1', [semesterId])).rows[0];
-      if (doctorUser && courseInfo && semInfo) {
-        await notifService.onCourseAssigned(
-          doctorUser.id, courseInfo.code, courseInfo.name_en, semInfo.label, section
-        );
+    
+    return withTransaction(async (client) => {
+      // [FIX-SCHED-2] Check for doctor schedule conflicts BEFORE inserting.
+      if (doctorId && schedule && schedule.length > 0) {
+        const conflict = await checkDoctorScheduleConflict(client, doctorId, schedule);
+        if (conflict) return res.status(409).json({ success: false, message: conflict });
       }
-    }
 
-    return res.status(201).json({ success: true, data: offering });
+      const offering = (await client.query(
+        'INSERT INTO course_offerings (semester_id, course_id, doctor_id, capacity, schedule, room) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
+        [semesterId, courseId, doctorId || null, capacity, schedule ? JSON.stringify(schedule) : null, room || null]
+      )).rows[0];
+
+      if (schedule && schedule.length > 0) {
+        for (const slot of schedule) {
+          await client.query(
+            `INSERT INTO doctor_schedule_slots
+               (offering_id, day_of_week, start_time, end_time, room, session_type)
+             VALUES ($1, $2, $3, $4, $5, $6)
+             ON CONFLICT (offering_id, day_of_week, start_time) DO UPDATE
+               SET end_time = EXCLUDED.end_time,
+                   room     = EXCLUDED.room,
+                   session_type = EXCLUDED.session_type`,
+            [offering.id, slot.day, slot.startTime, slot.endTime, slot.room || room || null, slot.type || 'lecture']
+          );
+        }
+      }
+
+      // [B2-FIX] Notify assigned doctor
+      if (doctorId) {
+        const doctorUser = (await client.query(
+          'SELECT u.id FROM doctors d JOIN users u ON u.id = d.user_id WHERE d.id = $1', [doctorId]
+        )).rows[0];
+        const courseInfo = (await client.query('SELECT code, name_en FROM courses WHERE id = $1', [courseId])).rows[0];
+        const semInfo = (await client.query('SELECT label FROM semesters WHERE id = $1', [semesterId])).rows[0];
+        if (doctorUser && courseInfo && semInfo) {
+          await notifService.onCourseAssigned(
+            doctorUser.id, courseInfo.code, courseInfo.name_en, semInfo.label
+          );
+        }
+      }
+
+      return res.status(201).json({ success: true, data: offering });
+    });
   } catch (err) {
-    if (err.code === '23505') return res.status(409).json({ success: false, message: 'Offering already exists for this semester/course/section' });
+    if (err.code === '23505') return res.status(409).json({ success: false, message: 'Offering already exists for this semester/course' });
     next(err);
   }
 };
@@ -363,12 +805,14 @@ const createOffering = async (req, res, next) => {
 // ─────────────────────────────────────────────────────────────────────────────
 const createAnnouncement = async (req, res, next) => {
   try {
-    const { title, body, targetRole, isPinned, expiresAt } = req.body;
-    if (!title || !body) return res.status(400).json({ success: false, message: 'title and body required' });
+    const title = req.body.title || req.body.titleAr || req.body.title_ar;
+    const body  = req.body.body  || req.body.bodyAr  || req.body.body_ar;
+    const { targetRole, isPinned, expiresAt } = req.body;
+    if (!title || !body) return res.status(400).json({ success: false, message: 'title (or titleAr) and body (or bodyAr) required' });
 
     const ann = (await query(
       'INSERT INTO announcements (title, body, target_role, created_by, is_pinned, expires_at) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
-      [title, body, targetRole || null, req.user.id, isPinned || false, expiresAt || null]
+      [title, body, (targetRole && targetRole !== 'all') ? targetRole : null, req.user.id, isPinned || false, expiresAt || null]
     )).rows[0];
 
     // [B2-FIX] Dispatch non-blocking notifications to target audience
@@ -390,6 +834,15 @@ const getAnnouncements = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+const deleteAnnouncement = async (req, res, next) => {
+  try {
+    const { announcementId } = req.params;
+    const result = await query('DELETE FROM announcements WHERE id = $1 RETURNING id', [announcementId]);
+    if (!result.rows[0]) return res.status(404).json({ success: false, message: 'Announcement not found' });
+    return res.json({ success: true, message: 'Announcement deleted' });
+  } catch (err) { next(err); }
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // REPORTS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -397,14 +850,14 @@ const getAcademicReport = async (req, res, next) => {
   try {
     const [topStudents, dismissedStudents, gpaDistribution, levelStats] = await Promise.all([
       query(
-        `SELECT s.student_code, u.full_name_en, s.specialization, s.cgpa,
+        `SELECT s.student_code, u.full_name_ar, u.full_name_en, s.specialization, s.cgpa,
                 s.total_credits_passed, s.current_level, s.semesters_enrolled
          FROM students s JOIN users u ON u.id = s.user_id
          WHERE s.academic_status IN ('active','graduated')
          ORDER BY s.cgpa DESC LIMIT 20`
       ),
       query(
-        `SELECT s.student_code, u.full_name_en, s.specialization, s.cgpa,
+        `SELECT s.student_code, u.full_name_ar, u.full_name_en, s.specialization, s.cgpa,
                 s.total_warnings, s.semesters_enrolled
          FROM students s JOIN users u ON u.id = s.user_id
          WHERE s.academic_status = 'dismissed'
@@ -412,15 +865,15 @@ const getAcademicReport = async (req, res, next) => {
       ),
       query(
         `SELECT
-           COUNT(*) FILTER (WHERE cgpa >= 3.5) as excellent,
-           COUNT(*) FILTER (WHERE cgpa >= 3.0 AND cgpa < 3.5) as very_good,
-           COUNT(*) FILTER (WHERE cgpa >= 2.5 AND cgpa < 3.0) as good,
-           COUNT(*) FILTER (WHERE cgpa >= 2.0 AND cgpa < 2.5) as satisfactory,
-           COUNT(*) FILTER (WHERE cgpa < 2.0) as below_average
+           COUNT(*) FILTER (WHERE cgpa >= 3.5)::int as excellent,
+           COUNT(*) FILTER (WHERE cgpa >= 3.0 AND cgpa < 3.5)::int as very_good,
+           COUNT(*) FILTER (WHERE cgpa >= 2.5 AND cgpa < 3.0)::int as good,
+           COUNT(*) FILTER (WHERE cgpa >= 2.0 AND cgpa < 2.5)::int as satisfactory,
+           COUNT(*) FILTER (WHERE cgpa < 2.0)::int as below_average
          FROM students WHERE academic_status IN ('active','warning')`
       ),
       query(
-        `SELECT current_level, COUNT(*) as count, ROUND(AVG(cgpa), 3) as avg_cgpa
+        `SELECT current_level, COUNT(*)::int as count, ROUND(AVG(cgpa), 3) as avg_cgpa
          FROM students WHERE academic_status IN ('active','warning','probation')
          GROUP BY current_level ORDER BY current_level`
       ),
@@ -460,7 +913,7 @@ const getCourses = async (req, res, next) => {
     const params = [];
     if (department) { params.push(department); sql += ` AND dep.code = $${params.length}`; }
     if (level)      { params.push(parseInt(level)); sql += ` AND c.level = $${params.length}`; }
-    if (category)   { params.push(category); sql += ` AND c.category = $${params.length}`; }
+    if (category)   { params.push(category); sql += ` AND c.category::text = $${params.length}::text`; }
     if (active !== undefined) { params.push(active === 'true'); sql += ` AND c.is_active = $${params.length}`; }
     sql += ' GROUP BY c.id, dep.code, dep.name_en ORDER BY c.level, c.code';
     const result = await query(sql, params);
@@ -581,9 +1034,15 @@ const getOfferings = async (req, res, next) => {
   try {
     const { semesterId, courseId, doctorId } = req.query;
     let sql = `
-      SELECT co.*, c.code, c.name_en, c.credits, c.level,
-             u.full_name_en as doctor_name,
-             sem.label as semester_label, sem.status as semester_status
+      SELECT co.*, c.code, c.name_en, c.name_ar, c.credits, c.level,
+             u.full_name_en as doctor_name, u.full_name_ar as doctor_name_ar,
+             sem.label as semester_label, sem.status as semester_status,
+             (SELECT json_agg(json_build_object(
+               'id', dss.id, 'day', dss.day_of_week,
+               'start', dss.start_time::text, 'end', dss.end_time::text,
+               'room', dss.room, 'type', dss.session_type
+             ) ORDER BY dss.day_of_week, dss.start_time)
+              FROM doctor_schedule_slots dss WHERE dss.offering_id = co.id) as schedule_slots
       FROM course_offerings co
       JOIN courses c ON c.id = co.course_id
       LEFT JOIN doctors d ON d.id = co.doctor_id
@@ -606,22 +1065,55 @@ const getOfferings = async (req, res, next) => {
 const updateOffering = async (req, res, next) => {
   try {
     const { offeringId } = req.params;
-    const { capacity, doctorId, section, schedule, room, isActive } = req.body;
+    const { capacity, doctorId, schedule, room, isActive } = req.body;
 
-    const offering = (await query(
-      `UPDATE course_offerings SET
-         capacity = COALESCE($1, capacity),
-         doctor_id = COALESCE($2::uuid, doctor_id),
-         section = COALESCE($3, section),
-         schedule = COALESCE($4::jsonb, schedule),
-         room = COALESCE($5, room),
-         is_active = COALESCE($6, is_active)
-       WHERE id = $7 RETURNING *`,
-      [capacity, doctorId || null, section, schedule ? JSON.stringify(schedule) : null, room, isActive, offeringId]
-    )).rows[0];
+    return withTransaction(async (client) => {
+      // [FIX-SCHED-3] When updating doctor or schedule, check for conflicts.
+      // Determine effective doctorId: use supplied value or fall back to existing.
+      let effectiveDoctorId = doctorId;
+      if (!effectiveDoctorId) {
+        const cur = (await client.query('SELECT doctor_id FROM course_offerings WHERE id = $1', [offeringId])).rows[0];
+        effectiveDoctorId = cur?.doctor_id;
+      }
+      if (effectiveDoctorId && schedule && schedule.length > 0) {
+        const conflict = await checkDoctorScheduleConflict(client, effectiveDoctorId, schedule, offeringId);
+        if (conflict) return res.status(409).json({ success: false, message: conflict });
+      }
 
-    if (!offering) return res.status(404).json({ success: false, message: 'Offering not found' });
-    return res.json({ success: true, data: offering });
+      const offering = (await client.query(
+        `UPDATE course_offerings SET
+           capacity = COALESCE($1, capacity),
+           doctor_id = COALESCE($2::uuid, doctor_id),
+           schedule = COALESCE($3::jsonb, schedule),
+           room = COALESCE($4, room),
+           is_active = COALESCE($5, is_active)
+         WHERE id = $6 RETURNING *`,
+        [capacity, doctorId || null, schedule ? JSON.stringify(schedule) : null, room, isActive, offeringId]
+      )).rows[0];
+
+      if (!offering) return res.status(404).json({ success: false, message: 'Offering not found' });
+
+      if (schedule && schedule.length > 0) {
+        // Since we are updating, it's safer to clear existing and recreate or rely on ON CONFLICT
+        // The user spec said ON CONFLICT DO UPDATE, which implies we should keep existing ones.
+        // However, if a slot was removed from the schedule array, it would not be deleted here.
+        // For now, I am strictly following the user's provided insert/upsert pattern:
+        for (const slot of schedule) {
+          await client.query(
+            `INSERT INTO doctor_schedule_slots
+               (offering_id, day_of_week, start_time, end_time, room, session_type)
+             VALUES ($1, $2, $3, $4, $5, $6)
+             ON CONFLICT (offering_id, day_of_week, start_time) DO UPDATE
+               SET end_time = EXCLUDED.end_time,
+                   room     = EXCLUDED.room,
+                   session_type = EXCLUDED.session_type`,
+            [offeringId, slot.day, slot.startTime, slot.endTime, slot.room || room || null, slot.type || 'lecture']
+          );
+        }
+      }
+
+      return res.json({ success: true, data: offering });
+    });
   } catch (err) { next(err); }
 };
 
@@ -713,10 +1205,12 @@ const adminForceDropStudent = async (req, res, next) => {
     const { reason = 'Admin force drop' } = req.body;
 
     const enrollment = (await query(
-      `SELECT e.*, c.code, c.name_en FROM enrollments e
+      `SELECT e.*, c.code, c.name_en
+       FROM enrollments e
        JOIN course_offerings co ON co.id = e.offering_id
-       JOIN courses c ON c.id = co.course_id
-       WHERE e.id = $1 AND e.student_id = $2`,
+       JOIN courses c            ON c.id  = co.course_id
+       WHERE e.id = $1
+         AND e.student_id = $2`,
       [enrollmentId, studentId]
     )).rows[0];
     if (!enrollment) return res.status(404).json({ success: false, message: 'Enrollment not found' });
@@ -754,7 +1248,7 @@ const getStudentEnrollments = async (req, res, next) => {
 
     let sql = `
       SELECT e.*, c.code, c.name_en, c.credits, c.level, c.category,
-             co.section, sem.label as semester_label, sem.status as semester_status,
+             sem.label as semester_label, sem.status as semester_status,
              u.full_name_en as doctor_name
       FROM enrollments e
       JOIN course_offerings co ON co.id = e.offering_id
@@ -835,9 +1329,10 @@ const toggleRegistration = async (req, res, next) => {
 module.exports = {
   // Original
   getDashboard, getUsers, createUser, updateUser, resetPassword,
+  validateUsersBulk, bulkImportUsers,
   getStudents, getStudentDetail,
-  getSemesters, updateSemesterStatus, finalizeSemester,
-  createOffering, createAnnouncement, getAnnouncements, getAcademicReport,
+  getSemesters, createSemester, updateSemesterStatus, finalizeSemester,
+  createOffering, createAnnouncement, getAnnouncements, deleteAnnouncement, getAcademicReport,
   // [C6-FIX] Course management
   getCourses, createCourse, updateCourse, deleteCourse, addPrerequisite,
   // Offerings management

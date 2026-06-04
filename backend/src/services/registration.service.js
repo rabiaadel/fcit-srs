@@ -15,19 +15,27 @@ const logger = require('../utils/logger');
 // ─────────────────────────────────────────────────────────────────────────────
 async function registerCourse(studentId, offeringId) {
   return withTransaction(async (client) => {
+    // BUG-010 FIX: SELECT FOR UPDATE locks the offering row to prevent concurrent over-enrollment.
+    // Two simultaneous requests will serialize here — second sees updated enrolled_count.
     const offering = (await client.query(
       `SELECT co.*, c.id as course_id, c.credits, c.name_en, c.code,
               sem.label as semester_label
        FROM course_offerings co
        JOIN courses c ON c.id = co.course_id
        JOIN semesters sem ON sem.id = co.semester_id
-       WHERE co.id = $1`,
+       WHERE co.id = $1
+       FOR UPDATE OF co`,
       [offeringId]
     )).rows[0];
     if (!offering) throw new Error('Course offering not found');
 
+    // Capacity check AFTER lock (prevents race condition — TC-209)
+    if (offering.enrolled_count >= offering.capacity) {
+      throw Object.assign(new Error(`هذه الشعبة ممتلئة (${offering.enrolled_count}/${offering.capacity}). يرجى اختيار شعبة أخرى.`), { statusCode: 409 });
+    }
+
     // Bylaw validation
-    const check = await bylawService.canStudentRegisterCourse(studentId, offering.course_id, offering.semester_id);
+    const check = await bylawService.canStudentRegisterCourse(studentId, offering.course_id, offering.semester_id, offering.id);
     if (!check.allowed) throw new Error(check.reason);
 
     // Determine attempt number
@@ -47,15 +55,32 @@ async function registerCourse(studentId, offeringId) {
     )).rows[0];
 
     const isImprovementRetake = !!hasPreviousPass;
+    // Art. 23 vs Art. 24 distinction:
+    // - 'improvement' retake = student previously PASSED but wants a better grade (Art. 24, capped at 3)
+    // - 'avoidance' retake   = student previously FAILED and is at risk of dismissal (Art. 23, uncapped)
+    // - 'failed' retake      = student previously FAILED, no dismissal risk
+    const studentForRetake = isImprovementRetake ? null :
+      (await client.query('SELECT cgpa FROM students WHERE id = $1', [studentId])).rows[0];
+    const isAvoidanceRetake = !isImprovementRetake && studentForRetake && parseFloat(studentForRetake.cgpa) < 2.0;
+
+    const previousEnrollments = (await client.query(
+      `SELECT e.id FROM enrollments e JOIN course_offerings co ON co.id = e.offering_id
+       WHERE e.student_id = $1 AND co.course_id = $2 AND e.status = 'completed'
+       ORDER BY e.created_at DESC LIMIT 1`,
+      [studentId, offering.course_id]
+    )).rows;
+    
+    const originalEnrollmentId = previousEnrollments.length > 0 ? previousEnrollments[0].id : null;
 
     if (isImprovementRetake || attemptNumber > 1) {
-      const retakeType = isImprovementRetake ? 'improvement' : 'failed';
+      // Art. 23: avoidance retake (CGPA < 2.0, failed course) is uncapped; Art. 24: improvement is capped at 3
+      const retakeType = isImprovementRetake ? 'improvement' : (isAvoidanceRetake ? 'avoidance' : 'failed');
       await client.query(
-        `INSERT INTO course_retake_log (student_id, course_id, retake_type, attempt_count)
-         VALUES ($1, $2, $3, $4)
-         ON CONFLICT (student_id, course_id)
+        `INSERT INTO course_retake_log (student_id, course_id, retake_type, attempt_count, original_enrollment_id)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (student_id, course_id, retake_type, original_enrollment_id)
          DO UPDATE SET attempt_count = $4, updated_at = NOW()`,
-        [studentId, offering.course_id, retakeType, attemptNumber]
+        [studentId, offering.course_id, retakeType, attemptNumber, originalEnrollmentId]
       );
     }
 
@@ -111,6 +136,12 @@ async function dropCourse(enrollmentId, studentId) {
     await client.query(
       'UPDATE enrollments SET status = $1, withdrawn_at = NOW(), updated_at = NOW() WHERE id = $2',
       ['dropped', enrollmentId]
+    );
+
+    // Decrement enrolled_count so the seat becomes available for other students
+    await client.query(
+      'UPDATE course_offerings SET enrolled_count = GREATEST(0, enrolled_count - 1) WHERE id = $1',
+      [enrollment.offering_id]
     );
 
     // [B2-FIX] Notify student
@@ -173,7 +204,13 @@ async function withdrawCourse(enrollmentId, studentId, reason = '') {
 // ─────────────────────────────────────────────────────────────────────────────
 async function enterGrades(enrollmentId, grades, enteredById) {
   return withTransaction(async (client) => {
-    const { midterm_grade, coursework_grade, practical_grade, final_exam_grade } = grades;
+    // [FIX-GRADES-1] Normalize: empty strings → null, otherwise parse to float.
+    // Empty strings ('') cannot be stored in numeric columns and cause a 400 DB error.
+    const toNum = (v) => (v === '' || v === null || v === undefined) ? null : parseFloat(v);
+    const midterm_grade    = toNum(grades.midterm_grade);
+    const coursework_grade = toNum(grades.coursework_grade);
+    const practical_grade  = toNum(grades.practical_grade);
+    const final_exam_grade = toNum(grades.final_exam_grade);
 
     const errors = gpaService.validateGradeEntry({
       midterm: midterm_grade, coursework: coursework_grade,
@@ -213,8 +250,18 @@ async function enterGrades(enrollmentId, grades, enteredById) {
       practical: practical_grade, final_exam: final_exam_grade
     });
 
+    // [FIX-GRADE-NULL] If total is null it means ALL four components were null —
+    // the doctor sent an empty save (e.g. bulk-save for a not-yet-graded student).
+    // Do NOT write anything to the DB in this case; the row stays ungraded.
+    if (total === null) {
+      logger.info('enterGrades: all components null — skipping write for ungraded student', { enrollmentId });
+      return { success: true, total_grade: null, letter_grade: null, grade_points: null };
+    }
+
     let letter, points;
-    if (parseFloat(final_exam_grade) < 30) {
+    // [FIX-GRADES-2] final_exam_grade is null when not yet entered; only auto-fail
+    // when a value is actually provided AND it is below 30 (i.e. < 50% of 60).
+    if (final_exam_grade !== null && final_exam_grade < 30) {
       letter = 'F'; points = 0.0;
     } else {
       letter = gpaService.percentageToLetter(total);
@@ -239,7 +286,8 @@ async function enterGrades(enrollmentId, grades, enteredById) {
     )).rows[0];
 
     if (existing.attempt_number > 1 || existing.is_improvement_retake) {
-      await client.query('SELECT process_retake_grade($1, $2)', [courseRef.student_id, courseRef.course_id]);
+      const pRetakeType = existing.is_improvement_retake ? 'improvement' : 'failed';
+      await client.query('SELECT process_retake_grade($1, $2, $3)', [courseRef.student_id, courseRef.course_id, pRetakeType]);
     } else {
       await client.query('SELECT recompute_student_cgpa($1)', [courseRef.student_id]);
     }
@@ -267,6 +315,102 @@ async function finalizeSemester(semesterId, adminId) {
     const semester = (await client.query('SELECT * FROM semesters WHERE id = $1', [semesterId])).rows[0];
     if (!semester) throw new Error('Semester not found');
     if (semester.status === 'closed') throw new Error('Semester already closed');
+
+    // ── Art. 14 — Attendance barring must run BEFORE grade processing ──
+    // Students with < 75% attendance AND at least 1 recorded session get Abs grade
+    const MIN_ATTEND = require('../config/constants').MIN_ATTENDANCE_PCT || 75;
+    const barredEnrollments = (await client.query(
+      `SELECT e.id AS enrollment_id, e.student_id, e.offering_id,
+              a.attendance_pct, u.id AS student_user_id
+       FROM enrollments e
+       JOIN course_offerings co ON co.id = e.offering_id
+       LEFT JOIN attendance_summary a ON a.enrollment_id = e.id
+       JOIN students s ON s.id = e.student_id
+       JOIN users u ON u.id = s.user_id
+       WHERE co.semester_id = $1
+         AND e.status = 'registered'
+         AND a.total_sessions > 0
+         AND a.attendance_pct < $2`,
+      [semesterId, MIN_ATTEND]
+    )).rows;
+
+    let absCount = 0;
+    for (const barred of barredEnrollments) {
+      // Assign Abs grade — counts as fail for GPA (grade_points = 0), not counted in credits passed
+      await client.query(
+        `UPDATE enrollments SET
+           letter_grade = 'Abs', grade_points = 0.0, total_grade = 0,
+           is_counted_in_gpa = TRUE, status = 'completed',
+           grade_entered_at = NOW(), updated_at = NOW()
+         WHERE id = $1`,
+        [barred.enrollment_id]
+      );
+      // Recompute CGPA with Abs grade
+      await client.query('SELECT recompute_student_cgpa($1)', [barred.student_id]);
+      // Notify student (Art. 14)
+      if (barred.student_user_id) {
+        try {
+          await client.query(
+            `INSERT INTO notifications (user_id, title, message, type, created_at)
+             VALUES ($1, 'تحذير: حرمان من الامتحان', $2, 'warning', NOW())`,
+            [barred.student_user_id,
+             `تم حرمانك من الامتحان النهائي بسبب الغياب الزائد (نسبة حضورك: ${barred.attendance_pct?.toFixed(1)}%). سيتم تسجيل درجة غياب (Abs) في سجلك الأكاديمي.`]
+          );
+        } catch (err) {
+          if (err.code === '42703') {
+            await client.query(
+              `INSERT INTO notifications (user_id, title, message, created_at)
+               VALUES ($1, 'تحذير: حرمان من الامتحان', $2, NOW())`,
+              [barred.student_user_id,
+               `تم حرمانك من الامتحان النهائي بسبب الغياب الزائد (نسبة حضورك: ${barred.attendance_pct?.toFixed(1)}%). سيتم تسجيل درجة غياب (Abs) في سجلك الأكاديمي.`]
+            );
+          } else {
+            throw err;
+          }
+        }
+      }
+      absCount++;
+    }
+
+    // ── Art. 14 — Incomplete (I) grade for excused absence from final exam ──
+    // Students who: (1) have a valid excuse approved, (2) attended ≥75%, AND (3) scored
+    // ≥60% of non-final coursework should receive grade I instead of Abs or 0.
+    const incompleteEnrollments = (await client.query(
+      `SELECT e.id AS enrollment_id, e.student_id,
+              e.midterm_grade, e.coursework_grade, e.practical_grade
+       FROM enrollments e
+       JOIN course_offerings co ON co.id = e.offering_id
+       LEFT JOIN attendance_summary a ON a.enrollment_id = e.id
+       WHERE co.semester_id = $1
+         AND e.status = 'registered'
+         AND e.final_exam_grade IS NULL
+         AND e.excuse_approved = TRUE
+         AND (a.attendance_pct IS NULL OR a.attendance_pct >= $2)
+         AND (
+           COALESCE(e.midterm_grade, 0) + COALESCE(e.coursework_grade, 0) + COALESCE(e.practical_grade, 0)
+         ) >= 24`,   // 60% of 40 non-final marks
+      [semesterId, MIN_ATTEND]
+    )).rows;
+
+    for (const inc of incompleteEnrollments) {
+      await client.query(
+        `UPDATE enrollments SET
+           letter_grade = 'I', grade_points = NULL, is_counted_in_gpa = FALSE,
+           status = 'completed', grade_entered_at = NOW(), updated_at = NOW()
+         WHERE id = $1`,
+        [inc.enrollment_id]
+      );
+    }
+
+    // Also process students who are still 'registered' but have no attendance recorded
+    // (sessions = 0 or NULL) — mark as completed with null grades (not penalized for missing attendance data)
+    await client.query(
+      `UPDATE enrollments SET status = 'completed', updated_at = NOW()
+       WHERE offering_id IN (SELECT id FROM course_offerings WHERE semester_id = $1)
+         AND status = 'registered'
+         AND id NOT IN (SELECT enrollment_id FROM attendance_summary WHERE total_sessions > 0 AND attendance_pct < $2)`,
+      [semesterId, MIN_ATTEND]
+    );
 
     const students = (await client.query(
       'SELECT DISTINCT student_id FROM enrollments WHERE semester_id = $1 AND status = $2',
@@ -310,6 +454,9 @@ async function finalizeSemester(semesterId, adminId) {
       );
 
       const updatedStudent = (await client.query('SELECT * FROM students WHERE id = $1', [student_id])).rows[0];
+
+      // WARNING: process_semester_warnings() SQL function must NEVER be called for the same
+      // semester — it duplicates this logic and will double-count warnings.
       const needsWarning = bylawService.shouldReceiveWarning(updatedStudent);
 
       // Get student user_id for notifications
@@ -375,8 +522,15 @@ async function finalizeSemester(semesterId, adminId) {
     // [B2-FIX] Broadcast semester-closed notification (non-blocking)
     notifService.onSemesterClosed(semester.label);
 
-    logger.info('Semester finalized', { semesterId, studentsProcessed: students.length });
-    return { processed: students.length, results };
+    logger.info('Semester finalized', { semesterId, studentsProcessed: students.length, absCount });
+    return {
+      processed: students.length,
+      studentsProcessed: students.length,
+      warningsIssued: results.filter(r => !r.dismissed).length,
+      dismissals: results.filter(r => r.dismissed).length,
+      absGradesAssigned: absCount,
+      results,
+    };
   });
 }
 
@@ -384,14 +538,20 @@ async function finalizeSemester(semesterId, adminId) {
 // GET STUDENT SCHEDULE
 // ─────────────────────────────────────────────────────────────────────────────
 async function getStudentSchedule(studentId, semesterId) {
-  const res = await query(
+  const enrollments = (await query(
     `SELECT e.id as enrollment_id, e.status, e.attempt_number,
             e.total_grade, e.letter_grade, e.grade_points,
             c.code, c.name_ar, c.name_en, c.credits, c.category,
-            co.section, co.schedule, co.room, co.capacity, co.enrolled_count,
-            u.full_name_en as doctor_name,
+            co.id as offering_id, co.room, co.capacity, co.enrolled_count,
+            u.full_name_en as doctor_name, u.full_name_ar as doctor_name_ar,
             a.attendance_pct,
-            CASE WHEN a.attendance_pct < 42 AND a.total_sessions > 0 THEN TRUE ELSE FALSE END as below_attendance_minimum
+            (SELECT json_agg(json_build_object(
+              'id', dss.id, 'day', dss.day_of_week,
+              'start', dss.start_time::text, 'end', dss.end_time::text,
+              'room', dss.room, 'type', dss.session_type
+            ) ORDER BY dss.day_of_week, dss.start_time)
+             FROM doctor_schedule_slots dss WHERE dss.offering_id = co.id) as schedule_slots,
+            CASE WHEN a.attendance_pct < 75 AND a.total_sessions > 0 THEN TRUE ELSE FALSE END as below_attendance_minimum
      FROM enrollments e
      JOIN course_offerings co ON co.id = e.offering_id
      JOIN courses c ON c.id = co.course_id
@@ -402,8 +562,31 @@ async function getStudentSchedule(studentId, semesterId) {
        AND e.status IN ('registered', 'completed')
      ORDER BY c.code`,
     [studentId, semesterId]
-  );
-  return res.rows;
+  )).rows;
+
+  const DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+  const weeklyGrid = {};
+  for (const day of DAYS) weeklyGrid[day] = [];
+
+  for (const enrollment of enrollments) {
+    if (enrollment.schedule_slots) {
+      for (const slot of enrollment.schedule_slots) {
+        if (weeklyGrid[slot.day]) {
+          weeklyGrid[slot.day].push({
+            ...slot,
+            courseCode: enrollment.code,
+            courseName: enrollment.name_en,
+            courseNameAr: enrollment.name_ar,
+            offeringId: enrollment.offering_id,
+            doctorName: enrollment.doctor_name,
+            doctorNameAr: enrollment.doctor_name_ar,
+          });
+        }
+      }
+    }
+  }
+
+  return { enrollments, weeklyGrid };
 }
 
 module.exports = {

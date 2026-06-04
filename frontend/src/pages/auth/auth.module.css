@@ -1,0 +1,374 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Auth Page Styles — Login, ForgotPassword, ChangePassword
+   Split-panel layout: decorative left panel + form right panel (RTL)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Keyframes ───────────────────────────────────────────────────────────── */
+@keyframes gradientDrift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes floatSlow {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
+/* ── Split Panel Shell ───────────────────────────────────────────────────── */
+.splitShell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row-reverse; /* RTL: form on right, deco on left */
+  font-family: var(--font-family);
+  direction: rtl;
+}
+
+/* ── Right panel (RTL primary — the form) ───────────────────────────────── */
+.formPanel {
+  flex: 0 0 480px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px;
+  background: #ffffff;
+  min-height: 100vh;
+  position: relative;
+  z-index: 2;
+  box-shadow: -4px 0 40px rgba(0,0,0,0.08);
+}
+
+/* ── Left decorative panel ───────────────────────────────────────────────── */
+.decoPanel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 40%, #1d4ed8 70%, #2563eb 100%);
+  background-size: 300% 300%;
+  animation: gradientDrift 18s ease infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+.decoPanel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 40%, rgba(59,130,246,0.3) 0%, transparent 60%),
+              radial-gradient(ellipse at 20% 80%, rgba(79,70,229,0.25) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Geometric floating shapes in the deco panel */
+.decoShape1, .decoShape2, .decoShape3 {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  pointer-events: none;
+}
+.decoShape1 {
+  width: 320px; height: 320px;
+  background: #ffffff;
+  top: -80px; left: -80px;
+  animation: floatSlow 10s ease-in-out infinite;
+}
+.decoShape2 {
+  width: 200px; height: 200px;
+  background: #60a5fa;
+  bottom: -40px; right: -40px;
+  animation: floatSlow 13s ease-in-out infinite reverse;
+  opacity: 0.12;
+}
+.decoShape3 {
+  width: 120px; height: 120px;
+  background: #a5b4fc;
+  top: 40%; left: 55%;
+  animation: floatSlow 7s ease-in-out infinite;
+  opacity: 0.1;
+}
+
+.decoBrand {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.decoBrandIcon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+.decoBrandName {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.decoTagline {
+  position: relative;
+  z-index: 2;
+  font-size: 17px;
+  font-weight: var(--font-weight-semibold);
+  color: rgba(255,255,255,0.9);
+  text-align: center;
+  max-width: 320px;
+  line-height: var(--line-height-relaxed);
+  margin-bottom: 48px;
+}
+
+.decoIllustration {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 320px;
+  animation: floatSlow 8s ease-in-out infinite;
+}
+
+/* ── Form card content ───────────────────────────────────────────────────── */
+.formInner {
+  width: 100%;
+  max-width: 380px;
+  animation: fadeSlideUp 0.4s ease both;
+}
+
+.formBranding {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  justify-content: center;
+}
+.formBrandIcon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #1d4ed8, #4f46e5);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+.formBrandName {
+  color: #1e293b;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.title {
+  color: #1e293b;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+.subtitle {
+  color: #94a3b8;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+/* ── Form elements ───────────────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.inputWrap {
+  position: relative;
+  width: 100%;
+}
+.inputIcon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.authInput {
+  width: 100%;
+  padding: 13px 44px 13px 44px;
+  font-size: 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #0f172a;
+  outline: none;
+  font-family: var(--font-family);
+  direction: rtl;
+  transition: all 0.2s;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  box-sizing: border-box;
+}
+.authInput:focus {
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+.authInput::placeholder { color: #94a3b8; }
+
+.eyeBtn {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-base);
+}
+.eyeBtn:hover { color: #475569; }
+
+.submitBtn {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  margin-top: 4px;
+}
+.submitBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1e40af, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+.submitBtn:active:not(:disabled) { transform: translateY(0); }
+.submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.forgotLink {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 13px;
+}
+.forgotLink a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color var(--transition-base);
+}
+.forgotLink a:hover { color: #1d4ed8; text-decoration: underline; }
+
+/* ── Demo credentials ────────────────────────────────────────────────────── */
+.demoSection {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+}
+.demoTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.demoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.demoBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: var(--font-family);
+  position: relative;
+}
+.demoBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.demoBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+.demoBadge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+.demoLabel {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ── Responsive — mobile: stack panels ───────────────────────────────────── */
+@media (max-width: 768px) {
+  .splitShell {
+    flex-direction: column-reverse;
+  }
+  .formPanel {
+    flex: none;
+    max-width: 100%;
+    width: 100%;
+    padding: 32px 24px;
+    box-shadow: none;
+    min-height: auto;
+  }
+  .decoPanel {
+    display: none; /* collapsed on mobile */
+  }
+}
+
+/* ── Legacy AuthLayout fallback (used by ForgotPage / ChangePwPage) ──────── */
+.legacyWrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(-45deg, #0f172a, #1e3a8a, #312e81, #0f172a);
+  background-size: 400% 400%;
+  animation: gradientDrift 15s ease infinite;
+  padding: 24px;
+  font-family: var(--font-family);
+}

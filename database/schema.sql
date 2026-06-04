@@ -13,13 +13,15 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- =============================================================================
 
 DO $$ BEGIN CREATE TYPE user_role AS ENUM ('admin', 'doctor', 'student'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE TYPE semester_type AS ENUM ('fall', 'spring', 'summer'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE semester_type AS ENUM ('first', 'second', 'summer'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE semester_status AS ENUM ('upcoming', 'registration', 'active', 'grading', 'closed'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE enrollment_status AS ENUM ('registered', 'withdrawn', 'excused_withdrawn', 'dropped', 'completed'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE grade_code AS ENUM ('A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F','P','W','Abs','I','Con'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE TYPE specialization_code AS ENUM ('CS', 'IS', 'IT', 'SE'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+-- [AUDIT-I-22 FIX] SE removed from approved specializations. Only CS, IS, IT are active.
+-- Live databases use migration 026_fix_se_enum_and_project_offerings.sql to remove SE.
+DO $$ BEGIN CREATE TYPE specialization_code AS ENUM ('CS', 'IS', 'IT'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE course_category AS ENUM ('university_req', 'math_science', 'basic_computing', 'applied_computing', 'elective', 'project', 'training'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE TYPE student_level AS ENUM ('freshman', 'sophomore', 'junior', 'senior'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE student_level AS ENUM ('الفرقة الأولى', 'الفرقة الثانية', 'الفرقة الثالثة', 'الفرقة الرابعة'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE academic_status AS ENUM ('active', 'warning', 'probation', 'dismissed', 'graduated', 'on_leave', 'withdrawn'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE track_type AS ENUM ('science_math', 'science_science'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE warning_type AS ENUM ('academic', 'attendance', 'dismissal'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -90,7 +92,7 @@ CREATE TABLE IF NOT EXISTS students (
     enrollment_year     INT NOT NULL,
     specialization      specialization_code,
     track               track_type NOT NULL DEFAULT 'science_math',
-    current_level       student_level DEFAULT 'freshman',
+    current_level       student_level DEFAULT 'الفرقة الأولى',
     academic_status     academic_status DEFAULT 'active',
     cgpa                NUMERIC(4,3) DEFAULT 0.000 CHECK (cgpa >= 0 AND cgpa <= 4),
     total_credits_passed INT DEFAULT 0,
@@ -191,14 +193,16 @@ CREATE TABLE IF NOT EXISTS course_offerings (
     id              SERIAL PRIMARY KEY,
     semester_id     INT NOT NULL REFERENCES semesters(id),
     course_id       INT NOT NULL REFERENCES courses(id),
-    doctor_id       UUID REFERENCES doctors(id),
-    section         VARCHAR(10) DEFAULT 'A',
-    capacity        INT DEFAULT 60,
-    enrolled_count  INT DEFAULT 0,
+    doctor_id       UUID REFERENCES doctors(id) ON DELETE SET NULL,
+    capacity        INTEGER NOT NULL DEFAULT 60,
+    enrolled_count  INTEGER NOT NULL DEFAULT 0,
+    schedule        JSONB, -- Array of objects: { day, start_time, end_time, room }
     room            VARCHAR(50),
-    schedule        JSONB,   -- {days: ["Sun","Tue","Thu"], time: "9:00-11:00"}
+    section_label   VARCHAR(10) DEFAULT 'A',  -- e.g. A, B, C for multi-section courses
     is_active       BOOLEAN DEFAULT TRUE,
-    UNIQUE (semester_id, course_id, section)
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    -- Allow multiple sections (A, B, etc.) of the same course in the same semester
+    UNIQUE (semester_id, course_id, section_label)
 );
 
 -- =============================================================================
@@ -227,6 +231,8 @@ CREATE TABLE IF NOT EXISTS enrollments (
     attempt_number      INT DEFAULT 1,
     is_improvement_retake BOOLEAN DEFAULT FALSE,  -- voluntary retake for GPA improvement
     is_counted_in_gpa   BOOLEAN DEFAULT TRUE,     -- highest attempt counts
+    -- Art. 14: excuse flag for Incomplete (I) grade assignment at finalization
+    excuse_approved     BOOLEAN DEFAULT FALSE,    -- TRUE if student submitted valid excuse for final exam
     -- Meta
     grade_entered_by    UUID REFERENCES users(id),
     grade_entered_at    TIMESTAMPTZ,
@@ -377,15 +383,19 @@ CREATE TABLE IF NOT EXISTS course_retake_log (
     id              SERIAL PRIMARY KEY,
     student_id      UUID NOT NULL REFERENCES students(id),
     course_id       INT NOT NULL REFERENCES courses(id),
-    -- Bylaw: max 3 voluntary improvement retakes
-    retake_type     VARCHAR(20) NOT NULL CHECK (retake_type IN ('failed', 'improvement')),
+    -- Art. 23: 'avoidance' = CGPA < 2.0, retaking failed course (uncapped)
+    -- Art. 24: 'improvement' = previously passed, wants better grade (capped at 3)
+    -- 'failed'  = retaking failed course without dismissal risk
+    retake_type     VARCHAR(20) NOT NULL CHECK (retake_type IN ('failed', 'improvement', 'avoidance')),
     attempt_count   INT DEFAULT 1,
+    original_enrollment_id UUID REFERENCES enrollments(id),
     best_grade      NUMERIC(5,2),
     best_letter     grade_code,
     best_points     NUMERIC(3,1),
     created_at      TIMESTAMPTZ DEFAULT NOW(),
     updated_at      TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE (student_id, course_id)
+    -- Allow multiple retake log entries per student per course (one per attempt)
+    UNIQUE (student_id, course_id, retake_type, original_enrollment_id)
 );
 
 -- =============================================================================
@@ -563,13 +573,14 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 -- -------------------------------------------------------
 -- Determine student level from passed credits (BYLAW Art.10)
 -- -------------------------------------------------------
+-- These thresholds must match academic-regulations.json credit_hour_thresholds (levels array)
 CREATE OR REPLACE FUNCTION credits_to_level(credits INT)
 RETURNS student_level AS $$
 BEGIN
-    IF credits >= 102 THEN RETURN 'senior';
-    ELSIF credits >= 66 THEN RETURN 'junior';
-    ELSIF credits >= 33 THEN RETURN 'sophomore';
-    ELSE RETURN 'freshman';
+    IF credits >= 98 THEN RETURN 'الفرقة الرابعة';
+    ELSIF credits >= 63 THEN RETURN 'الفرقة الثالثة';
+    ELSIF credits >= 28 THEN RETURN 'الفرقة الثانية';
+    ELSE RETURN 'الفرقة الأولى';
     END IF;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
@@ -585,14 +596,15 @@ CREATE OR REPLACE FUNCTION get_max_credits_by_cgpa(
 )
 RETURNS INT AS $$
 BEGIN
-    -- Summer semester limit (BYLAW: max 7)
-    IF p_is_summer THEN RETURN 7; END IF;
-    -- New students first semester (BYLAW: max 20)
-    IF p_is_new_student THEN RETURN 20; END IF;
-    -- By CGPA (Art. 11): >=3.0→70, 2.5-3.0→20, <2.5→40
-    IF p_cgpa >= 3.0 THEN RETURN 70;
-    ELSIF p_cgpa >= 2.5 THEN RETURN 20;
-    ELSE RETURN 40;
+    -- Summer semester limit (BYLAW: max 9 per academic-regulations.json)
+    IF p_is_summer THEN RETURN 9; END IF;
+    -- New students first semester (BYLAW: max 18)
+    IF p_is_new_student THEN RETURN 18; END IF;
+    -- By CGPA (Art. 11) — must match academic-regulations.json max_hours_by_gpa:
+    -- >=3.0→24, >=2.0→21, <2.0→18
+    IF p_cgpa >= 3.0 THEN RETURN 24;
+    ELSIF p_cgpa >= 2.0 THEN RETURN 21;
+    ELSE RETURN 18;
     END IF;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
@@ -740,7 +752,9 @@ CREATE TRIGGER trg_enrollment_count
 -- -------------------------------------------------------
 -- Auto-detect academic warning after semester finalization
 -- -------------------------------------------------------
-CREATE OR REPLACE FUNCTION process_semester_warnings(p_semester_id INT)
+-- DO NOT CALL: warning logic is handled exclusively in
+-- registration.service.js finalizeSemester().
+CREATE OR REPLACE FUNCTION process_semester_warnings__DEPRECATED(p_semester_id INT)
 RETURNS TABLE(student_id UUID, action VARCHAR) AS $$
 DECLARE
     rec RECORD;
@@ -825,6 +839,10 @@ JOIN enrollments e ON e.student_id = s.id
 JOIN course_offerings co ON co.id = e.offering_id
 JOIN courses c ON c.id = co.course_id
 JOIN semesters sem ON sem.id = e.semester_id
+-- [AUDIT-RC-009 FIX] Exclude training courses from transcript view.
+-- Training is handled exclusively via training_records table.
+WHERE c.category != 'training'
+  AND c.is_credit_bearing = TRUE
 ORDER BY sem.start_date, c.code;
 
 -- Current semester registrations
@@ -860,16 +878,22 @@ SELECT
     c.name_en AS course_name,
     c.credits,
     co.id AS offering_id,
-    co.section,
     co.enrolled_count,
     co.capacity
 FROM doctors d
 JOIN users u ON u.id = d.user_id
 JOIN course_offerings co ON co.doctor_id = d.id
 JOIN courses c ON c.id = co.course_id
-JOIN semesters sem ON sem.id = co.semester_id;
+JOIN semesters sem ON sem.id = co.semester_id
+WHERE sem.status IN ('registration', 'active', 'grading');
 
--- Graduation eligibility check
+-- Stub function to allow view creation. Replaced in 06-migration-v3.sql
+CREATE OR REPLACE FUNCTION get_bylaw_value(p_key VARCHAR)
+RETURNS NUMERIC AS $$
+BEGIN RETURN NULL; END;
+$$ LANGUAGE plpgsql STABLE;
+
+-- Graduation eligibility check (credits threshold must match academic-regulations.json total_credit_hours = 138)
 CREATE OR REPLACE VIEW v_graduation_eligibility AS
 SELECT
     s.id AS student_id,
@@ -880,12 +904,24 @@ SELECT
     s.total_credits_passed,
     s.semesters_enrolled,
     s.academic_status,
-    -- Bylaw: 132 credits, CGPA >= 2.0
-    (s.total_credits_passed >= 132) AS credits_met,
+    -- Bylaw: 138 credits, CGPA >= 2.0
+    (s.total_credits_passed >= COALESCE(get_bylaw_value('total_credits_required'), 138)) AS credits_met,
     (s.cgpa >= 2.0) AS gpa_met,
     (s.academic_status NOT IN ('dismissed', 'withdrawn')) AS status_ok,
     -- Honors: CGPA >= 3.0, <= 8 semesters, no F
     (s.cgpa >= 3.0 AND s.semesters_enrolled <= 8) AS honors_possible,
-    (s.total_credits_passed >= 132 AND s.cgpa >= 2.0 AND s.academic_status NOT IN ('dismissed','withdrawn')) AS is_eligible
+    (s.total_credits_passed >= COALESCE(get_bylaw_value('total_credits_required'), 138) AND s.cgpa >= 2.0 AND s.academic_status NOT IN ('dismissed','withdrawn')) AS is_eligible
 FROM students s
 JOIN users u ON u.id = s.user_id;
+
+
+CREATE TABLE IF NOT EXISTS doctor_schedule_slots (
+    id              SERIAL PRIMARY KEY,
+    offering_id     INT NOT NULL REFERENCES course_offerings(id) ON DELETE CASCADE,
+    day_of_week     VARCHAR(10) NOT NULL CHECK (day_of_week IN ('Sun','Mon','Tue','Wed','Thu','Fri','Sat')),
+    start_time      TIME NOT NULL,
+    end_time        TIME NOT NULL,
+    room            VARCHAR(50),
+    session_type    VARCHAR(20) DEFAULT 'lecture' CHECK (session_type IN ('lecture','lab','tutorial','project')),
+    UNIQUE (offering_id, day_of_week, start_time)
+);

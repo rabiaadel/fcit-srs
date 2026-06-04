@@ -1,0 +1,267 @@
+{
+  "source": "bylaw-2024-7-73-14-33.pdf — FCIT Tanta University",
+  "generated": "2026-05-27",
+  "note": "All course codes, names, credits, and prerequisites extracted from official bylaw document.",
+
+  "university_requirements": {
+    "total_credits": 12,
+    "mandatory": {
+      "credits": 6,
+      "courses": [
+        { "code": "UNV111", "name_ar": "كتابة التقارير الفنية",    "name_en": "Technical Report Writing",  "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] },
+        { "code": "UNV112", "name_ar": "قضايا مجتمعية",           "name_en": "Societal Issues",           "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] },
+        { "code": "UNV113", "name_ar": "لغة إنجليزية (1)",        "name_en": "English Language (1)",      "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] },
+        { "code": "UNV114", "name_ar": "مهارات الإتصال",          "name_en": "Communication Skills",      "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] }
+      ]
+    },
+    "elective_pick_6": {
+      "credits": 6,
+      "courses": [
+        { "code": "UNV115", "name_ar": "مبادئ علم النفس",          "name_en": "Fundamentals of Psychology",  "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] },
+        { "code": "UNV116", "name_ar": "مبادئ علم الاجتماع",       "name_en": "Fundamentals of Sociology",   "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] },
+        { "code": "UNV117", "name_ar": "سياسات مقارنة",            "name_en": "Comparative Politics",       "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] },
+        { "code": "UNV118", "name_ar": "موضوعات مختارة في الإنسانيات","name_en": "Selected Topics in Humanities","credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] },
+        { "code": "UNV119", "name_ar": "الأخلاق والمهنية",         "name_en": "Ethics and Professionalism", "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] },
+        { "code": "UNV120", "name_ar": "تسويق ومبيعات",            "name_en": "Marketing and Sales",        "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] },
+        { "code": "UNV121", "name_ar": "لغة إنجليزية (2)",         "name_en": "English Language (2)",       "credits": 2, "lecture": 2, "lab": 0, "prerequisites": ["UNV113"] },
+        { "code": "UNV411", "name_ar": "ريادة الأعمال",            "name_en": "Entrepreneurship",           "credits": 2, "lecture": 2, "lab": 0, "prerequisites": [] }
+      ]
+    }
+  },
+
+  "college_requirements": {
+    "total_credits": 60,
+    "math_and_basic_sciences": {
+      "credits": 21,
+      "type": "mandatory",
+      "courses": [
+        { "code": "BS111", "name_ar": "رياضيات (1)",              "name_en": "Math (1)",                          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] },
+        { "code": "BS112", "name_ar": "رياضيات متقطعة",           "name_en": "Discrete Mathematics",              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] },
+        { "code": "BS113", "name_ar": "رياضيات (2)",              "name_en": "Math (2)",                          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS111"] },
+        { "code": "BS114", "name_ar": "رياضيات (3)",              "name_en": "Math (3)",                          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS113"] },
+        { "code": "BS115", "name_ar": "إلكترونيات",               "name_en": "Electronics",                       "credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] },
+        { "code": "BS116", "name_ar": "إحصاء واحتمالات (1)",      "name_en": "Probability and Statistics (1)",    "credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] },
+        { "code": "BS117", "name_ar": "بحوث العمليات",            "name_en": "Operations Research",              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS111", "BS116"] }
+      ]
+    },
+    "basic_computer_science": {
+      "credits": 39,
+      "type": "mandatory",
+      "courses": [
+        { "code": "CS111", "name_ar": "أساسيات علوم الحاسب",           "name_en": "Fundamentals of Computer Science",       "credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] },
+        { "code": "CS112", "name_ar": "برمجة هيكلية",                 "name_en": "Structured Programming",                 "credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] },
+        { "code": "IT111", "name_ar": "أساسيات تكنولوجيا المعلومات",   "name_en": "Fundamentals of Information Technology", "credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] },
+        { "code": "IS111", "name_ar": "مقدمة في نظم المعلومات",        "name_en": "Introduction to Information Systems",    "credits": 2, "lecture": 1, "lab": 1, "prerequisites": [] },
+        { "code": "CS211", "name_ar": "برمجة شيئية",                  "name_en": "Object Oriented Programming",            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS112"] },
+        { "code": "CS212", "name_ar": "هياكل البيانات",               "name_en": "Data Structures",                        "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS112"] },
+        { "code": "SE211", "name_ar": "مقدمة في هندسة البرمجيات",     "name_en": "Introduction to Software Engineering",   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] },
+        { "code": "IS211", "name_ar": "مقدمة في نظم قواعد البيانات",  "name_en": "Introduction to Database Systems",       "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS111"] },
+        { "code": "IS212", "name_ar": "طرق الأمثلية",                 "name_en": "Optimization Methods",                   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS113", "BS112"] },
+        { "code": "IT211", "name_ar": "تصميم المنطق الرقمي",          "name_en": "Digital Logic Design",                   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS115"] },
+        { "code": "IT212", "name_ar": "تكنولوجيا شبكات الحاسب",       "name_en": "Computer Network Technology",            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS111"] },
+        { "code": "CS213", "name_ar": "تحليل وتصميم الخوارزميات",     "name_en": "Algorithm Analysis and Design",          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS212"] },
+        { "code": "CS214", "name_ar": "نظم التشغيل",                  "name_en": "Operating Systems",                      "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS212"] }
+      ]
+    }
+  },
+
+  "specialization_programs": {
+
+    "CS": {
+      "name_ar": "علوم الحاسب",
+      "name_en": "Computer Science",
+      "total_credits": 60,
+      "mandatory_applied": {
+        "credits": 48,
+        "courses": [
+          { "code": "IS311",  "name_ar": "تحليل وتصميم نظم المعلومات",      "name_en": "Analysis and Design of Information Systems",   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS211"] },
+          { "code": "CS311",  "name_ar": "أمن الحاسب",                      "name_en": "Computer Security",                           "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT212"] },
+          { "code": "CS312",  "name_ar": "تنظيم وبنية الحاسبات",            "name_en": "Computer Organization and Architecture",       "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT211"] },
+          { "code": "CS313",  "name_ar": "الذكاء الاصطناعي",                "name_en": "Artificial Intelligence",                     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS212"] },
+          { "code": "IT311",  "name_ar": "الرسم بالحاسب",                   "name_en": "Computer Graphic",                            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS112"] },
+          { "code": "CS314",  "name_ar": "تعلم الآلة",                      "name_en": "Machine Learning",                            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS211"] },
+          { "code": "CS315",  "name_ar": "تحليل البيانات الكبيرة",          "name_en": "Big Data Analysis",                           "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS311"] },
+          { "code": "CS316",  "name_ar": "نظم التشغيل المتقدمة",            "name_en": "Advanced Operating Systems",                  "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS214"] },
+          { "code": "SE315",  "name_ar": "هندسة البرمجيات المتقدمة",        "name_en": "Advanced Software Engineering",               "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE211"] },
+          { "code": "IS318",  "name_ar": "نظرية المعلومات وضغط البيانات",   "name_en": "Information Theory and Data Compression",     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS116"] },
+          { "code": "CS411",  "name_ar": "نظرية الحاسبات",                  "name_en": "Computation Theory",                          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS112"] },
+          { "code": "CS412",  "name_ar": "إنترنت الأشياء",                  "name_en": "Internet of Things (IOT)",                    "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT212"] },
+          { "code": "CS413",  "name_ar": "حل المشاكل وإتخاذ القرارات",     "name_en": "Problem Solving and Decision Making",         "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS213"] },
+          { "code": "CS414",  "name_ar": "علم البيانات",                    "name_en": "Data Science",                                "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS314"] },
+          { "code": "CS415",  "name_ar": "الحوسبة السحابية",                "name_en": "Cloud Computing",                             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS316"] },
+          { "code": "CS416",  "name_ar": "المترجمات",                       "name_en": "Compilers",                                   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS411"] }
+        ]
+      },
+      "electives_pick_12": {
+        "credits": 12,
+        "courses": [
+          { "code": "CS321",  "name_ar": "علم التشفير",                        "name_en": "Cryptography",                              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS311"] },
+          { "code": "CS322",  "name_ar": "أمن الشبكات والإنترنت",              "name_en": "Network And Internet Security",             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS311"] },
+          { "code": "CS423",  "name_ar": "الحوسبة المتنقلة",                   "name_en": "Mobile Computing",                          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS316"] },
+          { "code": "CS424",  "name_ar": "برمجة تطبيقات المحمول",             "name_en": "Mobile Application Programming",            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS423"] },
+          { "code": "CS331",  "name_ar": "تفاعل الإنسان مع الحاسب",           "name_en": "Human Computer Interaction",                "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS213"] },
+          { "code": "CS332",  "name_ar": "أكتشاف المعرفة",                    "name_en": "Knowledge Discovery",                       "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS331"] },
+          { "code": "CS433",  "name_ar": "موضوعات مختارة في الذكاء الاصطناعي","name_en": "Selected Topics in Artificial Intelligence","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS313"] },
+          { "code": "CS434",  "name_ar": "الحوسبة عالية الأداء",              "name_en": "High Performance Computing",                "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS214"] },
+          { "code": "IS351",  "name_ar": "معالجة البيانات والتحليل",          "name_en": "Data Processing and Analysis",              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS311"] },
+          { "code": "CS342",  "name_ar": "نماذج البيانات والتصور",            "name_en": "Data Models and Visualization",             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS351"] },
+          { "code": "CS443",  "name_ar": "معالجة اللغات الطبيعية",            "name_en": "Natural Language Processing",               "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS314"] },
+          { "code": "IS444",  "name_ar": "موضوعات مختارة في نظم المعلومات المتقدمة","name_en": "Selected Topics in Advanced Information Systems","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS351"] }
+        ]
+      },
+      "graduation_project": [
+        { "code": "PR411", "name_ar": "مشروع التخرج (1)", "name_en": "Graduation Project (1)", "credits": 3, "prerequisites": ["passed_85_credits"] },
+        { "code": "PR412", "name_ar": "مشروع التخرج (2)", "name_en": "Graduation Project (2)", "credits": 3, "prerequisites": ["PR411"] }
+      ]
+    },
+
+    "IS": {
+      "name_ar": "نظم المعلومات",
+      "name_en": "Information Systems",
+      "total_credits": 60,
+      "mandatory_applied": {
+        "credits": 48,
+        "courses": [
+          { "code": "IS311",  "name_ar": "تحليل وتصميم نظم المعلومات",      "name_en": "Analysis and Design of Information Systems",   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS211"] },
+          { "code": "IS312",  "name_ar": "نظم إدارة قواعد البيانات",        "name_en": "Database Management Systems",                 "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS211"] },
+          { "code": "IS313",  "name_ar": "إدارة ومعالجة الملفات",           "name_en": "File Management and Processing",              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS212"] },
+          { "code": "IS314",  "name_ar": "إسترجاع المعلومات",               "name_en": "Information Retrieval",                       "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS115"] },
+          { "code": "CS313",  "name_ar": "الذكاء الاصطناعي",                "name_en": "Artificial Intelligence",                     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS212"] },
+          { "code": "IS315",  "name_ar": "مستودع البيانات",                  "name_en": "Data Warehousing",                            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS311"] },
+          { "code": "IS316",  "name_ar": "تحليل البيانات وإدارتها",          "name_en": "Data Analytics and Management",               "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS315"] },
+          { "code": "IS317",  "name_ar": "تطوير نظم المعلومات المستندة إلى الويب","name_en": "Web-based Information Systems Development","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS211"] },
+          { "code": "IS318",  "name_ar": "نظرية المعلومات وضغط البيانات",   "name_en": "Information Theory and Data Compression",     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS116"] },
+          { "code": "CS315",  "name_ar": "تعلم الآلة",                      "name_en": "Machine Learning",                            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS211"] },
+          { "code": "IS411",  "name_ar": "التنقيب في البيانات",              "name_en": "Data Mining",                                 "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS116"] },
+          { "code": "CS413",  "name_ar": "حل المشاكل وإتخاذ القرارات",     "name_en": "Problem Solving and Decision Making",         "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS213"] },
+          { "code": "CS414",  "name_ar": "علم البيانات",                    "name_en": "Data Science",                                "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS314"] },
+          { "code": "IS412",  "name_ar": "إدارة مشاريع نظم المعلومات",      "name_en": "Information Systems Project Management",      "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS311"] },
+          { "code": "IS413",  "name_ar": "موضوعات مختارة في نظم المعلومات 1","name_en": "Selected Topics in Information Systems 1",   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS317"] },
+          { "code": "IS414",  "name_ar": "موضوعات مختارة في قواعد البيانات","name_en": "Selected Topics in Databases",               "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS312"] },
+          { "code": "IS415",  "name_ar": "منهجيات تطوير نظم المعلومات",     "name_en": "Information Systems Development Methodologies","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS311"] }
+        ]
+      },
+      "electives_pick_12": {
+        "credits": 12,
+        "courses": [
+          { "code": "IS321",  "name_ar": "موضوعات مختارة في هندسة البيانات","name_en": "Selected Topics in Data Engineering",        "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS311"] },
+          { "code": "IS322",  "name_ar": "قواعد البيانات السحابية",          "name_en": "Cloud Databases",                           "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS312"] },
+          { "code": "IS423",  "name_ar": "قواعد البيانات الموزعة",           "name_en": "Distributed Databases",                     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS211"] },
+          { "code": "IS424",  "name_ar": "موضوعات مختارة في نظم المعلومات المتقدمة","name_en": "Selected Topics in Advanced Information Systems","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS311"] },
+          { "code": "IS331",  "name_ar": "نظم معلومات المؤسسية",            "name_en": "Enterprise Information Systems",            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS317"] },
+          { "code": "IS332",  "name_ar": "نظم المعلومات الإدارية",          "name_en": "Management Information Systems",            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS412"] },
+          { "code": "IS433",  "name_ar": "الأعمال الإلكترونية",             "name_en": "E-Business",                                "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS332"] },
+          { "code": "IS434",  "name_ar": "إدارة إجراءات الأعمال",           "name_en": "Business Process Management",               "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS412"] },
+          { "code": "IS341",  "name_ar": "ضمان جودة نظم المعلومات",         "name_en": "Information Systems Quality Assurance",     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS111"] },
+          { "code": "IS342",  "name_ar": "أمن وإدارة مخاطر نظم المعلومات","name_en": "Information Systems Security and Risk Management","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS313"] },
+          { "code": "IS443",  "name_ar": "مراجعة ورقابة نظم المعلومات",    "name_en": "Information Systems Audit and Control",     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS311"] },
+          { "code": "IS351",  "name_ar": "معالجة البيانات والتحليل",        "name_en": "Data Processing and Analysis",              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS311"] },
+          { "code": "CS342",  "name_ar": "نماذج البيانات والتصور",          "name_en": "Data Models and Visualization",             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IS351"] },
+          { "code": "CS443",  "name_ar": "معالجة اللغات الطبيعية",          "name_en": "Natural Language Processing",               "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS314"] },
+          { "code": "IS452",  "name_ar": "موضوعات مختارة في نظم المعلومات المتقدمة 2","name_en": "Advanced Selected Topics in IS 2",   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] }
+        ]
+      },
+      "graduation_project": [
+        { "code": "PR421", "name_ar": "مشروع التخرج (1)", "name_en": "Graduation Project (1)", "credits": 3, "prerequisites": ["passed_85_credits"] },
+        { "code": "PR422", "name_ar": "مشروع التخرج (2)", "name_en": "Graduation Project (2)", "credits": 3, "prerequisites": ["PR421"] }
+      ]
+    },
+
+    "IT": {
+      "name_ar": "تكنولوجيا المعلومات",
+      "name_en": "Information Technology",
+      "total_credits": 60,
+      "mandatory_applied": {
+        "credits": 48,
+        "courses": [
+          { "code": "IT311",  "name_ar": "الرسم بالحاسب",                        "name_en": "Computer Graphic",                     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS112"] },
+          { "code": "IT312",  "name_ar": "التعرف على الأنماط",                   "name_en": "Pattern Recognition",                  "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS117"] },
+          { "code": "IT313",  "name_ar": "تأمين شبكات الحاسبات والمعلومات",     "name_en": "Information and Computer Networks Security","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT111"] },
+          { "code": "IT314",  "name_ar": "أشارات ونظم",                          "name_en": "Signals and Systems",                  "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS114"] },
+          { "code": "IT315",  "name_ar": "المعالجات الدقيقة",                    "name_en": "Microprocessors",                      "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT211"] },
+          { "code": "IT316",  "name_ar": "معالجة الصور",                          "name_en": "Image Processing",                     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT314"] },
+          { "code": "IT317",  "name_ar": "شبكات الحاسب المتقدم",                 "name_en": "Advanced Computer Networks",           "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT212"] },
+          { "code": "SE315",  "name_ar": "هندسة البرمجيات المتقدمة",             "name_en": "Advanced Software Engineering",        "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE211"] },
+          { "code": "IT318",  "name_ar": "بنية الحاسبات",                        "name_en": "Computer Architecture",                "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS115"] },
+          { "code": "IT319",  "name_ar": "الوسائط المتعددة الرقمية",             "name_en": "Digital Multimedia",                   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT311"] },
+          { "code": "IT411",  "name_ar": "أنظمة الروبوت",                        "name_en": "Robot Systems",                        "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT315"] },
+          { "code": "CS313",  "name_ar": "الذكاء الاصطناعي",                    "name_en": "Artificial Intelligence",              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS212"] },
+          { "code": "CS412",  "name_ar": "إنترنت الأشياء",                       "name_en": "Internet of Things (IOT)",             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT212"] },
+          { "code": "IT413",  "name_ar": "تكنولوجيا الاتصالات",                 "name_en": "Communication Technology",             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT317"] },
+          { "code": "IT414",  "name_ar": "الأمن السيبراني",                      "name_en": "Cyber Security",                       "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT313"] },
+          { "code": "IT415",  "name_ar": "شبكات الحوسبة السحابية",               "name_en": "Cloud Computing Networks",             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT111"] }
+        ]
+      },
+      "electives_pick_12": {
+        "credits": 12,
+        "courses": [
+          { "code": "IT321",  "name_ar": "نظم تشغيل الشبكات",                   "name_en": "Network Operating System",                  "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS214"] },
+          { "code": "IT322",  "name_ar": "تكنولوجيا سلسلة الكتل",               "name_en": "Blockchain Technology",                     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT111"] },
+          { "code": "IT423",  "name_ar": "شبكات المحمول",                        "name_en": "Mobile Networks",                           "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT321"] },
+          { "code": "IT424",  "name_ar": "موضوعات مختارة في شبكات الحاسب",     "name_en": "Selected Topics in Computer Networks",      "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT317"] },
+          { "code": "IT331",  "name_ar": "الأنظمة المدمجة",                     "name_en": "Embedded Systems",                          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["BS115"] },
+          { "code": "IT332",  "name_ar": "تصور الآلة",                          "name_en": "Machine Vision",                            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT315"] },
+          { "code": "IT433",  "name_ar": "التعرف على الأنماط المتقدمة",         "name_en": "Advanced Pattern Recognition",              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT312"] },
+          { "code": "IT434",  "name_ar": "موضوعات مختارة في النظم المدمجة والإنسان الآلي","name_en": "Selected Topics in Embedded Systems and Robotic","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT331"] },
+          { "code": "IT341",  "name_ar": "الرسوم الحاسوبية المتحركة",           "name_en": "Computer Animation",                        "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS111"] },
+          { "code": "IT342",  "name_ar": "الرسم بالحاسب المتقدم",               "name_en": "Advanced Computer Graphics",                "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT341"] },
+          { "code": "IT443",  "name_ar": "معالجة الصور المتقدمة",               "name_en": "Advanced Image Processing",                 "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT316"] },
+          { "code": "IT444",  "name_ar": "موضوعات مختارة في الوسائط المتعددة","name_en": "Selected Topics in Multimedia",             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT319"] }
+        ]
+      },
+      "graduation_project": [
+        { "code": "PR431", "name_ar": "مشروع التخرج (1)", "name_en": "Graduation Project (1)", "credits": 3, "prerequisites": ["passed_85_credits"] },
+        { "code": "PR432", "name_ar": "مشروع التخرج (2)", "name_en": "Graduation Project (2)", "credits": 3, "prerequisites": ["PR431"] }
+      ]
+    },
+
+    "SE": {
+      "name_ar": "هندسة البرمجيات",
+      "name_en": "Software Engineering",
+      "total_credits": 60,
+      "mandatory_applied": {
+        "credits": 48,
+        "courses": [
+          { "code": "CS311",  "name_ar": "أمن الحاسب",                       "name_en": "Computer Security",                           "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT212"] },
+          { "code": "SE311",  "name_ar": "تحليل متطلبات البرمجيات",          "name_en": "Software Requirements Analysis",              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE211"] },
+          { "code": "CS312",  "name_ar": "تنظيم وبنية الحاسبات",             "name_en": "Computer Organization and Architecture",       "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["IT211"] },
+          { "code": "CS313",  "name_ar": "الذكاء الاصطناعي",                 "name_en": "Artificial Intelligence",                     "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS212"] },
+          { "code": "SE312",  "name_ar": "هندسة البرمجيات لتطبيقات الإنترنت","name_en": "Software Engineering for Internet Applications","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE211"] },
+          { "code": "SE313",  "name_ar": "تصميم وعمارة البرمجيات",           "name_en": "Software Design and Architecture",            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE311"] },
+          { "code": "SE314",  "name_ar": "ضمان جودة البرمجيات",              "name_en": "Software Quality Assurance",                  "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE311"] },
+          { "code": "CS316",  "name_ar": "نظم التشغيل المتقدمة",             "name_en": "Advanced Operating Systems",                  "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS214"] },
+          { "code": "SE315",  "name_ar": "هندسة البرمجيات المتقدمة",         "name_en": "Advanced Software Engineering",               "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE211"] },
+          { "code": "SE316",  "name_ar": "تصميم واجهات المستخدم",            "name_en": "User Interface Design",                       "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE312"] },
+          { "code": "SE411",  "name_ar": "إدارة مشاريع البرمجيات",           "name_en": "Software Project Management",                 "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE314"] },
+          { "code": "SE412",  "name_ar": "الإختبار والتحقق من البرمجيات",    "name_en": "Software Testing and Validation",             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE314"] },
+          { "code": "SE413",  "name_ar": "أسلوب هندسة البرمجيات في تفاعل الإنسان مع الحاسب","name_en": "Software Engineering Approach to Human Computer Interaction","credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE315"] },
+          { "code": "SE414",  "name_ar": "إعادة استخدام البرمجيات",          "name_en": "Software Reuse",                              "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE313"] },
+          { "code": "SE415",  "name_ar": "الأخلاقيات والممارسة المهنية في هندسة البرمجيات","name_en": "Ethics and Professional Practice in SE","credits": 3, "lecture": 2, "lab": 2, "prerequisites": [] },
+          { "code": "SE416",  "name_ar": "تطوير البرمجيات وصيانتها",         "name_en": "Software Evolution and Maintenance",          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE412"] },
+          { "code": "SE417",  "name_ar": "تصميم برمجيات الأنظمة المدمجة",   "name_en": "Embedded Systems Software Design",           "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE411"] }
+        ]
+      },
+      "electives_pick_12": {
+        "credits": 12,
+        "courses": [
+          { "code": "SE321",  "name_ar": "أمن البرمجيات",                    "name_en": "Software Security",                          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE211"] },
+          { "code": "SE322",  "name_ar": "أنماط التصميم",                    "name_en": "Design Patterns",                            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE321"] },
+          { "code": "SE423",  "name_ar": "هندسة استخدام البرمجيات",          "name_en": "Software Usability Engineering",             "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE322"] },
+          { "code": "SE424",  "name_ar": "التطبيقات المتنقلة",               "name_en": "Mobile Applications",                        "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE423"] },
+          { "code": "SE331",  "name_ar": "إدارة تطوير البرمجيات",            "name_en": "Software Development Management",            "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE211"] },
+          { "code": "SE332",  "name_ar": "تطوير تطبيقات الويب",              "name_en": "Web Application Development",                "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE331"] },
+          { "code": "SE433",  "name_ar": "تطوير الألعاب",                    "name_en": "Games Development",                          "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE332"] },
+          { "code": "SE434",  "name_ar": "النمذجة والتصميم ثلاثي الأبعاد",  "name_en": "3D Modeling and Design",                    "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE433"] },
+          { "code": "SE341",  "name_ar": "هندسة المعرفة",                    "name_en": "Knowledge Engineering",                      "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["CS211"] },
+          { "code": "SE342",  "name_ar": "إحترافية ممارسة هندسة البرمجيات", "name_en": "Professional Software Engineering Practice",  "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE341"] },
+          { "code": "SE443",  "name_ar": "الطرق الأساسية في هندسة البرمجيات","name_en": "Formal Methods in Software Engineering",    "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE342"] },
+          { "code": "SE444",  "name_ar": "موضوعات مختارة في هندسة البرمجيات","name_en": "Selected Topics in Software Engineering",   "credits": 3, "lecture": 2, "lab": 2, "prerequisites": ["SE443"] }
+        ]
+      },
+      "graduation_project": [
+        { "code": "PR441", "name_ar": "مشروع التخرج (1)", "name_en": "Graduation Project (1)", "credits": 3, "prerequisites": ["passed_85_credits"] },
+        { "code": "PR442", "name_ar": "مشروع التخرج (2)", "name_en": "Graduation Project (2)", "credits": 3, "prerequisites": ["PR441"] }
+      ]
+    }
+  }
+}

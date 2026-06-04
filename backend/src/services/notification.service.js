@@ -10,30 +10,59 @@ const { recordNotification } = require('../middleware/metrics');
 // ─────────────────────────────────────────────────────────────────────────────
 // PRIMITIVE: insert one notification row
 // ─────────────────────────────────────────────────────────────────────────────
-async function _insert(client_or_query, userId, title, message, link = null) {
-  const fn = client_or_query.query
+async function _insert(client_or_query, userId, title, message, link = null, type = 'system') {
+  const fn = client_or_query?.query
     ? (sql, p) => client_or_query.query(sql, p)   // transaction client
     : query;                                        // pool query
-  await fn(
-    'INSERT INTO notifications (user_id, title, message, link) VALUES ($1, $2, $3, $4)',
-    [userId, title, message, link]
-  );
+  try {
+    await fn(
+      'INSERT INTO notifications (user_id, title, message, link, type) VALUES ($1, $2, $3, $4, $5)',
+      [userId, title, message, link, type]
+    );
+  } catch (err) {
+    if (err.code === '42703') {
+      // migration_v3 has not run yet — type column does not exist; insert without it
+      await fn(
+        'INSERT INTO notifications (user_id, title, message, link) VALUES ($1, $2, $3, $4)',
+        [userId, title, message, link]
+      );
+    } else {
+      throw err;
+    }
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PRIMITIVE: bulk-notify a role (or all roles when targetRole is null)
 // ─────────────────────────────────────────────────────────────────────────────
-async function _notifyRole(client, targetRole, title, message, link = null) {
-  let sql, params;
-  if (targetRole) {
-    sql = 'INSERT INTO notifications (user_id, title, message, link) SELECT id, $1, $2, $3 FROM users WHERE role = $4 AND is_active = TRUE';
-    params = [title, message, link, targetRole];
-  } else {
-    sql = 'INSERT INTO notifications (user_id, title, message, link) SELECT id, $1, $2, $3 FROM users WHERE is_active = TRUE';
-    params = [title, message, link];
-  }
+async function _notifyRole(client, targetRole, title, message, link = null, type = 'system') {
   const fn = client?.query ? (s, p) => client.query(s, p) : query;
-  await fn(sql, params);
+  
+  try {
+    let sql, params;
+    if (targetRole) {
+      sql = 'INSERT INTO notifications (user_id, title, message, link, type) SELECT id, $1, $2, $3, $4 FROM users WHERE role = $5 AND is_active = TRUE';
+      params = [title, message, link, type, targetRole];
+    } else {
+      sql = 'INSERT INTO notifications (user_id, title, message, link, type) SELECT id, $1, $2, $3, $4 FROM users WHERE is_active = TRUE';
+      params = [title, message, link, type];
+    }
+    await fn(sql, params);
+  } catch (err) {
+    if (err.code === '42703') {
+      let fallbackSql, fallbackParams;
+      if (targetRole) {
+        fallbackSql = 'INSERT INTO notifications (user_id, title, message, link) SELECT id, $1, $2, $3 FROM users WHERE role = $4 AND is_active = TRUE';
+        fallbackParams = [title, message, link, targetRole];
+      } else {
+        fallbackSql = 'INSERT INTO notifications (user_id, title, message, link) SELECT id, $1, $2, $3 FROM users WHERE is_active = TRUE';
+        fallbackParams = [title, message, link];
+      }
+      await fn(fallbackSql, fallbackParams);
+    } else {
+      throw err;
+    }
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,7 +77,8 @@ async function onCourseRegistered(client, studentUserId, courseCode, courseName,
     client, studentUserId,
     `Registered: ${courseCode}`,
     `You have been successfully registered for "${courseName}" in ${semesterLabel}.`,
-    '/student/schedule'
+    '/student/schedule',
+    'enrollment'
   );
   recordNotification('course_registered');
 }
@@ -61,7 +91,8 @@ async function onCourseDropped(client, studentUserId, courseCode, courseName) {
     client, studentUserId,
     `Course Dropped: ${courseCode}`,
     `You have dropped "${courseName}". No W grade has been recorded.`,
-    '/student/schedule'
+    '/student/schedule',
+    'enrollment'
   );
 }
 
@@ -73,7 +104,8 @@ async function onCourseWithdrawn(client, studentUserId, courseCode, courseName) 
     client, studentUserId,
     `Withdrawn: ${courseCode}`,
     `You have been withdrawn from "${courseName}". A W grade has been recorded on your transcript.`,
-    '/student/transcript'
+    '/student/transcript',
+    'enrollment'
   );
 }
 
@@ -89,7 +121,8 @@ async function onGradeEntered(client, studentUserId, courseCode, totalGrade, let
     client, studentUserId,
     `Grade Posted: ${courseCode}`,
     msg,
-    '/student/transcript'
+    '/student/transcript',
+    'grade'
   );
 }
 
@@ -102,7 +135,8 @@ async function onAcademicWarning(client, studentUserId, cgpa, semesterLabel, con
     client, studentUserId,
     `${urgency}Academic Warning Issued`,
     `Your CGPA (${parseFloat(cgpa).toFixed(3)}) has fallen below 2.0 in ${semesterLabel}. This is warning #${consecutiveWarnings}. Four consecutive warnings result in dismissal.`,
-    '/student/graduation'
+    '/student/graduation',
+    'warning'
   );
 }
 
@@ -114,19 +148,21 @@ async function onDismissal(client, studentUserId, reasons) {
     client, studentUserId,
     'Academic Dismissal Notice',
     `You have been academically dismissed. Reason(s): ${reasons.join('; ')}. Please contact the registrar's office for further information.`,
-    null
+    null,
+    'dismissal'
   );
 }
 
 /**
- * [B2-FIX] Notify doctor when a new course section is assigned to them
+ * [B2-FIX] Notify doctor when a new course is assigned to them
  */
-async function onCourseAssigned(doctorUserId, courseCode, courseName, semesterLabel, section) {
+async function onCourseAssigned(doctorUserId, courseCode, courseName, semesterLabel) {
   await _insert(
     null, doctorUserId,
-    `Course Assigned: ${courseCode}`,
-    `You have been assigned to teach "${courseName}" (Section ${section}) in ${semesterLabel}.`,
-    '/doctor'
+    'تخصيص مقرر جديد',
+    `You have been assigned to teach "${courseName}" in ${semesterLabel}.`,
+    '/doctor',
+    'schedule_assigned'
   );
 }
 
@@ -138,7 +174,8 @@ async function onGradeDeadlineReminder(doctorUserId, courseCode, semesterLabel, 
     null, doctorUserId,
     `Grade Entry Reminder: ${courseCode}`,
     `Grades for ${courseCode} in ${semesterLabel} must be entered by ${deadline}. Students with missing grades will receive an Incomplete (I).`,
-    '/doctor'
+    '/doctor',
+    'system'
   );
 }
 
@@ -153,7 +190,8 @@ async function onAnnouncementPublished(announcementId, title, targetRole) {
         null, targetRole,
         `Announcement: ${title}`,
         'A new announcement has been posted. Click to view.',
-        '/student/notifications'
+        '/student/notifications',
+        'announcement'
       );
     } catch (err) {
       logger.error('Failed to dispatch announcement notifications', { announcementId, error: err.message });
@@ -171,7 +209,8 @@ async function onRegistrationOpened(semesterLabel) {
         null, 'student',
         `Registration Open: ${semesterLabel}`,
         `Course registration for ${semesterLabel} is now open. Log in to register before the deadline.`,
-        '/student/courses'
+        '/student/courses',
+        'semester_event'
       );
     } catch (err) {
       logger.error('Failed to dispatch registration-open notifications', { error: err.message });
@@ -189,7 +228,8 @@ async function onGradingPeriodStarted(semesterLabel) {
         null, 'student',
         `Grading Period: ${semesterLabel}`,
         `The grading period for ${semesterLabel} has begun. Final grades will be posted shortly.`,
-        '/student/transcript'
+        '/student/transcript',
+        'semester_event'
       );
     } catch (err) {
       logger.error('Failed to dispatch grading-period notifications', { error: err.message });
@@ -207,7 +247,8 @@ async function onSemesterClosed(semesterLabel) {
         null, 'student',
         `Semester Finalized: ${semesterLabel}`,
         `${semesterLabel} has been finalized. Your final grades and updated CGPA are now available in your transcript.`,
-        '/student/transcript'
+        '/student/transcript',
+        'semester_event'
       );
     } catch (err) {
       logger.error('Failed to dispatch semester-closed notifications', { error: err.message });

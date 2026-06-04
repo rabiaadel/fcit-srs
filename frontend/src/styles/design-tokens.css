@@ -1,0 +1,183 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   FCIT-SRS Design Tokens
+   University SaaS dashboard — Arabic RTL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Brand ─────────────────────────────────────────────────────────────── */
+  --color-primary:        #2563eb;
+  --color-primary-dark:   #1d4ed8;
+  --color-primary-light:  #3b82f6;
+  --color-primary-50:     #eff6ff;
+  --color-primary-100:    #dbeafe;
+  --color-primary-200:    #bfdbfe;
+  --color-accent:         #f59e0b;
+  --color-accent-light:   #fbbf24;
+
+  /* ── Semantic ──────────────────────────────────────────────────────────── */
+  --color-success:        #16a34a;
+  --color-success-light:  #dcfce7;
+  --color-success-dark:   #166534;
+  --color-error:          #dc2626;
+  --color-error-light:    #fee2e2;
+  --color-error-dark:     #991b1b;
+  --color-warning:        #d97706;
+  --color-warning-light:  #fef3c7;
+  --color-warning-dark:   #92400e;
+  --color-info:           #2563eb;
+  --color-info-light:     #dbeafe;
+  --color-info-dark:      #1e40af;
+
+  /* ── Neutrals ──────────────────────────────────────────────────────────── */
+  --color-white:          #ffffff;
+  --color-gray-50:        #f9fafb;
+  --color-gray-100:       #f3f4f6;
+  --color-gray-200:       #e5e7eb;
+  --color-gray-300:       #d1d5db;
+  --color-gray-400:       #9ca3af;
+  --color-gray-500:       #6b7280;
+  --color-gray-600:       #4b5563;
+  --color-gray-700:       #374151;
+  --color-gray-800:       #1f2937;
+  --color-gray-900:       #111827;
+
+  /* ── Specialization colors ─────────────────────────────────────────────── */
+  --color-spec-cs:        #2563eb;
+  --color-spec-cs-bg:     #dbeafe;
+  --color-spec-it:        #16a34a;
+  --color-spec-it-bg:     #dcfce7;
+  --color-spec-is:        #7c3aed;
+  --color-spec-is-bg:     #f3e8ff;
+  --color-spec-se:        #ea580c;
+  --color-spec-se-bg:     #fff7ed;
+
+  /* ── Role colors ───────────────────────────────────────────────────────── */
+  --color-role-admin:     #7c3aed;
+  --color-role-admin-bg:  #f3e8ff;
+  --color-role-doctor:    #0891b2;
+  --color-role-doctor-bg: #e0f2fe;
+  --color-role-student:   #2563eb;
+  --color-role-student-bg:#eff6ff;
+
+  /* ── Surface ───────────────────────────────────────────────────────────── */
+  --surface-page:         #f1f5f9;
+  --surface-card:         #ffffff;
+  --surface-sidebar:      #ffffff;
+  --surface-overlay:      rgba(15, 23, 42, 0.5);
+
+  /* ── Typography ────────────────────────────────────────────────────────── */
+  --font-family:          'Cairo', 'Segoe UI', system-ui, sans-serif;
+  --font-size-xs:         0.6875rem;   /* 11px */
+  --font-size-sm:         0.75rem;     /* 12px */
+  --font-size-base:       0.8125rem;   /* 13px */
+  --font-size-md:         0.875rem;    /* 14px */
+  --font-size-lg:         1rem;        /* 16px */
+  --font-size-xl:         1.125rem;    /* 18px */
+  --font-size-2xl:        1.5rem;      /* 24px */
+  --font-size-3xl:        1.875rem;    /* 30px */
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+  --font-weight-extrabold:800;
+  --line-height-tight:    1.25;
+  --line-height-normal:   1.5;
+  --line-height-relaxed:  1.75;
+
+  /* ── Spacing ───────────────────────────────────────────────────────────── */
+  --spacing-xs:           4px;
+  --spacing-sm:           8px;
+  --spacing-md:           12px;
+  --spacing-lg:           16px;
+  --spacing-xl:           20px;
+  --spacing-2xl:          24px;
+  --spacing-3xl:          32px;
+  --spacing-4xl:          40px;
+  --spacing-5xl:          48px;
+
+  /* ── Border Radius ─────────────────────────────────────────────────────── */
+  --radius-sm:            6px;
+  --radius-md:            8px;
+  --radius-lg:            12px;
+  --radius-xl:            16px;
+  --radius-2xl:           20px;
+  --radius-full:          9999px;
+
+  /* ── Shadows ───────────────────────────────────────────────────────────── */
+  --shadow-xs:            0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm:            0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md:            0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg:            0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl:            0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-focus:         0 0 0 3px rgba(37, 99, 235, 0.15);
+  --shadow-focus-error:   0 0 0 3px rgba(220, 38, 38, 0.15);
+
+  /* ── Transitions ───────────────────────────────────────────────────────── */
+  --transition-fast:      0.1s ease;
+  --transition-base:      0.15s ease;
+  --transition-slow:      0.25s ease;
+
+  /* ── Layout ────────────────────────────────────────────────────────────── */
+  --topbar-height:        64px;
+  --sidebar-width:        260px;
+  --sidebar-collapsed-width: 60px;
+  --sidebar-current-width: 260px;
+  --content-max-width:    1400px;
+
+  /* ── Z-index ───────────────────────────────────────────────────────────── */
+  --z-dropdown:           100;
+  --z-sidebar:            200;
+  --z-topbar:             300;
+  --z-overlay:            900;
+  --z-modal:              1000;
+  --z-toast:              1100;
+}
+
+/* ── Dark Mode ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-primary:        #3b82f6;
+  --color-primary-dark:   #2563eb;
+  --color-primary-light:  #60a5fa;
+  --color-primary-50:     rgba(59, 130, 246, 0.1);
+  --color-primary-100:    rgba(59, 130, 246, 0.15);
+  --color-primary-200:    rgba(59, 130, 246, 0.2);
+  --color-accent:         #fbbf24;
+
+  --color-success-light:  rgba(22, 163, 74, 0.15);
+  --color-error-light:    rgba(220, 38, 38, 0.15);
+  --color-warning-light:  rgba(217, 119, 6, 0.15);
+  --color-info-light:     rgba(37, 99, 235, 0.15);
+
+  --color-white:          #1e293b;
+  --color-gray-50:        #1e293b;
+  --color-gray-100:       #263548;
+  --color-gray-200:       #334155;
+  --color-gray-300:       #475569;
+  --color-gray-400:       #64748b;
+  --color-gray-500:       #94a3b8;
+  --color-gray-600:       #cbd5e1;
+  --color-gray-700:       #e2e8f0;
+  --color-gray-800:       #f1f5f9;
+  --color-gray-900:       #f8fafc;
+
+  --surface-page:         #0f172a;
+  --surface-card:         #1e293b;
+  --surface-sidebar:      #1a2540;
+  --surface-overlay:      rgba(0, 0, 0, 0.7);
+
+  --shadow-xs:            0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm:            0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md:            0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg:            0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-xl:            0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --shadow-focus:         0 0 0 3px rgba(59, 130, 246, 0.3);
+
+  --color-spec-cs-bg:     rgba(37, 99, 235, 0.15);
+  --color-spec-it-bg:     rgba(22, 163, 74, 0.15);
+  --color-spec-is-bg:     rgba(124, 58, 237, 0.15);
+  --color-spec-se-bg:     rgba(234, 88, 12, 0.15);
+
+  --color-role-admin-bg:  rgba(124, 58, 237, 0.15);
+  --color-role-doctor-bg: rgba(8, 145, 178, 0.15);
+  --color-role-student-bg:rgba(37, 99, 235, 0.15);
+}

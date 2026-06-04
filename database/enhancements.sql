@@ -101,7 +101,8 @@ $$ LANGUAGE plpgsql;
 -- -------------------------------------------------------
 CREATE OR REPLACE FUNCTION process_retake_grade(
     p_student_id UUID,
-    p_course_id INT
+    p_course_id INT,
+    p_retake_type VARCHAR
 )
 RETURNS VOID AS $$
 DECLARE
@@ -157,7 +158,9 @@ BEGIN
         attempt_count = v_retake_count,
         best_grade = v_best_grade,
         updated_at = NOW()
-    WHERE student_id = p_student_id AND course_id = p_course_id;
+    WHERE student_id = p_student_id
+      AND course_id  = p_course_id
+      AND retake_type = p_retake_type;
 
     -- Recompute CGPA
     PERFORM recompute_student_cgpa(p_student_id);
@@ -194,8 +197,8 @@ BEGIN
     v_result := jsonb_build_object(
         'student_id', p_student_id,
         'credits_passed', v_student.total_credits_passed,
-        'credits_required', 132,
-        'credits_met', v_student.total_credits_passed >= 132,
+        'credits_required', COALESCE(get_bylaw_value('total_credits_required'), 138),
+        'credits_met', v_student.total_credits_passed >= COALESCE(get_bylaw_value('total_credits_required'), 138),
         'cgpa', v_student.cgpa,
         'cgpa_met', v_student.cgpa >= 2.0,
         'training1_done', v_training1_done,
@@ -205,7 +208,7 @@ BEGIN
         'no_pending_f_grades', NOT v_has_f_grades,
         'remedial_math_ok', (NOT v_student.remedial_math_required OR v_student.remedial_math_passed),
         'is_eligible', (
-            v_student.total_credits_passed >= 132 AND
+            v_student.total_credits_passed >= COALESCE(get_bylaw_value('total_credits_required'), 138) AND
             v_student.cgpa >= 2.0 AND
             v_training1_done AND v_training2_done AND
             v_project1_done AND v_project2_done AND
@@ -231,12 +234,13 @@ CREATE OR REPLACE VIEW v_admin_dashboard_stats AS
 SELECT
     (SELECT COUNT(*) FROM students WHERE academic_status = 'active') AS active_students,
     (SELECT COUNT(*) FROM students WHERE academic_status = 'warning') AS warning_students,
+    (SELECT COUNT(*) FROM students WHERE academic_status = 'probation') AS probation_students,
     (SELECT COUNT(*) FROM students WHERE academic_status = 'dismissed') AS dismissed_students,
     (SELECT COUNT(*) FROM students WHERE academic_status = 'graduated') AS graduated_students,
     (SELECT COUNT(*) FROM doctors) AS total_doctors,
     (SELECT COUNT(*) FROM courses WHERE is_active = TRUE) AS active_courses,
     (SELECT COUNT(*) FROM enrollments WHERE status = 'registered') AS current_enrollments,
-    (SELECT AVG(cgpa)::NUMERIC(4,3) FROM students WHERE academic_status IN ('active','warning')) AS avg_cgpa;
+    (SELECT AVG(cgpa)::NUMERIC(4,3) FROM students WHERE academic_status IN ('active','warning','probation')) AS avg_cgpa;
 
 -- Students per specialization
 CREATE OR REPLACE VIEW v_specialization_stats AS
@@ -292,10 +296,10 @@ CREATE OR REPLACE FUNCTION student_level_to_int(p_level student_level)
 RETURNS INT AS $$
 BEGIN
   RETURN CASE p_level
-    WHEN 'freshman'  THEN 1
-    WHEN 'sophomore' THEN 2
-    WHEN 'junior'    THEN 3
-    WHEN 'senior'    THEN 4
+    WHEN 'الفرقة الأولى'  THEN 1
+    WHEN 'الفرقة الثانية' THEN 2
+    WHEN 'الفرقة الثالثة'    THEN 3
+    WHEN 'الفرقة الرابعة'    THEN 4
     ELSE 0
   END;
 END;

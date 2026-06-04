@@ -31,9 +31,15 @@ export const AuthProvider = ({ children }) => {
         const res = await authAPI.getMe();
         setUser(res.data.data.user);
         setProfile(res.data.data.profile);
-      } catch {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+      } catch (err) {
+        // Only clear tokens on authentication failures (401/403).
+        // Preserve tokens on network errors or server errors (5xx) so the
+        // user isn't silently logged out due to a temporary backend issue.
+        const status = err?.response?.status;
+        if (status === 401 || status === 403) {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+        }
       } finally {
         setLoading(false);
       }

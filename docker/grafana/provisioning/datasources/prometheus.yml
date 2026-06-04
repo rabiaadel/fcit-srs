@@ -1,21 +1,25 @@
 # =============================================================================
-# Grafana Datasource Provisioning
-# [P4-FIX] Added uid field — prevents Grafana from generating random IDs
-#           on each restart, which would break dashboard panel references
+# Grafana 11 Datasource Provisioning
+# UPDATED: Added Prometheus 3.x compatible settings
 # =============================================================================
 
 apiVersion: 1
 
 datasources:
-  - name: Prometheus
-    uid: prometheus           # [P4-FIX] Fixed UID — dashboard JSON can reference this
-    type: prometheus
-    access: proxy
-    url: http://prometheus:9090
+  - name:      Prometheus
+    uid:       prometheus
+    type:      prometheus
+    access:    proxy
+    url:       http://prometheus:9090
     isDefault: true
-    editable: false
+    editable:  false
     jsonData:
-      timeInterval: '15s'
-      queryTimeout: '60s'
-      httpMethod: POST
+      timeInterval:              '15s'
+      queryTimeout:              '60s'
+      httpMethod:                POST
+      prometheusType:            Prometheus
+      prometheusVersion:         '3.4.0'
+      cacheLevel:                Low
+      incrementalQuerying:       true
+      incrementalQueryOverlapWindow: '10m'
     version: 1

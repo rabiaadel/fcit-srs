@@ -234,6 +234,8 @@ app.get('/metrics', async (req, res) => {
 
 // ── API Routes ────────────────────────────────────────────────────────────────
 app.use('/api/v1/auth/login', loginLimiter);
+
+// Mount routes
 app.use('/api/v1', routes);
 
 // ── 404 and Error handlers ────────────────────────────────────────────────────

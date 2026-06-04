@@ -42,6 +42,25 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Handle Rate Limiting (429)
+    if (error.response?.status === 429) {
+      if (!originalRequest._hasRetried429) {
+        originalRequest._hasRetried429 = true;
+        // Don't toast repeatedly if there are multiple requests failing at once
+        if (!window._isRateLimitToasting) {
+          window._isRateLimitToasting = true;
+          import('react-hot-toast').then(({ toast }) => {
+            toast.error('تم تجاوز الحد المسموح من الطلبات. يرجى الانتظار قليلاً والمحاولة مرة أخرى.', {
+              id: 'rate-limit-error',
+              duration: 5000,
+            });
+            setTimeout(() => { window._isRateLimitToasting = false; }, 5000);
+          });
+        }
+      }
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (error.response?.data?.code === 'TOKEN_EXPIRED') {
         if (isRefreshing) {
@@ -58,8 +77,13 @@ api.interceptors.response.use(
 
         const refreshToken = localStorage.getItem('refreshToken');
         if (!refreshToken) {
+          // No refresh token — reject queued requests, clear state, redirect
+          isRefreshing = false;
+          processQueue(new Error('No refresh token'), null);
           localStorage.clear();
-          window.location.href = '/login';
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
           return Promise.reject(error);
         }
 
@@ -74,7 +98,10 @@ api.interceptors.response.use(
         } catch (refreshErr) {
           processQueue(refreshErr, null);
           localStorage.clear();
-          window.location.href = '/login';
+          // Avoid reloading the page if we are already on /login
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
           return Promise.reject(refreshErr);
         } finally {
           isRefreshing = false;
@@ -83,7 +110,9 @@ api.interceptors.response.use(
 
       if (!originalRequest.url.includes('/auth/')) {
         localStorage.clear();
-        window.location.href = '/login';
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
       }
     }
 
@@ -110,6 +139,7 @@ export const studentAPI = {
   getWarnings:          ()               => api.get('/student/warnings'),
   getSchedule:          (semesterId)     => api.get(`/student/semesters/${semesterId}/schedule`),
   getAvailableCourses:  (semesterId)     => api.get(`/student/semesters/${semesterId}/available-courses`),
+  getCoursesByPlan:     (semesterId)     => api.get(`/student/semesters/${semesterId}/courses-by-plan`),
   registerCourse:       (offeringId)     => api.post('/student/register', { offeringId }),
   dropCourse:           (enrollmentId)   => api.delete(`/student/enrollments/${enrollmentId}/drop`),
   withdrawCourse:       (enrollmentId, reason) =>
@@ -119,6 +149,12 @@ export const studentAPI = {
   getUnreadCount:         ()           => api.get('/notifications/unread-count'),
   markNotificationRead:   (notifId)    => api.patch(`/notifications/${notifId}/read`),
   markAllNotificationsRead: ()         => api.patch('/notifications/read-all'),
+  getNotificationDetail:  (notifId)    => api.get(`/notifications/${notifId}/detail`),
+  // FR-1 to FR-5: Credit hours + eligibility + alternatives
+  getCreditSummary:       (semId)      => api.get(`/student/semesters/${semId}/credit-summary`),
+  checkEligibility:       (semId, oid) => api.get(`/student/semesters/${semId}/offerings/${oid}/eligibility`),
+  getAlternatives:        (semId, oid) => api.get(`/student/semesters/${semId}/offerings/${oid}/alternatives`),
+  validateRegistration:   (semId, d)   => api.post(`/student/semesters/${semId}/validate-registration`, d),
 };
 
 // ── Doctor API ────────────────────────────────────────────────────────────────
@@ -134,11 +170,13 @@ export const doctorAPI = {
     api.post(`/doctor/offerings/${offeringId}/attendance`, data),
   getAttendanceReport: (offeringId) =>
     api.get(`/doctor/offerings/${offeringId}/attendance`),
+  getSchedule:         (params)    => api.get('/doctor/schedule', { params }),
   // [B9-FIX] Doctor notifications via own route
   getNotifications:       ()        => api.get('/doctor/notifications'),
   markNotificationRead:   (notifId) => api.patch(`/doctor/notifications/${notifId}/read`),
   getUnreadCount:         ()        => api.get('/notifications/unread-count'),
   markAllNotificationsRead: ()      => api.patch('/notifications/read-all'),
+  getNotificationDetail:  (notifId) => api.get(`/notifications/${notifId}/detail`),
 };
 
 // ── Admin API ─────────────────────────────────────────────────────────────────
@@ -149,15 +187,22 @@ export const adminAPI = {
   updateUser:           (userId, data)     => api.patch(`/admin/users/${userId}`, data),
   resetPassword:        (userId, newPassword) =>
     api.post(`/admin/users/${userId}/reset-password`, { newPassword }),
+  // Bulk Import Users
+  validateUsersBulk:    (rows)             => api.post('/admin/users/validate-bulk', { rows }),
+  bulkImportUsers:      (data)             => api.post('/admin/users/bulk-import', data),
   getStudents:          (params)           => api.get('/admin/students', { params }),
   getStudentDetail:     (studentId)        => api.get(`/admin/students/${studentId}`),
   getSemesters:         ()                 => api.get('/admin/semesters'),
+  createSemester:       (data)             => api.post('/admin/semesters', data),
   updateSemesterStatus: (semesterId, status) =>
     api.patch(`/admin/semesters/${semesterId}/status`, { status }),
+  updateSemesterDates:  (semesterId, dates) => 
+    api.patch(`/admin/semesters/${semesterId}/dates`, dates),
   finalizeSemester:     (semesterId)       => api.post(`/admin/semesters/${semesterId}/finalize`),
   createOffering:       (data)             => api.post('/admin/offerings', data),
   createAnnouncement:   (data)             => api.post('/admin/announcements', data),
   getAnnouncements:     ()                 => api.get('/admin/announcements'),
+  deleteAnnouncement:   (id)               => api.delete(`/admin/announcements/${id}`),
   getAcademicReport:    ()                 => api.get('/admin/reports/academic'),
   getNotifications:     ()                 => api.get('/notifications'),
   markNotificationRead: (notifId)          => api.patch(`/notifications/${notifId}/read`),
@@ -185,6 +230,34 @@ export const adminAPI = {
   getRegistrationStatus:()                  => api.get('/admin/registration/status'),
   toggleRegistration:   (semesterId, action) =>
     api.post('/admin/registration/toggle', { semesterId, action }),
+
+  // V3 Extensions
+  // Curriculum plans
+  getCurriculumPlan:    (spec)              => api.get('/admin/curriculum', { params: { specialization: spec } }),
+  addCourseToCurriculum:(data)              => api.post('/admin/curriculum', data),
+  updateCurriculumEntry:(planId, data)      => api.put(`/admin/curriculum/${planId}`, data),
+  removeCourseFromCurriculum:(planId)       => api.delete(`/admin/curriculum/${planId}`),
+  // Bylaw config (Database)
+  getBylawConfig:       ()                  => api.get('/admin/bylaw-config'),
+  updateBylawConfig:    (key, value)        => api.put(`/admin/bylaw-config/${key}`, { value }),
+  resetBylawConfig:     (key)               => api.post(`/admin/bylaw-config/${key}/reset`),
+  // Bylaw config (JSON Full)
+  getBylawFull:         ()                  => api.get('/admin/bylaw-full'),
+  updateBylawFull:      (data)              => api.post('/admin/bylaw-full', data),
+  // Departments CRUD
+  getDepartmentsFull:   ()                  => api.get('/admin/departments'),
+  createDepartment:     (data)              => api.post('/admin/departments', data),
+  updateDepartment:     (deptId, data)      => api.patch(`/admin/departments/${deptId}`, data),
+  // Doctor schedule
+  getDoctorSchedule:    (doctorId, params)  => api.get(`/admin/doctor-schedule/${doctorId}`, { params }),
+  assignSchedule:       (offeringId, data)  => api.post(`/admin/offerings/${offeringId}/schedule`, data),
+  // Prerequisites UI
+  getPrerequisites:     (courseId)          => api.get(`/admin/courses/${courseId}/prerequisites`),
+  removePrerequisite:   (courseId, prereqId)=> api.delete(`/admin/courses/${courseId}/prerequisites/${prereqId}`),
+  // Reports
+  getDetailedReports:   (params)            => api.get('/admin/reports/detailed', { params }),
+  // Notification detail
+  getNotificationDetail:(notifId)           => api.get(`/notifications/${notifId}/detail`),
 };
 
 // ── Shared API ────────────────────────────────────────────────────────────────

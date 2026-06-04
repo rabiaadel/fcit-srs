@@ -1,11 +1,12 @@
-version: '3.9'
-
 # =============================================================================
-# FCIT SRS — Docker Compose
-# [DC1-FIX] prometheus no longer depends on backend health — it retries scraping
-# [P3-FIX]  grafana dashboard volume now maps to correct /etc/grafana/dashboards
-# [P4-FIX]  datasource uid is stable via provisioned prometheus.yml
-# [DC2-FIX] Grafana provisioning includes both datasource + dashboard dirs
+# FCIT SRS — Docker Compose v3
+# FIXES:
+#   [PG-LOG-FIX]   Removed direct Prometheus→postgres:5432 scrape
+#                  (was causing "invalid length of startup packet" in PG logs)
+#   [PROM-FIX]     Added postgres_exporter sidecar (proper PG metrics on :9187)
+#   [IMG-UPDATE]   Prometheus v2.51 → v3.4.0, Grafana 10.4.2 → 11.6.0
+#   [PREREQ-FIX]   Added migration_prerequisites.sql (07) to DB init
+#   [REG-FIX]      Spring 2026 dates updated via migration SQL
 # =============================================================================
 
 services:
@@ -13,34 +14,31 @@ services:
   # ── Database ─────────────────────────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
-    container_name: fcit-srs-postgres
+    container_name: fcit-srs-audit-postgres
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       POSTGRES_DB: ${DB_NAME:-student_registration_system}
       PGDATA: /var/lib/postgresql/data/pgdata
-      # [C9-FIX] Set locale to prevent "locale: not found" warnings
       POSTGRES_INITDB_ARGS: "--locale=C --encoding=UTF8"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./database/enhancements.sql:/docker-entrypoint-initdb.d/02-enhancements.sql:ro
-      - ./database/seeds/001_demo_users.sql:/docker-entrypoint-initdb.d/03-seed-users.sql:ro
-      - ./database/seeds/002_initial_setup.sql:/docker-entrypoint-initdb.d/04-seed-setup.sql:ro
-      - ./database/seeds/003_complete_curriculum.sql:/docker-entrypoint-initdb.d/05-seed-curriculum.sql:ro
+      - ./database/migration_v3.sql:/docker-entrypoint-initdb.d/06-migration-v3.sql:ro
+      - ./database/migration_prerequisites.sql:/docker-entrypoint-initdb.d/07-migration-prerequisites.sql:ro
+      - ./database/migration_v4.sql:/docker-entrypoint-initdb.d/08-migration-v4.sql:ro
+      - ./database/migration_v5.sql:/docker-entrypoint-initdb.d/09-migration-v5.sql:ro
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "${DB_PORT:-5433}:5432"
     networks:
       - fcit-network
     healthcheck:
-      # [C2-FIX] start_period MUST account for all 5 SQL init files running
-      # 003_complete_curriculum.sql alone can take 30-60s on first run
-      # We also check the TARGET database (not just postgres default) is ready
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-student_registration_system} -q && psql -U ${DB_USER:-postgres} -d ${DB_NAME:-student_registration_system} -c 'SELECT 1 FROM users LIMIT 1' -q >/dev/null 2>&1"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-student_registration_system} -q && psql -U ${DB_USER:-postgres} -d ${DB_NAME:-student_registration_system} -c 'SELECT 1 FROM users LIMIT 1' -q >/dev/null 2>&1" ]
       interval: 10s
       timeout: 8s
       retries: 15
-      start_period: 120s   # [C2-FIX] Allow full seed run before declaring healthy
+      start_period: 120s
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -48,8 +46,8 @@ services:
 
   # ── Backend ───────────────────────────────────────────────────────────────────
   backend:
-    image: fcit-srs-backend:1.0.0
-    container_name: fcit-srs-backend
+    image: fcit-srs-audit-backend:1.0.0
+    container_name: fcit-srs-audit-backend
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -65,12 +63,10 @@ services:
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-fcit-srs-refresh-change-me}
       JWT_EXPIRY: ${JWT_EXPIRY:-15m}
       JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
-      API_RATE_LIMIT: ${API_RATE_LIMIT:-200}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3002,http://localhost:8080,http://127.0.0.1:3002}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3003,http://localhost:8080}
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      METRICS_TOKEN: ${METRICS_TOKEN:-}   # Optional: secure metrics endpoint externally
     ports:
-      - "${BACKEND_PORT:-3000}:3000"
+      - "${BACKEND_PORT:-3001}:3000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -80,11 +76,11 @@ services:
     networks:
       - fcit-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:3000/health || exit 1"]
+      test: [ "CMD-SHELL", "curl -sf http://localhost:3000/health || exit 1" ]
       interval: 20s
       timeout: 8s
       retries: 5
-      start_period: 60s   # Backend starts fast once DB is healthy (setup.js is idempotent)
+      start_period: 60s
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -92,22 +88,22 @@ services:
 
   # ── Frontend ──────────────────────────────────────────────────────────────────
   frontend:
-    image: fcit-srs-frontend:1.0.0
-    container_name: fcit-srs-frontend
+    image: fcit-srs-audit-frontend:1.0.0
+    container_name: fcit-srs-audit-frontend
     build:
       context: .
       dockerfile: Dockerfile.frontend
       args:
         REACT_APP_API_URL: /api/v1
     ports:
-      - "${FRONTEND_PORT:-3002}:8080"
+      - "${FRONTEND_PORT:-3003}:8080"
     depends_on:
       backend:
         condition: service_healthy
     networks:
       - fcit-network
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/index.html || exit 1"]
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:8080/index.html || exit 1" ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -117,21 +113,48 @@ services:
       driver: "json-file"
       options: { max-size: "10m", max-file: "3" }
 
+  # ── PostgreSQL Exporter ───────────────────────────────────────────────────────
+  # FIX: This sidecar speaks the Postgres wire protocol and exposes HTTP /metrics
+  # on port 9187. Prometheus scrapes :9187, NOT :5432 directly.
+  # This eliminates "invalid length of startup packet" from postgres logs.
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    container_name: fcit-srs-audit-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-student_registration_system}?sslmode=disable"
+      PG_EXPORTER_DISABLE_DEFAULT_METRICS: "false"
+      PG_EXPORTER_DISABLE_SETTINGS_METRICS: "false"
+      PG_EXPORTER_AUTO_DISCOVER_DATABASES: "false"
+    ports:
+      - "9188:9187"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fcit-network
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:9187/metrics || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options: { max-size: "5m", max-file: "3" }
+
   # ── Prometheus ────────────────────────────────────────────────────────────────
-  # [DC1-FIX] Removed depends_on backend:service_healthy
-  # Reason: Prometheus should start independently and retry scraping.
-  # If backend isn't ready, Prometheus marks it as DOWN and keeps trying.
-  # Making prometheus wait on backend health means prometheus never starts
-  # if backend takes 90+ seconds to initialize.
+  # UPDATED: v2.51.0 → v3.4.0 (latest stable May 2026)
   prometheus:
-    image: prom/prometheus:v2.51.0
-    container_name: fcit-srs-prometheus
+    image: prom/prometheus:latest
+    container_name: fcit-srs-audit-prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention.time=30d'
       - '--storage.tsdb.retention.size=2GB'
       - '--web.enable-lifecycle'
+      - '--web.enable-remote-write-receiver'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--log.level=warn'
@@ -139,11 +162,14 @@ services:
       - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      - "9091:9090"
+    depends_on:
+      postgres-exporter:
+        condition: service_healthy
     networks:
       - fcit-network
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:9090/-/healthy || exit 1"]
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:9090/-/healthy || exit 1" ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -154,35 +180,34 @@ services:
       options: { max-size: "10m", max-file: "3" }
 
   # ── Grafana ───────────────────────────────────────────────────────────────────
-  # [P3-FIX] Dashboard JSON files are now provisioned via volume mount to /etc/grafana/dashboards
-  # [P4-FIX] Datasource has stable uid via provisioning config
-  # [DC2-FIX] Two separate volumes: one for provisioning config, one for dashboard JSON
+  # UPDATED: 10.4.2 → 11.6.0 (latest stable May 2026)
   grafana:
-    image: grafana/grafana:10.4.2
-    container_name: fcit-srs-grafana
+    image: grafana/grafana:latest
+    container_name: fcit-srs-audit-grafana
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?GRAFANA_PASSWORD must be set in .env}
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_ANALYTICS_REPORTING_ENABLED: "false"
       GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
       GF_LOG_LEVEL: "warn"
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/etc/grafana/dashboards/fcit-srs-overview.json"
       GF_SERVER_ROOT_URL: "http://localhost:3050"
+      # Grafana 11: enable new navigation
+      GF_FEATURE_TOGGLES_ENABLE: "newNavigation"
     volumes:
       - grafana_data:/var/lib/grafana
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
-      # [P3-FIX] Dashboard JSON files mounted to the path referenced in dashboards.yml
       - ./docker/grafana/dashboards:/etc/grafana/dashboards:ro
     ports:
-      - "3050:3000"
+      - "3051:3000"
     depends_on:
       prometheus:
         condition: service_healthy
     networks:
       - fcit-network
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api/health || exit 1"]
+      test: [ "CMD-SHELL", "wget -q --spider http://localhost:3000/api/health || exit 1" ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -196,24 +221,28 @@ services:
 networks:
   fcit-network:
     driver: bridge
-    name: fcit-srs-network
+    name: fcit-srs-audit-network
     ipam:
       driver: default
       config:
-        - subnet: 172.30.0.0/24
-          gateway: 172.30.0.1
+        - subnet: 172.31.0.0/24
+          gateway: 172.31.0.1
 
 # ── Volumes ───────────────────────────────────────────────────────────────────
+# [IMPORTANT SAFEGUARD]
+# NEVER run `docker compose down -v` unless you explicitly want to WIPE all
+# database data (users, students, grades, etc.).
+# The `-v` flag deletes these named volumes, permanently erasing the data.
 volumes:
   postgres_data:
     driver: local
-    name: fcit-srs-postgres-data
+    name: fcit-srs-audit-postgres-data
   backend_logs:
     driver: local
-    name: fcit-srs-backend-logs
+    name: fcit-srs-audit-backend-logs
   prometheus_data:
     driver: local
-    name: fcit-srs-prometheus-data
+    name: fcit-srs-audit-prometheus-data
   grafana_data:
     driver: local
-    name: fcit-srs-grafana-data
+    name: fcit-srs-audit-grafana-data
